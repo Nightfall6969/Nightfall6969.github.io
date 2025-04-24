@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduGame - Learning App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+        
+        .greeting {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin: 10px 0;
+        }
+        
+        .subject-cards {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin: 20px 0;
+        }
+        
+        .subject-card {
+            min-width: 120px;
+            height: 80px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .subject-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .subject-card:nth-child(2) {
+            background: linear-gradient(135deg, #e74c3c, #f39c12);
+        }
+        
+        .subject-card:nth-child(3) {
+            background: linear-gradient(135deg, #9b59b6, #34495e);
+        }
+        
+        .learning-path {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .learning-path h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .learning-path p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .see-all {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            color: #3498db;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .topic-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .topic-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            border-left: 5px solid #3498db;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .topic-card:hover {
+            transform: translateX(5px);
+        }
+        
+        .topic-card h4 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .topic-card p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .explore-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 15px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 5px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .nav-item.active .nav-icon {
+            background-color: #3498db;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        /* Game elements */
+        .game-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .subject-card .game-icon {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 800px;
+                margin: 20px auto;
+            }
+            
+            .subject-cards {
+                justify-content: center;
+            }
+            
+            .topic-cards {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .topic-card {
+                flex: 1 1 45%;
+                min-width: 250px;
+            }
+            
+            .nav-bar {
+                position: static;
+                border-top: none;
+                border-radius: 0 0 20px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="greeting">Hi, Juan Cruz</div>
+            <div class="subtitle">Let's learn something new today!</div>
+        </div>
+        
+        <div class="subject-cards">
+            <div class="subject-card">
+                General Mathematics
+                <div class="game-icon">🎮</div>
+            </div>
+            <div class="subject-card">
+                Physical Education
+                <div class="game-icon">🏆</div>
+            </div>
+            <div class="subject-card" id="earth-life-card">
+                Earth and Life
+                <div class="game-icon">🌍</div>
+            </div>
+        </div>
+        
+        <div class="learning-path">
+            <h3>Learning path</h3>
+            <p>Achieve your learning goal effectively</p>
+            <div class="see-all">See All</div>
+        </div>
+        
+        <div class="topic-cards">
+            <div class="topic-card">
+                <h4>Learn about the different types of Atmosphere</h4>
+                <p>Interactive lesson with quizzes</p>
+                <a href="#" class="explore-btn">Play Lesson</a>
+                <div class="game-badge">3</div>
+            </div>
+            <div class="topic-card">
+                <h4>Learn about the different types of Rocks</h4>
+                <p>Game-based learning adventure</p>
+                <a href="#" class="explore-btn">Explore Now!</a>
+                <div class="game-badge">5</div>
+            </div>
+            <div class="topic-card">
+                <h4>Math Puzzle Challenge</h4>
+                <p>Solve problems to unlock levels</p>
+                <a href="#" class="explore-btn">Start Game</a>
+                <div class="game-badge">🎯</div>
+            </div>
+            <div class="topic-card">
+                <h4>PE Fitness Quest</h4>
+                <p>Track activity to earn rewards</p>
+                <a href="#" class="explore-btn">Begin Workout</a>
+                <div class="game-badge">🏅</div>
+            </div>
+        </div>
+        
+        <div class="nav-bar">
+            <div class="nav-item active">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">🏆</div>
+                <div class="nav-label">Leaderboard</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📚</div>
+                <div class="nav-label">Library</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simple interactivity for the prototype
+        document.querySelectorAll('.subject-card, .topic-card, .nav-item, .see-all, .explore-btn').forEach(element => {
+            element.addEventListener('click', function() {
+                if (this.id === 'earth-life-card') {
+                    // Redirect to the Earth and Life Science page
+                    window.location.href = 'What is Earth & Life Science.html';
+                } else {
+                    alert('This would navigate to the ' + (this.textContent || this.innerText).trim() + ' page in the full app');
+                }
+                
+            });
+        });
+          // Navigation functionality
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const navLabel = this.querySelector('.nav-label').textContent;
+            
+            if (navLabel === 'Home') {
+                // Already on home page, no action needed
+                return;
+            } else if (navLabel === 'Profile') {
+                window.location.href = 'Profile view.html';
+            } else {
+                alert('This would navigate to the ' + navLabel + ' page in the full app');
+            }
+        });
+    });
+    </script>
+</body>
+</html>

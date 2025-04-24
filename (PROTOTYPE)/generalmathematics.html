@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduGame - General Mathematics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .subject-header {
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+        }
+        
+        .subject-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .subject-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .subject-description {
+            font-size: 16px;
+            color: #7f8c8d;
+            line-height: 1.5;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+        }
+        
+        .stat-box {
+            flex: 1;
+            padding: 10px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+        
+        .game-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .content-section {
+            margin: 25px 0;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-icon {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .content-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.2s;
+            border-left: 5px solid #3498db;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-icon {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .card-desc {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        
+        .progress-container {
+            margin-top: 10px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background-color: #ecf0f1;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #3498db);
+            width: 65%;
+            border-radius: 3px;
+        }
+        
+        .progress-text {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-align: right;
+            margin-top: 3px;
+        }
+        
+        .game-card {
+            background: linear-gradient(135deg, #9b59b6, #3498db);
+            color: white;
+            border-left: 5px solid #f1c40f;
+        }
+        
+        .game-card .card-title {
+            color: white;
+        }
+        
+        .game-card .card-desc {
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .game-card .progress-fill {
+            background: linear-gradient(90deg, #f1c40f, #e67e22);
+        }
+        
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 5px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .nav-item.active .nav-icon {
+            background-color: #3498db;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 800px;
+                margin: 20px auto;
+            }
+            
+            .nav-bar {
+                position: static;
+                border-top: none;
+                border-radius: 0 0 20px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="subject-header">
+            <div class="subject-icon">🧮</div>
+            <h1 class="subject-title">General Mathematics</h1>
+            <p class="subject-description">
+                This subject is designed to equip you with essential mathematical concepts and problem-solving skills 
+                that are crucial for both your academic journey and everyday life. In Senior High School, mathematics 
+                becomes more than just numbers and formulas—it's about understanding patterns, making logical decisions, 
+                and applying mathematical principles to solve real-world problems.
+            </p>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-box" style="position: relative;">
+                <div class="stat-value">85%</div>
+                <div class="stat-label">Mastery</div>
+                <div class="game-badge">+2%</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">28</div>
+                <div class="stat-label">Level</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">#2</div>
+                <div class="stat-label">Class Rank</div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2 class="section-title"><span class="section-icon">📚</span> Learning Modules</h2>
+            <div class="card-container">
+                <div class="content-card">
+                    <h3 class="card-title"><span class="card-icon">➗</span>Algebra Basics</h3>
+                    <p class="card-desc">Master algebraic expressions and equations</p>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 90%"></div>
+                        </div>
+                        <div class="progress-text">90% complete</div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h3 class="card-title"><span class="card-icon">📈</span>Functions</h3>
+                    <p class="card-desc">Understand different types of functions</p>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                        <div class="progress-text">75% complete</div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h3 class="card-title"><span class="card-icon">🧮</span>Trigonometry</h3>
+                    <p class="card-desc">Explore trigonometric functions</p>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 40%"></div>
+                        </div>
+                        <div class="progress-text">40% complete</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2 class="section-title"><span class="section-icon">🎮</span> Math Games</h2>
+            <div class="card-container">
+                <div class="content-card game-card">
+                    <h3 class="card-title"><span class="card-icon">➗</span>Algebra Adventure</h3>
+                    <p class="card-desc">Solve equations to unlock new levels</p>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%"></div>
+                        </div>
+                        <div class="progress-text">Level 5/8</div>
+                    </div>
+                </div>
+                
+                <div class="content-card game-card" style="background: linear-gradient(135deg, #e74c3c, #f39c12);">
+                    <h3 class="card-title"><span class="card-icon">🧩</span>Math Puzzle Rush</h3>
+                    <p class="card-desc">Race against time to solve puzzles</p>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 30%"></div>
+                        </div>
+                        <div class="progress-text">High Score: 850</div>
+                    </div>
+                </div>
+                
+                <div class="content-card game-card" style="background: linear-gradient(135deg, #2ecc71, #16a085);">
+                    <h3 class="card-title"><span class="card-icon">🏆</span>Math Olympiad</h3>
+                    <p class="card-desc">Compete with classmates</p>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="progress-text">Current Rank: #2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-bar">
+            <div class="nav-item">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📊</div>
+                <div class="nav-label">Progress</div>
+            </div>
+            <div class="nav-item active">
+                <div class="nav-icon">🧮</div>
+                <div class="nav-label">Math</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Interactive elements
+        document.querySelectorAll('.content-card, .nav-item').forEach(element => {
+            element.addEventListener('click', function() {
+                const cardTitle = this.querySelector('.card-title')?.textContent;
+                const navLabel = this.querySelector('.nav-label')?.textContent;
+                
+                if (cardTitle) {
+                    alert('This would open: ' + cardTitle);
+                } else if (navLabel) {
+                    alert('This would navigate to the ' + navLabel + ' page');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

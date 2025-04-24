@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduGame - Profile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .profile-header {
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+        }
+        
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .stat-box {
+            flex: 1;
+            padding: 15px;
+            position: relative;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .rank-value {
+            font-size: 20px;
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .divider {
+            height: 50px;
+            width: 1px;
+            background-color: #eee;
+            align-self: center;
+        }
+        
+        .activity-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .activity-item:hover {
+            transform: translateX(5px);
+            background-color: #f1f3f5;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .activity-details {
+            flex: 1;
+        }
+        
+        .activity-time {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-bottom: 3px;
+        }
+        
+        .activity-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 3px;
+        }
+        
+        .activity-subtitle {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .progress-container {
+            margin-top: 5px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background-color: #ecf0f1;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #3498db);
+            width: 65%;
+            border-radius: 3px;
+        }
+        
+        .progress-text {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-align: right;
+            margin-top: 3px;
+        }
+        
+        .game-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 5px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .nav-item.active .nav-icon {
+            background-color: #3498db;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 800px;
+                margin: 20px auto;
+            }
+            
+            .stats-container {
+                max-width: 500px;
+                margin: 30px auto;
+            }
+            
+            .activity-item {
+                padding: 20px;
+            }
+            
+            .nav-bar {
+                position: static;
+                border-top: none;
+                border-radius: 0 0 20px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="profile-header">
+            <div class="avatar">JC</div>
+            <div class="profile-name">Juan Cruz</div>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-label">Points</div>
+                <div class="stat-value">600</div>
+                <div class="game-badge">+5</div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="stat-box">
+                <div class="stat-label">General Rank</div>
+                <div class="rank-value">#182</div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="stat-box">
+                <div class="stat-label">Classroom Rank</div>
+                <div class="rank-value">#2</div>
+            </div>
+        </div>
+        
+        <div class="activity-header">Recent Activity</div>
+        
+        <div class="activity-item">
+            <div class="activity-icon">🧮</div>
+            <div class="activity-details">
+                <div class="activity-time">Today</div>
+                <div class="activity-title">Gen Math Level 28</div>
+                <div class="activity-subtitle">Algebra Challenge</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%"></div>
+                    </div>
+                    <div class="progress-text">85% complete</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="activity-item">
+            <div class="activity-icon">🪨</div>
+            <div class="activity-details">
+                <div class="activity-time">Yesterday</div>
+                <div class="activity-title">Learning Path: Types of Rocks</div>
+                <div class="activity-subtitle">Earth Science Quest</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div>
+                    </div>
+                    <div class="progress-text">65% complete</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="activity-item">
+            <div class="activity-icon">💼</div>
+            <div class="activity-details">
+                <div class="activity-time">2 days ago</div>
+                <div class="activity-title">Entrep Level 2</div>
+                <div class="activity-subtitle">Business Simulation</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 40%"></div>
+                    </div>
+                    <div class="progress-text">40% complete</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="activity-item">
+            <div class="activity-icon">🏆</div>
+            <div class="activity-details">
+                <div class="activity-time">3 days ago</div>
+                <div class="activity-title">Achievement Unlocked!</div>
+                <div class="activity-subtitle">Math Master: Bronze Tier</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="progress-text">Reward: 50 points</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-bar">
+            <div class="nav-item">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📊</div>
+                <div class="nav-label">Stats</div>
+            </div>
+            <div class="nav-item active">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">🎮</div>
+                <div class="nav-label">Games</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simple interactivity for the prototype
+        document.querySelectorAll('.activity-item, .nav-item').forEach(element => {
+            element.addEventListener('click', function() {
+                const activityTitle = this.querySelector('.activity-title')?.textContent;
+                const navLabel = this.querySelector('.nav-label')?.textContent;
+                
+                if (activityTitle) {
+                    alert('This would show details for: ' + activityTitle);
+                } else if (navLabel) {
+                    alert('This would navigate to the ' + navLabel + ' page');
+                }
+            });
+        });
+           // Navigation functionality
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const navLabel = this.querySelector('.nav-label').textContent;
+            
+            if (navLabel === 'Home') {
+                window.location.href = 'Learningmainpage.html';
+            } else if (navLabel === 'Profile') {
+                // Already on profile page, no action needed
+                return;
+            } else {
+                alert('This would navigate to the ' + navLabel + ' page in the full app');
+            }
+        });
+    });
+    </script>
+</body>
+</html>

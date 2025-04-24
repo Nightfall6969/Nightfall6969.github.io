@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduGame - Pause Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #121212;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 80vh;
+            background-color: #1e1e1e;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .game-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=1000') center/cover;
+            filter: brightness(0.3) blur(3px);
+            opacity: 0.7;
+        }
+        
+        .pause-menu {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 30px;
+        }
+        
+        .pause-title {
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 40px;
+            text-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .menu-options {
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .menu-item:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+        }
+        
+        .menu-item.active {
+            background-color: rgba(74, 144, 226, 0.3);
+            border-color: #4a90e2;
+        }
+        
+        .menu-text {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .menu-value {
+            font-size: 16px;
+            color: #aaa;
+        }
+        
+        .menu-item.active .menu-value {
+            color: #4a90e2;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            border-radius: 34px;
+            transition: .4s;
+            cursor: pointer;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+        
+        input:checked + .slider {
+            background-color: #4a90e2;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* Haptic feedback simulation */
+        @keyframes haptic {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            50% { transform: translateX(3px); }
+            75% { transform: translateX(-3px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .haptic-effect {
+            animation: haptic 0.2s linear;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 500px) {
+            .game-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+            
+            .pause-title {
+                font-size: 36px;
+                margin-bottom: 30px;
+            }
+            
+            .menu-text {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-background"></div>
+        
+        <div class="pause-menu">
+            <div class="pause-title">Paused</div>
+            
+            <div class="menu-options">
+                <div class="menu-item" id="resumeBtn">
+                    <div class="menu-text">Resume</div>
+                    <div class="menu-value">▶</div>
+                </div>
+                
+                <div class="menu-item" id="hapticsBtn">
+                    <div class="menu-text">Haptics</div>
+                    <div class="menu-value">ON</div>
+                </div>
+                
+                <div class="menu-item" id="supportBtn">
+                    <div class="menu-text">Support</div>
+                    <div class="menu-value">🆘</div>
+                </div>
+                
+                <div class="menu-item" id="quitBtn">
+                    <div class="menu-text">Quit</div>
+                    <div class="menu-value">🚪</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Pause menu functionality
+        let hapticsEnabled = true;
+        
+        document.getElementById('resumeBtn').addEventListener('click', function() {
+            this.classList.add('haptic-effect');
+            setTimeout(() => {
+                this.classList.remove('haptic-effect');
+                alert('Game would resume now');
+            }, 200);
+        });
+        
+        document.getElementById('hapticsBtn').addEventListener('click', function() {
+            hapticsEnabled = !hapticsEnabled;
+            const valueElement = this.querySelector('.menu-value');
+            valueElement.textContent = hapticsEnabled ? 'ON' : 'OFF';
+            
+            if (hapticsEnabled) {
+                this.classList.add('haptic-effect');
+                setTimeout(() => this.classList.remove('haptic-effect'), 200);
+            }
+            
+            this.classList.toggle('active');
+        });
+        
+        document.getElementById('supportBtn').addEventListener('click', function() {
+            if (hapticsEnabled) {
+                this.classList.add('haptic-effect');
+                setTimeout(() => this.classList.remove('haptic-effect'), 200);
+            }
+            alert('Support options would appear');
+        });
+        
+        document.getElementById('quitBtn').addEventListener('click', function() {
+            if (hapticsEnabled) {
+                this.classList.add('haptic-effect');
+                setTimeout(() => this.classList.remove('haptic-effect'), 200);
+            }
+            alert('Are you sure you want to quit?');
+        });
+        
+        // Simulate haptic feedback on all clicks if enabled
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (hapticsEnabled && this.id !== 'hapticsBtn') {
+                    this.classList.add('haptic-effect');
+                    setTimeout(() => this.classList.remove('haptic-effect'), 200);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
