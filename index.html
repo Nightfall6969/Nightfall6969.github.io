@@ -19,60 +19,61 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
         }
         
         .login-container {
             width: 100%;
-            max-width: 500px;
+            max-width: 100%;
             background-color: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             overflow: hidden;
             position: relative;
         }
         
         .game-header {
             background: linear-gradient(135deg, #3498db, #9b59b6);
-            padding: 40px 20px;
+            padding: 30px 15px;
             text-align: center;
             color: white;
             position: relative;
         }
         
         .game-icon {
-            font-size: 50px;
-            margin-bottom: 15px;
+            font-size: 40px;
+            margin-bottom: 10px;
             display: inline-block;
             animation: bounce 2s infinite;
         }
         
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-20px);}
-            60% {transform: translateY(-10px);}
+            40% {transform: translateY(-15px);}
+            60% {transform: translateY(-7px);}
         }
         
         .welcome-title {
-            font-size: 32px;
+            font-size: 26px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .welcome-subtitle {
-            font-size: 16px;
+            font-size: 14px;
             opacity: 0.9;
         }
         
         .login-content {
-            padding: 30px;
+            padding: 20px;
         }
         
         .login-divider {
             display: flex;
             align-items: center;
-            margin: 25px 0;
+            margin: 20px 0;
             color: #7f8c8d;
+            font-size: 14px;
         }
         
         .login-divider::before, .login-divider::after {
@@ -82,11 +83,11 @@
         }
         
         .login-divider::before {
-            margin-right: 15px;
+            margin-right: 10px;
         }
         
         .login-divider::after {
-            margin-left: 15px;
+            margin-left: 10px;
         }
         
         .social-btn {
@@ -94,14 +95,14 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            padding: 15px;
-            border-radius: 12px;
+            padding: 12px;
+            border-radius: 10px;
             border: none;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .social-btn:hover {
@@ -121,14 +122,15 @@
         }
         
         .social-icon {
-            font-size: 20px;
-            margin-right: 10px;
+            font-size: 18px;
+            margin-right: 8px;
         }
         
         .login-footer {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 15px;
             color: #7f8c8d;
+            font-size: 14px;
         }
         
         .login-link {
@@ -149,7 +151,7 @@
         
         .game-float {
             position: absolute;
-            font-size: 24px;
+            font-size: 20px;
             opacity: 0.1;
             animation: float 15s linear infinite;
         }
@@ -159,18 +161,36 @@
             100% {transform: translateY(-100px) rotate(360deg);}
         }
         
-        /* Responsive adjustments */
+        /* Responsive adjustments for larger screens */
         @media (min-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            
             .login-container {
                 max-width: 450px;
+                border-radius: 20px;
             }
             
             .game-header {
-                padding: 50px 20px;
+                padding: 40px 20px;
             }
             
             .welcome-title {
-                font-size: 36px;
+                font-size: 32px;
+            }
+            
+            .welcome-subtitle {
+                font-size: 16px;
+            }
+            
+            .login-content {
+                padding: 30px;
+            }
+            
+            .social-btn {
+                padding: 15px;
+                font-size: 16px;
             }
         }
     </style>

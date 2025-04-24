@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EduGame - Earth and Life Science</title>
     <style>
         * {
@@ -17,77 +17,79 @@
             color: #333;
             max-width: 100%;
             overflow-x: hidden;
+            padding-bottom: 70px; /* Space for fixed nav */
         }
         
         .container {
-            max-width: 600px;
+            width: 100%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
             background-color: white;
-            border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            min-height: 100vh;
         }
         
         .module-header {
             text-align: center;
-            padding: 20px 0;
+            padding: 15px 0;
             position: relative;
         }
         
         .module-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
             background: linear-gradient(135deg, #2ecc71, #3498db);
-            margin: 0 auto 15px;
+            margin: 0 auto 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
         
         .module-title {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             color: #2c3e50;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .module-subtitle {
-            font-size: 16px;
+            font-size: 14px;
             color: #7f8c8d;
         }
         
         .progress-container {
-            margin: 25px 0;
-            padding: 15px;
+            margin: 20px 0;
+            padding: 12px;
             background-color: #f8f9fa;
-            border-radius: 15px;
+            border-radius: 12px;
         }
         
         .progress-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .progress-title {
             font-weight: bold;
             color: #2c3e50;
+            font-size: 14px;
         }
         
         .progress-percent {
             color: #3498db;
             font-weight: bold;
+            font-size: 14px;
         }
         
         .progress-bar {
-            height: 10px;
+            height: 8px;
             background-color: #ecf0f1;
-            border-radius: 5px;
+            border-radius: 4px;
             overflow: hidden;
         }
         
@@ -95,32 +97,35 @@
             height: 100%;
             background: linear-gradient(90deg, #2ecc71, #3498db);
             width: 65%;
-            border-radius: 5px;
+            border-radius: 4px;
         }
         
         .level-badge {
             display: inline-block;
-            padding: 3px 10px;
+            padding: 2px 8px;
             background-color: #f39c12;
             color: white;
-            border-radius: 20px;
-            font-size: 12px;
+            border-radius: 15px;
+            font-size: 11px;
             font-weight: bold;
-            margin-left: 10px;
+            margin-left: 8px;
         }
         
         .content-tabs {
             display: flex;
             border-bottom: 1px solid #eee;
-            margin: 20px 0;
+            margin: 15px 0;
         }
         
         .tab {
-            padding: 10px 15px;
+            padding: 12px 10px;
             cursor: pointer;
             font-weight: bold;
             color: #7f8c8d;
             position: relative;
+            font-size: 14px;
+            flex: 1;
+            text-align: center;
         }
         
         .tab.active {
@@ -131,8 +136,8 @@
             content: '';
             position: absolute;
             bottom: -1px;
-            left: 0;
-            right: 0;
+            left: 15%;
+            right: 15%;
             height: 3px;
             background-color: #3498db;
             border-radius: 3px 3px 0 0;
@@ -148,10 +153,10 @@
         
         .lesson-card {
             background-color: white;
-            border-radius: 15px;
+            border-radius: 12px;
             padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             border-left: 5px solid #3498db;
             cursor: pointer;
             transition: transform 0.2s;
@@ -159,17 +164,19 @@
         }
         
         .lesson-card:hover {
-            transform: translateX(5px);
+            transform: translateX(3px);
         }
         
         .lesson-card h3 {
             color: #2c3e50;
             margin-bottom: 5px;
+            font-size: 16px;
         }
         
         .lesson-card p {
             color: #7f8c8d;
-            font-size: 14px;
+            font-size: 13px;
+            line-height: 1.4;
         }
         
         .lesson-status {
@@ -198,81 +205,83 @@
         
         .quiz-card {
             background-color: #f8f9fa;
-            border-radius: 15px;
+            border-radius: 12px;
             padding: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             cursor: pointer;
             transition: transform 0.2s;
         }
         
         .quiz-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
         
         .quiz-header {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .quiz-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
             background: linear-gradient(135deg, #e74c3c, #f39c12);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 18px;
-            margin-right: 15px;
+            font-size: 16px;
+            margin-right: 12px;
             flex-shrink: 0;
         }
         
         .quiz-title {
             font-weight: bold;
             color: #2c3e50;
+            font-size: 15px;
         }
         
         .quiz-difficulty {
             font-size: 12px;
             color: #7f8c8d;
-            margin-top: 3px;
+            margin-top: 2px;
         }
         
         .quiz-stats {
             display: flex;
             justify-content: space-between;
-            margin-top: 10px;
-            font-size: 12px;
+            margin-top: 8px;
+            font-size: 11px;
             color: #7f8c8d;
         }
         
         .game-card {
             background: linear-gradient(135deg, #9b59b6, #3498db);
-            border-radius: 15px;
+            border-radius: 12px;
             padding: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: white;
             cursor: pointer;
             transition: transform 0.2s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
         
         .game-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
         }
         
         .game-title {
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
             margin-bottom: 5px;
         }
         
         .game-desc {
-            font-size: 14px;
+            font-size: 13px;
             opacity: 0.9;
             margin-bottom: 10px;
+            line-height: 1.4;
         }
         
         .game-btn {
@@ -289,15 +298,16 @@
         .nav-bar {
             display: flex;
             justify-content: space-around;
-            padding: 15px 0;
+            padding: 12px 0;
             background-color: white;
             border-top: 1px solid #eee;
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            max-width: 600px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 100%;
+            z-index: 1000;
         }
         
         .nav-item {
@@ -305,12 +315,14 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
+            padding: 0 5px;
+            min-width: 60px;
         }
         
         .nav-icon {
             width: 24px;
             height: 24px;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             background-color: #bdc3c7;
             border-radius: 50%;
             display: flex;
@@ -318,6 +330,7 @@
             justify-content: center;
             color: white;
             font-weight: bold;
+            font-size: 14px;
         }
         
         .nav-item.active .nav-icon {
@@ -325,7 +338,7 @@
         }
         
         .nav-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #7f8c8d;
         }
         
@@ -334,21 +347,10 @@
             font-weight: bold;
         }
         
-        /* Responsive adjustments */
-        @media (min-width: 768px) {
-            .container {
-                max-width: 800px;
-                margin: 20px auto;
-            }
-            
-            .lesson-card, .quiz-card, .game-card {
-                padding: 20px;
-            }
-            
-            .nav-bar {
-                position: static;
-                border-top: none;
-                border-radius: 0 0 20px 20px;
+        /* Remove hover effects on touch devices */
+        @media (hover: none) {
+            .lesson-card:hover, .quiz-card:hover, .game-card:hover {
+                transform: none;
             }
         }
     </style>
@@ -374,7 +376,7 @@
         <div class="content-tabs">
             <div class="tab active" data-tab="lessons">Lessons</div>
             <div class="tab" data-tab="quizzes">Quizzes</div>
-            <div class="tab" data-tab="games">Science Games</div>
+            <div class="tab" data-tab="games">Games</div>
         </div>
         
         <div class="tab-content active" id="lessons">
@@ -520,36 +522,21 @@
                 }
             });
         });
+        
         // Navigation functionality
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const navLabel = this.querySelector('.nav-label').textContent;
-            
-            if (navLabel === 'Home') {
-                // Already on home page, no action needed
-                return;
-            } else if (navLabel === 'Profile') {
-                window.location.href = 'Profile view.html';
-            } else {
-                alert('This would navigate to the ' + navLabel + ' page in the full app');
-            }
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const navLabel = this.querySelector('.nav-label').textContent;
+                
+                if (navLabel === 'Home') {
+                    window.location.href = 'Learningmainpage.html';
+                } else if (navLabel === 'Profile') {
+                    window.location.href = 'Profile view.html';
+                } else {
+                    alert('This would navigate to the ' + navLabel + ' page in the full app');
+                }
+            });
         });
-    });
-	// Navigation functionality
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const navLabel = this.querySelector('.nav-label').textContent;
-            
-            if (navLabel === 'Home') {
-                window.location.href = 'Learningmainpage.html';
-            } else if (navLabel === 'Profile') {
-                // Already on profile page, no action needed
-                return;
-            } else {
-                alert('This would navigate to the ' + navLabel + ' page in the full app');
-            }
-        });
-    });
     </script>
 </body>
 </html>

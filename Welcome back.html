@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EduGame - Update Profile</title>
     <style>
         * {
@@ -19,56 +19,56 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
         }
         
         .profile-container {
             width: 100%;
-            max-width: 500px;
+            max-width: 100%;
             background-color: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             overflow: hidden;
             position: relative;
         }
         
         .profile-header {
             background: linear-gradient(135deg, #2ecc71, #27ae60);
-            padding: 30px 20px;
+            padding: 25px 15px;
             text-align: center;
             color: white;
         }
         
         .welcome-icon {
-            font-size: 50px;
-            margin-bottom: 15px;
+            font-size: 40px;
+            margin-bottom: 10px;
             display: inline-block;
             animation: bounce 1.5s infinite;
         }
         
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-15px);}
-            60% {transform: translateY(-7px);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
         }
         
         .welcome-title {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             margin-bottom: 5px;
         }
         
         .welcome-subtitle {
-            font-size: 16px;
+            font-size: 14px;
             opacity: 0.9;
         }
         
         .profile-content {
-            padding: 30px;
+            padding: 20px;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .form-label {
@@ -78,21 +78,22 @@
             color: #2c3e50;
             display: flex;
             align-items: center;
+            font-size: 14px;
         }
         
         .form-icon {
-            margin-right: 10px;
-            font-size: 20px;
+            margin-right: 8px;
+            font-size: 18px;
             color: #2ecc71;
             transition: all 0.3s;
         }
         
         .form-input {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             border: 2px solid #ecf0f1;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 14px;
             transition: all 0.3s;
         }
         
@@ -104,15 +105,16 @@
         
         .form-input::placeholder {
             color: #bdc3c7;
+            font-size: 14px;
         }
         
         .update-btn {
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
@@ -121,6 +123,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            min-height: 50px; /* Better touch target */
         }
         
         .update-btn:hover {
@@ -129,27 +132,27 @@
         }
         
         .update-icon {
-            margin-right: 10px;
-            font-size: 20px;
+            margin-right: 8px;
+            font-size: 18px;
         }
         
         .badge-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin: 20px 0;
+            gap: 8px;
+            margin: 15px 0;
         }
         
         .badge {
-            padding: 8px 15px;
+            padding: 6px 12px;
             background-color: #f8f9fa;
-            border-radius: 20px;
-            font-size: 14px;
+            border-radius: 15px;
+            font-size: 12px;
             display: flex;
             align-items: center;
             cursor: pointer;
             transition: all 0.3s;
-            border: 2px solid transparent;
+            border: 1px solid transparent;
         }
         
         .badge:hover {
@@ -162,8 +165,8 @@
         }
         
         .badge-icon {
-            margin-right: 8px;
-            font-size: 16px;
+            margin-right: 6px;
+            font-size: 14px;
         }
         
         .game-elements {
@@ -177,7 +180,7 @@
         
         .game-float {
             position: absolute;
-            font-size: 24px;
+            font-size: 20px;
             opacity: 0.1;
             animation: float 15s linear infinite;
         }
@@ -187,18 +190,31 @@
             100% {transform: translateY(-100px) rotate(360deg);}
         }
         
-        /* Responsive adjustments */
-        @media (min-width: 768px) {
-            .profile-container {
-                max-width: 450px;
-            }
-            
+        /* Responsive adjustments for very small devices */
+        @media (max-width: 360px) {
             .profile-header {
-                padding: 40px 20px;
+                padding: 20px 10px;
             }
             
             .welcome-title {
-                font-size: 32px;
+                font-size: 22px;
+            }
+            
+            .welcome-subtitle {
+                font-size: 13px;
+            }
+            
+            .profile-content {
+                padding: 15px;
+            }
+            
+            .form-input {
+                padding: 10px;
+            }
+            
+            .update-btn {
+                padding: 12px;
+                font-size: 15px;
             }
         }
     </style>
@@ -295,7 +311,6 @@
             }, 1000);
         });
         
-        // Rest of the existing script remains the same...
         // Badge selection
         document.querySelectorAll('.badge').forEach(badge => {
             badge.addEventListener('click', function() {
