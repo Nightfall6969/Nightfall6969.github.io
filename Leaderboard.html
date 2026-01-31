@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduGame - Leaderboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+        
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .title-icon {
+            margin-right: 15px;
+            font-size: 32px;
+        }
+        
+        .leaderboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .top-three {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .podium {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border-radius: 15px;
+            background-color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .podium:hover {
+            transform: translateY(-5px);
+        }
+        
+        .podium-1 {
+            order: 2;
+            background: linear-gradient(135deg, #f1c40f, #f39c12);
+            color: white;
+            margin-top: -20px;
+        }
+        
+        .podium-2 {
+            order: 1;
+            background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+            color: white;
+        }
+        
+        .podium-3 {
+            order: 3;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+        }
+        
+        .podium-rank {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .podium-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .podium-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        
+        .podium-points {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .podium-trend {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .trend-up {
+            color: #2ecc71;
+        }
+        
+        .trend-down {
+            color: #e74c3c;
+        }
+        
+        .other-rankings {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .ranking {
+            display: grid;
+            grid-template-columns: 50px 1fr 100px;
+            align-items: center;
+            padding: 15px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .ranking:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .rank {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        
+        .student-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .student-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .student-points {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .student-stats {
+            text-align: right;
+        }
+        
+        .points {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .trend {
+            font-size: 12px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 5px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .nav-item.active .nav-icon {
+            background-color: #3498db;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 800px;
+                margin: 20px auto;
+            }
+            
+            .top-three {
+                gap: 20px;
+            }
+            
+            .nav-bar {
+                position: static;
+                border-top: none;
+                border-radius: 0 0 20px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title"><span class="title-icon">🏆</span>Leaderboard</h1>
+        </div>
+        
+        <div class="leaderboard">
+            <div class="top-three">
+                <div class="podium podium-1">
+                    <div class="podium-rank">1</div>
+                    <div class="podium-icon">👑</div>
+                    <div class="podium-name">Sardanas, Camille</div>
+                    <div class="podium-points">800 pts</div>
+                    <div class="podium-trend trend-up">+3 ▲</div>
+                </div>
+                
+                <div class="podium podium-2">
+                    <div class="podium-rank">2</div>
+                    <div class="podium-icon">⭐</div>
+                    <div class="podium-name">Sardanas, Leonard</div>
+                    <div class="podium-points">789 pts</div>
+                    <div class="podium-trend trend-down">-1 ▼</div>
+                </div>
+                
+                <div class="podium podium-3">
+                    <div class="podium-rank">3</div>
+                    <div class="podium-icon">✨</div>
+                    <div class="podium-name">Quilingan, Maxine</div>
+                    <div class="podium-points">750 pts</div>
+                    <div class="podium-trend trend-up">+3 ▲</div>
+                </div>
+            </div>
+            
+            <div class="other-rankings">
+                <div class="ranking">
+                    <div class="rank">04</div>
+                    <div class="student-info">
+                        <div class="student-name">Dela Cruz, Juan <span class="badge">Math Master</span></div>
+                        <div class="student-points">5 perfect quizzes</div>
+                    </div>
+                    <div class="student-stats">
+                        <div class="points">789 pts</div>
+                        <div class="trend trend-down">-1 ▼</div>
+                    </div>
+                </div>
+                
+                <div class="ranking">
+                    <div class="rank">05</div>
+                    <div class="student-info">
+                        <div class="student-name">Reyes, Maria <span class="badge">Fast Learner</span></div>
+                        <div class="student-points">Lesson streak: 7 days</div>
+                    </div>
+                    <div class="student-stats">
+                        <div class="points">750 pts</div>
+                        <div class="trend trend-up">+3 ▲</div>
+                    </div>
+                </div>
+                
+                <div class="ranking">
+                    <div class="rank">06</div>
+                    <div class="student-info">
+                        <div class="student-name">Balmes, Dejay M.</div>
+                        <div class="student-points">Fastest quiz time</div>
+                    </div>
+                    <div class="student-stats">
+                        <div class="points">600 pts</div>
+                        <div class="trend trend-up">+3 ▲</div>
+                    </div>
+                </div>
+                
+                <div class="ranking">
+                    <div class="rank">07</div>
+                    <div class="student-info">
+                        <div class="student-name">Obsanga, James</div>
+                        <div class="student-points">Newcomer of the month</div>
+                    </div>
+                    <div class="student-stats">
+                        <div class="points">579 pts</div>
+                        <div class="trend trend-up">+3 ▲</div>
+                    </div>
+                </div>
+                
+                <div class="ranking">
+                    <div class="rank">08</div>
+                    <div class="student-info">
+                        <div class="student-name">Tan, Michael</div>
+                        <div class="student-points">3 badges earned</div>
+                    </div>
+                    <div class="student-stats">
+                        <div class="points">550 pts</div>
+                        <div class="trend trend-up">+2 ▲</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-bar">
+            <div class="nav-item">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📚</div>
+                <div class="nav-label">Lessons</div>
+            </div>
+            <div class="nav-item active">
+                <div class="nav-icon">🏆</div>
+                <div class="nav-label">Leaderboard</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Interactive leaderboard elements
+        document.querySelectorAll('.podium, .ranking').forEach(item => {
+            item.addEventListener('click', function() {
+                let studentName = '';
+                if (this.classList.contains('podium')) {
+                    studentName = this.querySelector('.podium-name').textContent;
+                } else {
+                    studentName = this.querySelector('.student-name').textContent.split(' ')[0] + ' ' + 
+                                  this.querySelector('.student-name').textContent.split(' ')[1];
+                }
+                alert('This would show ' + studentName + "'s detailed progress and achievements");
+            });
+        });
+        
+        // Navigation functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                const navLabel = this.querySelector('.nav-label').textContent;
+                alert('This would navigate to the ' + navLabel + ' page');
+            });
+        });
+    </script>
+</body>
+</html>
