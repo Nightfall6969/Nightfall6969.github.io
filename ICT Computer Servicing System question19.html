@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EduGame - ICT Computer Servicing Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 70px;
+        }
+        
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .quiz-progress {
+            font-size: 13px;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+        
+        .quiz-timer {
+            background-color: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .subject-badge {
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .streak-counter {
+            display: inline-flex;
+            align-items: center;
+            background-color: #f39c12;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+        
+        .monitor-icon {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .monitor-module {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            padding: 15px 30px;
+            border-radius: 15px 15px 5px 5px;
+            color: white;
+            font-weight: bold;
+            font-size: 26px;
+            box-shadow: 0 4px 10px rgba(230, 126, 34, 0.4);
+            animation: glow-monitor 2s ease-in-out infinite;
+            position: relative;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .monitor-module::before {
+            content: "🖥️";
+            position: absolute;
+            left: -15px;
+            top: 10px;
+            font-size: 28px;
+            animation: pulse 1s ease-in-out infinite;
+        }
+        
+        .monitor-module::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 30%;
+            width: 40%;
+            height: 8px;
+            background: #2c3e50;
+            border-radius: 4px;
+        }
+        
+        @keyframes glow-monitor {
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 10px rgba(230, 126, 34, 0.4); }
+            50% { transform: scale(1.02); box-shadow: 0 8px 20px rgba(230, 126, 34, 0.8); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        
+        .question-container {
+            margin-bottom: 20px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #e67e22;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            padding: 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .option:hover {
+            border-color: #3498db;
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        
+        .option.selected {
+            border-color: #3498db;
+            background-color: #e8f4fc;
+        }
+        
+        .option.correct {
+            border-color: #2ecc71;
+            background-color: #e8f8f0;
+        }
+        
+        .option.incorrect {
+            border-color: #e74c3c;
+            background-color: #fef0f0;
+        }
+        
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            color: #7f8c8d;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+        
+        .option.selected .option-letter {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .option.correct .option-letter {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .option.incorrect .option-letter {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .nav-button {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+            min-width: 48%;
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
+        }
+        
+        .next-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .next-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .feedback {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 14px;
+        }
+        
+        .correct-feedback {
+            background-color: #e8f8f0;
+            border-left: 5px solid #2ecc71;
+            color: #27ae60;
+        }
+        
+        .incorrect-feedback {
+            background-color: #fef0f0;
+            border-left: 5px solid #e74c3c;
+            color: #c0392b;
+        }
+        
+        .feedback-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+        
+        .feedback-icon {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+        
+        .output-devices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .device-card {
+            background-color: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .device-card.output {
+            border-left: 4px solid #e67e22;
+            background-color: #fef0e8;
+        }
+        
+        .device-card.input {
+            border-left: 4px solid #27ae60;
+            background-color: #e8f8f0;
+        }
+        
+        .device-card h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        .device-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .device-card li {
+            padding: 3px 0;
+            padding-left: 20px;
+            position: relative;
+            font-size: 13px;
+        }
+        
+        .device-card.output li:before {
+            content: "📤";
+            position: absolute;
+            left: 0;
+            color: #e67e22;
+        }
+        
+        .device-card.input li:before {
+            content: "📥";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+        }
+        
+        .monitor-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .spec-item {
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        .spec-value {
+            font-weight: bold;
+            color: #e67e22;
+            font-size: 14px;
+        }
+        
+        .tip-box {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #856404;
+        }
+        
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-width: 100%;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px 10px;
+            flex: 1;
+        }
+        
+        .nav-icon {
+            width: 22px;
+            height: 22px;
+            margin-bottom: 3px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .nav-item.active .nav-icon {
+            background-color: #3498db;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #3498db;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-header">
+            <div class="quiz-progress">
+                Question 19 of 20
+                <span class="subject-badge">ICT Computer Servicing</span>
+                <span class="streak-counter">🔥 18-day streak</span>
+            </div>
+            <div class="quiz-timer">⏱️ 0:30</div>
+        </div>
+        
+        <div class="monitor-icon">
+            <div class="monitor-module">MONITOR</div>
+        </div>
+        
+        <!-- BADGE REMOVED as requested -->
+        
+        <div class="question-container">
+            <div class="question-text">
+                Q19. A monitor is an output device that displays visual information, graphics, and video from the computer.
+            </div>
+            
+            <div class="options-container">
+                <div class="option" data-option="A">
+                    <div class="option-letter">T</div>
+                    <div class="option-text">TRUE</div>
+                </div>
+                
+                <div class="option" data-option="B">
+                    <div class="option-letter">F</div>
+                    <div class="option-text">FALSE</div>
+                </div>
+            </div>
+            
+            <div class="feedback correct-feedback" id="correctFeedback">
+                <div class="feedback-title">
+                    <span class="feedback-icon">✅</span> Correct! Output Device Mastered – Continue to Q20!
+                </div>
+                <div><strong>TRUE - A monitor is an output device.</strong> It displays visual information processed by the computer, showing text, images, videos, and user interfaces. This is data flowing OUT of the computer to the user.</div>
+                
+                <div class="output-devices">
+                    <div class="device-card output">
+                        <h4>📤 OUTPUT DEVICES</h4>
+                        <ul>
+                            <li>Monitor</li>
+                            <li>Printer</li>
+                            <li>Speaker</li>
+                            <li>Headphones</li>
+                            <li>Projector</li>
+                            <li>Plotter</li>
+                        </ul>
+                    </div>
+                    <div class="device-card input">
+                        <h4>📥 INPUT DEVICES</h4>
+                        <ul>
+                            <li>Keyboard</li>
+                            <li>Mouse</li>
+                            <li>Scanner</li>
+                            <li>Microphone</li>
+                            <li>Webcam</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="monitor-specs">
+                    <div class="spec-item">
+                        <div>📏 Resolution</div>
+                        <div class="spec-value">HD: 1920×1080</div>
+                        <div class="spec-value">4K: 3840×2160</div>
+                    </div>
+                    <div class="spec-item">
+                        <div>⚡ Refresh Rate</div>
+                        <div class="spec-value">60Hz - 360Hz</div>
+                    </div>
+                    <div class="spec-item">
+                        <div>🎨 Panel Type</div>
+                        <div class="spec-value">IPS / TN / VA</div>
+                    </div>
+                    <div class="spec-item">
+                        <div>🔌 Connectivity</div>
+                        <div class="spec-value">HDMI / DP / USB-C</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 12px; padding: 8px; background-color: #e8f4fc; border-radius: 6px;">
+                    <strong>🖥️ Monitor Technologies:</strong><br>
+                    • <strong>LCD (Liquid Crystal Display):</strong> Most common, uses backlight and liquid crystals<br>
+                    • <strong>LED (Light Emitting Diode):</strong> Type of LCD with LED backlighting, better efficiency<br>
+                    • <strong>OLED (Organic LED):</strong> Self-emissive pixels, perfect blacks, infinite contrast<br>
+                    • <strong>Refresh Rate:</strong> Higher Hz = smoother motion, essential for gaming<br>
+                    • <strong>Response Time:</strong> Measured in ms (milliseconds), lower is better for gaming
+                </div>
+                
+                <div class="tip-box">
+                    <strong>💡 Tech Tip:</strong> When choosing a monitor, consider your use case. For office work, 4K resolution provides more screen space. For gaming, prioritize high refresh rate (144Hz+) and low response time (1ms). For graphic design, look for IPS panels with good color accuracy (sRGB/Adobe RGB coverage).
+                </div>
+            </div>
+            
+            <div class="feedback incorrect-feedback" id="incorrectFeedback">
+                <div class="feedback-title">
+                    <span class="feedback-icon">❌</span> Not quite...
+                </div>
+                <div>The correct answer is <strong>TRUE</strong> (Option A).</div>
+                
+                <div style="margin-top: 8px;">
+                    <strong>📋 Monitor Facts - Quick Reference:</strong><br>
+                    • <span style="color:#27ae60; font-weight:bold;">✓ OUTPUT device</span> - Data flows OUT of computer<br>
+                    • <span style="color:#27ae60; font-weight:bold;">✓ Visual display</span> - Shows text, images, video<br>
+                    • <span style="color:#27ae60; font-weight:bold;">✓ Soft copy output</span> - Temporary, unlike printed paper<br>
+                    • <span style="color:#27ae60; font-weight:bold;">✓ Requires graphics card</span> - GPU processes visual data<br>
+                    • <span style="color:#e74c3c;">✗ INPUT device</span> - Keyboard, mouse, scanner, microphone<br>
+                    • <span style="color:#e74c3c;">✗ Storage device</span> - HDD, SSD, USB drive<br>
+                    • <span style="color:#e74c3c;">✗ Processing device</span> - CPU, GPU
+                </div>
+                
+                <div style="margin-top: 12px; padding: 10px; background-color: #f8f9fa; border-radius: 8px;">
+                    <strong>🔍 Did You Know?</strong> The first computer monitor was developed for the Whirlwind computer at MIT in 1949. It wasn't a traditional monitor like today - it was a modified oscilloscope that displayed only dots and simple graphics! The first color monitor was introduced in 1977 for the Apple II computer, displaying 6 colors at 280×192 resolution. Today's 8K monitors have 33,177,600 pixels - over 600 times more!
+                </div>
+                
+                <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e74c3c;">
+                    <span style="font-weight: bold;">📝 Memory Trick:</span> Think of the direction of data flow:<br>
+                    <strong>OUTPUT</strong> = <strong>O</strong>utward <strong>U</strong>ser <strong>T</strong>ransmission <strong>P</strong>roduced <strong>U</strong>pon <strong>T</strong>ask<br>
+                    <strong>Monitor</strong> = <strong>M</strong>essages <strong>O</strong>utward <strong>N</strong>ow <strong>I</strong>n <strong>T</strong>ransmission <strong>O</strong>n <strong>R</strong>equest
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation-buttons">
+            <button class="nav-button submit-btn" id="submitBtn">Submit Answer</button>
+            <!-- Changed from "Complete Quiz →" to "Next →" and will navigate to Q20 -->
+            <button class="nav-button next-btn" id="nextBtn" disabled>Next →</button>
+        </div>
+        
+        <div class="nav-bar">
+            <div class="nav-item">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📚</div>
+                <div class="nav-label">Lessons</div>
+            </div>
+            <div class="nav-item active">
+                <div class="nav-icon">💻</div>
+                <div class="nav-label">ICT Quiz</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Quiz functionality for ICT Computer Servicing - Question 19 (now leads to Q20)
+        let selectedOption = null;
+        const correctAnswer = "A"; // TRUE - Monitor is an output device
+        
+        // Get DOM elements
+        const options = document.querySelectorAll('.option');
+        const submitBtn = document.getElementById('submitBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const correctFeedback = document.getElementById('correctFeedback');
+        const incorrectFeedback = document.getElementById('incorrectFeedback');
+        
+        // Log that we're continuing to Q20
+        console.log(`🔐 Q19 Correct answer is option ${correctAnswer} (TRUE - Monitor is an output device)`);
+        console.log(`➡️ After Q19, navigation goes to Q20 (Storage question).`);
+        
+        // Add click event to options
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selection from all options
+                options.forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Select this option
+                this.classList.add('selected');
+                selectedOption = this.getAttribute('data-option');
+                submitBtn.disabled = false;
+                
+                // Visual feedback for selection
+                this.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+        
+        // Submit answer
+        submitBtn.addEventListener('click', function() {
+            if (selectedOption) {
+                // Disable all options
+                options.forEach(opt => {
+                    opt.style.pointerEvents = 'none';
+                });
+                
+                // Mark correct answer (A)
+                document.querySelector(`.option[data-option="${correctAnswer}"]`).classList.add('correct');
+                
+                // Hide any previously shown feedback
+                correctFeedback.style.display = 'none';
+                incorrectFeedback.style.display = 'none';
+                
+                // Check if selected answer is correct
+                if (selectedOption === correctAnswer) {
+                    correctFeedback.style.display = 'block';
+                    
+                    // Update button style for success
+                    submitBtn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                    
+                    // Add XP notification - adjusted (not final, continue to Q20)
+                    const xpToast = document.createElement('div');
+                    xpToast.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#e67e22,#d35400); color:white; padding:15px 30px; border-radius:25px; font-weight:bold; z-index:2000; animation:slideDown 0.5s, fadeOut 0.5s 3s forwards; box-shadow:0 4px 12px rgba(0,0,0,0.2);';
+                    xpToast.textContent = '✅ +25 XP • Monitor mastered! • Next: Storage (HDD/SSD) 💾';
+                    document.body.appendChild(xpToast);
+                    
+                    setTimeout(() => {
+                        xpToast.remove();
+                    }, 3500);
+                    
+                    // Animate monitor
+                    document.querySelector('.monitor-module').style.animation = 'none';
+                    document.querySelector('.monitor-module').style.transform = 'scale(1.1)';
+                    document.querySelector('.monitor-module').style.boxShadow = '0 8px 25px rgba(230, 126, 34, 0.9)';
+                    setTimeout(() => {
+                        document.querySelector('.monitor-module').style.transform = 'scale(1)';
+                        document.querySelector('.monitor-module').style.animation = 'glow-monitor 2s ease-in-out infinite';
+                    }, 300);
+                    
+                } else {
+                    // Mark incorrect answer
+                    document.querySelector(`.option[data-option="${selectedOption}"]`).classList.add('incorrect');
+                    incorrectFeedback.style.display = 'block';
+                    
+                    // Update button style for error
+                    submitBtn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                    
+                    // Shake animation for incorrect answer
+                    document.querySelector('.monitor-module').style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        document.querySelector('.monitor-module').style.animation = 'glow-monitor 2s ease-in-out infinite';
+                    }, 500);
+                }
+                
+                // Enable next button
+                nextBtn.disabled = false;
+                this.disabled = true;
+            }
+        });
+        
+        // Next button - now navigates to Q20 (Storage question) instead of finishing
+        nextBtn.addEventListener('click', function() {
+            // Navigate to the next question: ICT Computer Servicing System question20.html
+            window.location.href = 'ICT Computer Servicing System question20.html';
+        });
+        
+        // Navigation items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const navLabel = this.querySelector('.nav-label').textContent;
+                
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item
+                this.classList.add('active');
+                
+                if (navLabel === 'Home') {
+                    window.location.href = 'Learningmainpage.html';
+                } else if (navLabel === 'Profile') {
+                    window.location.href = 'Profile view.html';
+                } else if (navLabel === 'Lessons') {
+                    window.location.href = 'Subjects.html';
+                } else {
+                    // ICT Quiz tab is active
+                }
+            });
+        });
+        
+        // Timer functionality
+        let timeLeft = 30; // 0:30 in seconds
+        const timerElement = document.querySelector('.quiz-timer');
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Warning when 30 seconds left
+            if (timeLeft === 30) {
+                timerElement.style.backgroundColor = '#fef0f0';
+                timerElement.style.color = '#e74c3c';
+                timerElement.style.animation = 'pulse 1s';
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert('⏰ Time\'s up! The statement is TRUE - a monitor is an output device. Proceed to Q20!');
+                
+                // Auto-show correct answer
+                options.forEach(opt => {
+                    opt.style.pointerEvents = 'none';
+                });
+                document.querySelector(`.option[data-option="${correctAnswer}"]`).classList.add('correct');
+                incorrectFeedback.style.display = 'block';
+                nextBtn.disabled = false;
+                submitBtn.disabled = true;
+            }
+            
+            timeLeft--;
+        }
+        
+        // Start timer
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // Clear timer when leaving page
+        window.addEventListener('beforeunload', function() {
+            clearInterval(timerInterval);
+        });
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+            @keyframes fadeOut {
+                to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            }
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize streak counter and adjust progress text
+        document.addEventListener('DOMContentLoaded', function() {
+            const streakElement = document.querySelector('.streak-counter');
+            if (streakElement) {
+                streakElement.textContent = '🔥 18-day streak';
+            }
+            // Ensure progress shows 19 of 20 (since we have Q20)
+            const progressElement = document.querySelector('.quiz-progress');
+            if (progressElement) {
+                progressElement.innerHTML = progressElement.innerHTML.replace('Question 19 of 19', 'Question 19 of 20');
+            }
+        });
+        
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EduGame - Learning App</title>
+    <title>EduGame - ICT Learning App</title>
     <style>
         * {
             margin: 0;
@@ -81,12 +81,21 @@
             transform: translateY(-3px);
         }
         
+        .subject-card:nth-child(1) {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
         .subject-card:nth-child(2) {
-            background: linear-gradient(135deg, #e74c3c, #f39c12);
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
         }
         
         .subject-card:nth-child(3) {
-            background: linear-gradient(135deg, #9b59b6, #34495e);
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+        
+        .ict-highlight {
+            border: 2px solid #e74c3c;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
         }
         
         .learning-path {
@@ -151,6 +160,18 @@
             font-size: 13px;
         }
         
+        .ict-topic {
+            border-left-color: #9b59b6;
+        }
+        
+        .hardware-topic {
+            border-left-color: #e74c3c;
+        }
+        
+        .software-topic {
+            border-left-color: #3498db;
+        }
+        
         .explore-btn {
             display: inline-block;
             margin-top: 8px;
@@ -161,6 +182,11 @@
             font-size: 11px;
             font-weight: bold;
             text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        
+        .explore-btn:hover {
+            background-color: #2980b9;
         }
         
         .nav-bar {
@@ -239,6 +265,22 @@
             color: rgba(255,255,255,0.8);
         }
         
+        /* Progress bar for ICT topics */
+        .progress-bar {
+            height: 4px;
+            background-color: #ecf0f1;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #2ecc71;
+            border-radius: 2px;
+            width: 60%;
+        }
+        
         /* Responsive adjustments for larger phones */
         @media (min-width: 400px) {
             .container {
@@ -256,55 +298,80 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="greeting">Hi, Juan Cruz</div>
-            <div class="subtitle">Let's learn something new today!</div>
+            <div class="greeting">Hi, Tech Student</div>
+            <div class="subtitle">Master ICT Computer Servicing today!</div>
         </div>
         
         <div class="subject-cards">
             <div class="subject-card">
-                General Mathematics
-                <div class="game-icon">🎮</div>
+                Computer Hardware
+                <div class="game-icon">💻</div>
             </div>
             <div class="subject-card">
-                Physical Education
-                <div class="game-icon">🏆</div>
+                Networking Basics
+                <div class="game-icon">🔧</div>
             </div>
-            <div class="subject-card" id="earth-life-card">
-                Earth and Life
-                <div class="game-icon">🌍</div>
+            <div class="subject-card ict-highlight">
+                ICT Computer Servicing
+                <div class="game-icon">⚡</div>
             </div>
         </div>
         
         <div class="learning-path">
-            <h3>Learning path</h3>
-            <p>Achieve your learning goal effectively</p>
+            <h3>ICT Learning Path</h3>
+            <p>Master computer servicing step by step</p>
             <div class="see-all">See All</div>
         </div>
         
         <div class="topic-cards">
-            <div class="topic-card">
-                <h4>Learn about the different types of Atmosphere</h4>
-                <p>Interactive lesson with quizzes</p>
-                <a href="#" class="explore-btn">Play Lesson</a>
-                <div class="game-badge">3</div>
+            <div class="topic-card hardware-topic">
+                <h4>PC Assembly & Disassembly</h4>
+                <p>Learn to build and troubleshoot computers</p>
+                <a href="#" class="explore-btn">Start Lesson</a>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 40%"></div>
+                </div>
+                <div class="game-badge">🔧</div>
             </div>
-            <div class="topic-card">
-                <h4>Learn about the different types of Rocks</h4>
-                <p>Game-based learning adventure</p>
-                <a href="#" class="explore-btn">Explore Now!</a>
+            
+            <div class="topic-card software-topic">
+                <h4>Operating System Installation</h4>
+                <p>Install Windows, Linux, and drivers</p>
+                <a href="#" class="explore-btn">Play Tutorial</a>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 25%"></div>
+                </div>
+                <div class="game-badge">🖥️</div>
+            </div>
+            
+            <div class="topic-card ict-topic">
+                <h4>Troubleshooting Common Issues</h4>
+                <p>Fix hardware and software problems</p>
+                <a href="#" class="explore-btn">Solve Challenges</a>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%"></div>
+                </div>
                 <div class="game-badge">5</div>
             </div>
+            
             <div class="topic-card">
-                <h4>Math Puzzle Challenge</h4>
-                <p>Solve problems to unlock levels</p>
-                <a href="#" class="explore-btn">Start Game</a>
-                <div class="game-badge">🎯</div>
+                <h4>Networking Fundamentals</h4>
+                <p>LAN setup, IP configuration, troubleshooting</p>
+                <a href="#" class="explore-btn">Connect & Learn</a>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 15%"></div>
+                </div>
+                <div class="game-badge">🌐</div>
             </div>
-            <div class="topic-card">
-                <h4>PE Fitness Quest</h4>
-                <p>Track activity to earn rewards</p>
-                <a href="#" class="explore-btn">Begin Workout</a>
-                <div class="game-badge">🏅</div>
+            
+            <div class="topic-card hardware-topic">
+                <h4>Peripheral Device Setup</h4>
+                <p>Printers, scanners, and external devices</p>
+                <a href="#" class="explore-btn">Setup Guide</a>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 50%"></div>
+                </div>
+                <div class="game-badge">🖨️</div>
             </div>
         </div>
         
@@ -315,11 +382,11 @@
             </div>
             <div class="nav-item">
                 <div class="nav-icon">🏆</div>
-                <div class="nav-label">Leaderboard</div>
+                <div class="nav-label">Achievements</div>
             </div>
             <div class="nav-item">
-                <div class="nav-icon">📚</div>
-                <div class="nav-label">Library</div>
+                <div class="nav-icon">🔧</div>
+                <div class="nav-label">Labs</div>
             </div>
             <div class="nav-item">
                 <div class="nav-icon">👤</div>
@@ -328,34 +395,68 @@
         </div>
     </div>
     
-    <script>
+<script>
         // Simple interactivity for the prototype
-        document.querySelectorAll('.subject-card, .topic-card, .nav-item, .see-all, .explore-btn').forEach(element => {
+        document.querySelectorAll('.subject-card, .topic-card, .see-all, .explore-btn').forEach(element => {
             element.addEventListener('click', function() {
-                if (this.id === 'earth-life-card') {
-                    // Redirect to the Earth and Life Science page
-                    window.location.href = 'What is Earth & Life Science.html';
-                } else {
-                    alert('This would navigate to the ' + (this.textContent || this.innerText).trim() + ' page in the full app');
-                }
+                const cardText = (this.textContent || this.innerText).trim();
                 
+                if (cardText.includes('ICT Computer Servicing') || cardText.includes('Computer Hardware') || 
+                    cardText.includes('Networking Basics')) {
+                    window.location.href = 'ICT Computer Servicing System.html';
+                } else if (cardText === 'See All') {
+                    alert('Showing all ICT Computer Servicing topics');
+                } else if (cardText.includes('Start Lesson') || cardText.includes('Play Tutorial') || 
+                           cardText.includes('Solve Challenges') || cardText.includes('Connect & Learn') || 
+                           cardText.includes('Setup Guide')) {
+                    const topicTitle = this.closest('.topic-card').querySelector('h4').textContent;
+                    alert('Starting interactive lesson: ' + topicTitle);
+                } else {
+                    alert('Loading topic: ' + cardText);
+                }
             });
         });
-          // Navigation functionality
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const navLabel = this.querySelector('.nav-label').textContent;
-            
-            if (navLabel === 'Home') {
-                // Already on home page, no action needed
-                return;
-            } else if (navLabel === 'Profile') {
-                window.location.href = 'Profile view.html';
-            } else {
-                alert('This would navigate to the ' + navLabel + ' page in the full app');
+        
+        // Navigation functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item
+                this.classList.add('active');
+                
+                const navLabel = this.querySelector('.nav-label').textContent;
+                
+                if (navLabel === 'Home') {
+                    window.location.href = 'Learningmainpage.html';
+                } else if (navLabel === 'Achievements') {
+                    window.location.href = 'Tree of Progress ICT.html';
+                } else if (navLabel === 'Labs') {
+                    alert('Opening virtual ICT labs for hands-on practice');
+                } else if (navLabel === 'Profile') {
+                    window.location.href = 'Profile view.html';
+                }
+            });
+        });
+        
+        // Highlight ICT card on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const ictCard = document.querySelector('.subject-card.ict-highlight');
+            if (ictCard) {
+                setTimeout(() => {
+                    ictCard.style.transform = 'scale(1.05)';
+                    ictCard.style.boxShadow = '0 6px 15px rgba(155, 89, 182, 0.3)';
+                    
+                    setTimeout(() => {
+                        ictCard.style.transform = 'scale(1)';
+                        ictCard.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                    }, 500);
+                }, 1000);
             }
         });
-    });
     </script>
 </body>
 </html>

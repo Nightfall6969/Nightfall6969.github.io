@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EduGame - ICT Computer Servicing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 70px; /* Space for fixed nav */
+        }
+        
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: white;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .subject-header {
+            text-align: center;
+            padding: 15px 0;
+        }
+        
+        .subject-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .subject-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .subject-description {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            line-height: 1.5;
+            font-size: 15px;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .topic-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .topic-pill {
+            padding: 7px 12px;
+            background-color: #e8f4fc;
+            border-radius: 18px;
+            font-size: 13px;
+            color: #3498db;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .topic-pill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        
+        .topic-pill.hardware {
+            background-color: #fde8e8;
+            color: #e74c3c;
+        }
+        
+        .topic-pill.software {
+            background-color: #e8f4fc;
+            color: #3498db;
+        }
+        
+        .topic-pill.networking {
+            background-color: #f0e8fd;
+            color: #9b59b6;
+        }
+        
+        .topic-pill.troubleshooting {
+            background-color: #e8f8f0;
+            color: #2ecc71;
+        }
+        
+        .game-features {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .game-feature {
+            flex: 1;
+            padding: 8px;
+        }
+        
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            border-radius: 12px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .feature-icon.hardware {
+            background: linear-gradient(135deg, #e74c3c, #f39c12);
+        }
+        
+        .feature-icon.software {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .feature-icon.network {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+        
+        .feature-text {
+            font-size: 11px;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+        
+        .learning-objectives {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .learning-objectives h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        .objective-list {
+            list-style-type: none;
+        }
+        
+        .objective-list li {
+            padding: 6px 0;
+            font-size: 14px;
+            color: #2c3e50;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .objective-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        
+        .cta-button {
+            display: block;
+            width: 90%;
+            max-width: 280px;
+            margin: 25px auto;
+            padding: 14px;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+        
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-width: 100%;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 0 5px;
+            min-width: 60px;
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .nav-item.active .nav-icon {
+            background-color: #3498db;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .game-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .skill-level {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        
+        /* Remove hover effects on touch devices */
+        @media (hover: none) {
+            .topic-pill:hover, .cta-button:hover {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-badge">NEW</div>
+        
+        <div class="subject-header">
+            <div class="subject-icon">💻</div>
+            <h1 class="subject-title">ICT Computer Servicing</h1>
+        </div>
+        
+        <div class="subject-description">
+            Master computer hardware, software troubleshooting, network setup, and system maintenance through interactive simulations and hands-on virtual labs. Become a certified computer technician with game-based learning.
+        </div>
+        
+        <div class="topic-pills">
+            <div class="topic-pill hardware">PC Assembly</div>
+            <div class="topic-pill software">OS Installation</div>
+            <div class="topic-pill troubleshooting">Troubleshooting</div>
+            <div class="topic-pill networking">Network Setup</div>
+            <div class="topic-pill hardware">Hardware Repair</div>
+            <div class="topic-pill software">Driver Updates</div>
+        </div>
+        
+        <div class="learning-objectives">
+            <h3>What You'll Learn</h3>
+            <ul class="objective-list">
+                <li>Diagnose and fix common computer hardware issues</li>
+                <li>Install and configure operating systems (Windows, Linux)</li>
+                <li>Set up local area networks and troubleshoot connectivity</li>
+                <li>Perform preventive maintenance and system optimization</li>
+                <li>Assemble and disassemble computer components safely</li>
+            </ul>
+        </div>
+        
+        <div class="game-features">
+            <div class="game-feature">
+                <div class="feature-icon hardware">🔧</div>
+                <div class="feature-text">Virtual Labs</div>
+            </div>
+            <div class="game-feature">
+                <div class="feature-icon software">💾</div>
+                <div class="feature-text">Simulations</div>
+            </div>
+            <div class="game-feature">
+                <div class="feature-icon network">🌐</div>
+                <div class="feature-text">Networking</div>
+            </div>
+        </div>
+        
+        <button class="cta-button">Start ICT Servicing Adventure</button>
+        
+        <div class="nav-bar">
+            <div class="nav-item">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📚</div>
+                <div class="nav-label">Subjects</div>
+            </div>
+            <div class="nav-item active">
+                <div class="nav-icon">💻</div>
+                <div class="nav-label">ICT</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simple interactivity for the prototype
+        document.querySelectorAll('.topic-pill').forEach(element => {
+            element.addEventListener('click', function() {
+                const topic = this.textContent;
+                alert(`Loading interactive module: ${topic}\nThis module includes virtual labs, quizzes, and hands-on simulations.`);
+                
+                // Highlight the clicked pill
+                document.querySelectorAll('.topic-pill').forEach(pill => {
+                    pill.style.opacity = '0.7';
+                });
+                this.style.opacity = '1';
+                this.style.transform = 'scale(1.05)';
+                
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                    document.querySelectorAll('.topic-pill').forEach(pill => {
+                        pill.style.opacity = '1';
+                    });
+                }, 500);
+            });
+        });
+            
+        // Animate the CTA button on load
+        setTimeout(() => {
+            document.querySelector('.cta-button').style.transform = 'translateY(-3px)';
+            setTimeout(() => {
+                document.querySelector('.cta-button').style.transform = 'translateY(0)';
+            }, 300);
+        }, 500);
+        
+        // Add click event for Start ICT Adventure button - UPDATED to navigate to Q1
+        document.querySelector('.cta-button').addEventListener('click', function() {
+            window.location.href = 'ICT Computer Servicing System question1.html';
+        });
+        
+        // Navigation functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item
+                this.classList.add('active');
+                
+                const navLabel = this.querySelector('.nav-label').textContent;
+                
+                if (navLabel === 'Home') {
+                    window.location.href = 'Learningmainpage.html';
+                } else if (navLabel === 'Profile') {
+                    window.location.href = 'Profile view.html';
+                } else if (navLabel === 'Subjects') {
+                    window.location.href = 'Subjects.html';
+                } else {
+                    // ICT tab is already active, no action needed
+                    return;
+                }
+            });
+        });
+        
+        // Add skill level indicators to topics
+        document.addEventListener('DOMContentLoaded', function() {
+            const topics = [
+                { pill: document.querySelector('.topic-pill.hardware:nth-child(1)'), level: 'Beginner' },
+                { pill: document.querySelector('.topic-pill.software:nth-child(2)'), level: 'Intermediate' },
+                { pill: document.querySelector('.topic-pill.troubleshooting:nth-child(3)'), level: 'Advanced' },
+                { pill: document.querySelector('.topic-pill.networking:nth-child(4)'), level: 'Intermediate' },
+                { pill: document.querySelector('.topic-pill.hardware:nth-child(5)'), level: 'Advanced' },
+                { pill: document.querySelector('.topic-pill.software:nth-child(6)'), level: 'Beginner' }
+            ];
+            
+            topics.forEach(topic => {
+                if (topic.pill) {
+                    const levelSpan = document.createElement('span');
+                    levelSpan.className = 'skill-level';
+                    levelSpan.textContent = topic.level;
+                    topic.pill.appendChild(levelSpan);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

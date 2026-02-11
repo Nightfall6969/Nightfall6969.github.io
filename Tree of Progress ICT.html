@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EduGame - ICT Computer Servicing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+            padding-bottom: 70px; /* Space for fixed nav */
+        }
+        
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        .module-header {
+            text-align: center;
+            padding: 15px 0;
+            position: relative;
+        }
+        
+        .module-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .module-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .module-subtitle {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .completion-banner {
+            margin: 15px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3); }
+            50% { box-shadow: 0 8px 25px rgba(46, 204, 113, 0.6); }
+        }
+        
+        .completion-banner h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .completion-banner p {
+            font-size: 16px;
+            opacity: 0.95;
+            margin-bottom: 15px;
+        }
+        
+        .certificate-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background-color: #f39c12;
+            color: white;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 16px;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .progress-title {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        
+        .progress-percent {
+            color: #3498db;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #9b59b6);
+            width: 100%;
+            border-radius: 5px;
+        }
+        
+        .level-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #f39c12;
+            color: white;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .achievement-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .achievement-icon {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .achievement-title {
+            font-weight: bold;
+            font-size: 12px;
+            color: #2c3e50;
+        }
+        
+        .achievement-desc {
+            font-size: 10px;
+            color: #7f8c8d;
+            margin-top: 3px;
+        }
+        
+        .content-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin: 20px 0 15px;
+        }
+        
+        .tab {
+            padding: 12px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #7f8c8d;
+            position: relative;
+            font-size: 14px;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .tab.active {
+            color: #3498db;
+        }
+        
+        .tab.active:after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 15%;
+            right: 15%;
+            height: 3px;
+            background-color: #3498db;
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .lesson-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 5px solid #3498db;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        
+        .lesson-card:hover {
+            transform: translateX(3px);
+        }
+        
+        .lesson-card h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        
+        .lesson-card p {
+            color: #7f8c8d;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .lesson-status {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #2ecc71;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .lesson-card.completed .lesson-status {
+            background-color: #2ecc71;
+        }
+        
+        .lesson-card.locked {
+            opacity: 0.6;
+            border-left-color: #bdc3c7;
+        }
+        
+        .lesson-card.locked .lesson-status {
+            background-color: #bdc3c7;
+        }
+        
+        .quiz-card {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border-left: 5px solid #e67e22;
+        }
+        
+        .quiz-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .quiz-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .quiz-title {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+        
+        .quiz-difficulty {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 2px;
+        }
+        
+        .quiz-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 11px;
+            color: #7f8c8d;
+            padding-top: 8px;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .game-card {
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .game-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .game-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .game-desc {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        
+        .game-btn {
+            display: inline-block;
+            padding: 6px 18px;
+            background-color: white;
+            color: #3498db;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-width: 100%;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 0 5px;
+            min-width: 60px;
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .nav-item.active .nav-icon {
+            background-color: #3498db;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        /* Remove hover effects on touch devices */
+        @media (hover: none) {
+            .lesson-card:hover, .quiz-card:hover, .game-card:hover {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="module-header">
+            <div class="module-icon">💻</div>
+            <div class="module-title">ICT Computer Servicing</div>
+            <div class="module-subtitle">Master hardware, software, and networking essentials</div>
+        </div>
+        
+        <!-- Quiz Completion Banner - This appears when user completes Q20 -->
+        <div class="completion-banner">
+            <h2>🏆 Congratulations! 🏆</h2>
+            <p>You've completed all 20 ICT Computer Servicing questions!</p>
+            <span class="certificate-badge">🎓 ICT CERTIFIED</span>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-header">
+                <div class="progress-title">Module Progress <span class="level-badge">Level 20</span></div>
+                <div class="progress-percent">100%</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 100%"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #7f8c8d;">
+                <span>✅ 20/20 Questions Completed</span>
+                <span>🏅 Mastery Achieved</span>
+            </div>
+        </div>
+        
+        <div class="achievement-grid">
+            <div class="achievement-card">
+                <div class="achievement-icon">⌨️</div>
+                <div class="achievement-title">Input Master</div>
+                <div class="achievement-desc">Identified all input devices</div>
+            </div>
+            <div class="achievement-card">
+                <div class="achievement-icon">🖥️</div>
+                <div class="achievement-title">Output Expert</div>
+                <div class="achievement-desc">Mastered output devices</div>
+            </div>
+            <div class="achievement-card">
+                <div class="achievement-icon">🧠</div>
+                <div class="achievement-title">CPU Architect</div>
+                <div class="achievement-desc">Understood the brain of PC</div>
+            </div>
+            <div class="achievement-card">
+                <div class="achievement-icon">💾</div>
+                <div class="achievement-title">Memory Specialist</div>
+                <div class="achievement-desc">RAM & ROM expert</div>
+            </div>
+            <div class="achievement-card">
+                <div class="achievement-icon">🔌</div>
+                <div class="achievement-title">Storage Pro</div>
+                <div class="achievement-desc">HDD, SSD & USB drives</div>
+            </div>
+            <div class="achievement-card">
+                <div class="achievement-icon">🖧</div>
+                <div class="achievement-title">Motherboard Guru</div>
+                <div class="achievement-desc">Connected all components</div>
+            </div>
+        </div>
+        
+        <div class="content-tabs">
+            <div class="tab active" data-tab="lessons">Lessons</div>
+            <div class="tab" data-tab="quizzes">Quizzes</div>
+            <div class="tab" data-tab="games">Games</div>
+        </div>
+        
+        <div class="tab-content active" id="lessons">
+            <div class="lesson-card completed">
+                <div class="lesson-status">✓</div>
+                <h3>Input & Output Devices</h3>
+                <p>Keyboard, mouse, scanner, monitor, printer, speakers</p>
+            </div>
+            
+            <div class="lesson-card completed">
+                <div class="lesson-status">✓</div>
+                <h3>Processing Unit (CPU)</h3>
+                <p>The brain of the computer - fetch, decode, execute cycle</p>
+            </div>
+            
+            <div class="lesson-card completed">
+                <div class="lesson-status">✓</div>
+                <h3>Memory & Storage</h3>
+                <p>RAM (volatile) vs ROM (non-volatile) vs HDD/SSD</p>
+            </div>
+            
+            <div class="lesson-card completed">
+                <div class="lesson-status">✓</div>
+                <h3>Motherboard Architecture</h3>
+                <p>Main circuit board, components, form factors</p>
+            </div>
+            
+            <div class="lesson-card completed">
+                <div class="lesson-status">✓</div>
+                <h3>Portable Storage</h3>
+                <p>USB flash drives, external SSDs, SD cards</p>
+            </div>
+            
+            <div class="lesson-card">
+                <div class="lesson-status">🔒</div>
+                <h3>Networking Fundamentals</h3>
+                <p>LAN, WAN, IP addresses, routers, switches</p>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="quizzes">
+            <div class="quiz-card" id="ict-quiz-1">
+                <div class="quiz-header">
+                    <div class="quiz-icon">⌨️</div>
+                    <div>
+                        <div class="quiz-title">Input/Output Devices</div>
+                        <div class="quiz-difficulty">Beginner • 20 questions</div>
+                    </div>
+                </div>
+                <div class="quiz-stats">
+                    <div>✅ Completed</div>
+                    <div>Score: 100%</div>
+                </div>
+            </div>
+            
+            <div class="quiz-card" id="ict-quiz-2">
+                <div class="quiz-header">
+                    <div class="quiz-icon">🧠</div>
+                    <div>
+                        <div class="quiz-title">CPU & Processing</div>
+                        <div class="quiz-difficulty">Intermediate • 20 questions</div>
+                    </div>
+                </div>
+                <div class="quiz-stats">
+                    <div>✅ Completed</div>
+                    <div>Score: 100%</div>
+                </div>
+            </div>
+            
+            <div class="quiz-card" id="ict-quiz-3">
+                <div class="quiz-header">
+                    <div class="quiz-icon">💾</div>
+                    <div>
+                        <div class="quiz-title">Memory & Storage</div>
+                        <div class="quiz-difficulty">Intermediate • 20 questions</div>
+                    </div>
+                </div>
+                <div class="quiz-stats">
+                    <div>✅ Completed</div>
+                    <div>Score: 100%</div>
+                </div>
+            </div>
+            
+            <div class="quiz-card" id="ict-quiz-4">
+                <div class="quiz-header">
+                    <div class="quiz-icon">🖧</div>
+                    <div>
+                        <div class="quiz-title">Motherboard & Components</div>
+                        <div class="quiz-difficulty">Advanced • 20 questions</div>
+                    </div>
+                </div>
+                <div class="quiz-stats">
+                    <div>✅ Completed</div>
+                    <div>Score: 100%</div>
+                </div>
+            </div>
+            
+            <div class="quiz-card" id="ict-quiz-5">
+                <div class="quiz-header">
+                    <div class="quiz-icon">🔌</div>
+                    <div>
+                        <div class="quiz-title">ICT Certification Exam</div>
+                        <div class="quiz-difficulty">Expert • 20 questions</div>
+                    </div>
+                </div>
+                <div class="quiz-stats">
+                    <div>🏆 Completed</div>
+                    <div>Score: 100%</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="games">
+            <div class="game-card" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                <div class="game-title">PC Builder Simulator</div>
+                <div class="game-desc">Assemble a complete computer by choosing compatible components</div>
+                <a href="#" class="game-btn">Play Now</a>
+            </div>
+            
+            <div class="game-card" style="background: linear-gradient(135deg, #e67e22, #d35400);">
+                <div class="game-title">Troubleshooting Challenge</div>
+                <div class="game-desc">Diagnose and fix common hardware and software issues</div>
+                <a href="#" class="game-btn">Play Now</a>
+            </div>
+            
+            <div class="game-card" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">
+                <div class="game-title">Network Detective</div>
+                <div class="game-desc">Set up networks and solve connectivity problems</div>
+                <a href="#" class="game-btn">Play Now</a>
+            </div>
+            
+            <div class="game-card" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
+                <div class="game-title">Memory Match</div>
+                <div class="game-desc">Match computer components with their functions</div>
+                <a href="#" class="game-btn">Play Now</a>
+            </div>
+        </div>
+        
+        <div class="nav-bar">
+            <div class="nav-item">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📚</div>
+                <div class="nav-label">Modules</div>
+            </div>
+            <div class="nav-item active">
+                <div class="nav-icon">💻</div>
+                <div class="nav-label">ICT</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs and contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Interactive elements
+        document.querySelectorAll('.lesson-card:not(.locked), .quiz-card, .game-card, .nav-item').forEach(element => {
+            element.addEventListener('click', function(e) {
+                // Prevent navigation if clicking on game-btn inside game-card
+                if (e.target.classList.contains('game-btn')) {
+                    e.preventDefault();
+                    alert('This would launch the game simulation in the full app');
+                    return;
+                }
+                
+                const lessonTitle = this.querySelector('h3')?.textContent;
+                const quizTitle = this.querySelector('.quiz-title')?.textContent;
+                const gameTitle = this.querySelector('.game-title')?.textContent;
+                const navLabel = this.querySelector('.nav-label')?.textContent;
+                
+                if (lessonTitle) {
+                    alert('Opening lesson: ' + lessonTitle);
+                } else if (quizTitle) {
+                    alert('Starting quiz: ' + quizTitle);
+                } else if (gameTitle) {
+                    alert('Launching game: ' + gameTitle);
+                } else if (navLabel) {
+                    if (navLabel === 'Home') {
+                        window.location.href = 'Learningmainpage.html';
+                    } else if (navLabel === 'Profile') {
+                        window.location.href = 'Profile view.html';
+                    } else if (navLabel === 'Modules') {
+                        window.location.href = 'Subjects.html';
+                    } else {
+                        // ICT tab is already active
+                    }
+                }
+            });
+        });
+        
+        // Navigation functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const navLabel = this.querySelector('.nav-label').textContent;
+                
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item
+                this.classList.add('active');
+                
+                if (navLabel === 'Home') {
+                    window.location.href = 'Learningmainpage.html';
+                } else if (navLabel === 'Profile') {
+                    window.location.href = 'Profile view.html';
+                } else if (navLabel === 'Modules') {
+                    window.location.href = 'Subjects.html';
+                } else {
+                    // ICT tab is active - stay on this page
+                    console.log('ICT Computer Servicing progress page');
+                }
+            });
+        });
+        
+        // Check if user came from quiz completion
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate quiz completion celebration
+            const urlParams = new URLSearchParams(window.location.search);
+            const completed = urlParams.get('completed');
+            
+            if (completed === 'true') {
+                // Add confetti effect or additional celebration
+                console.log('🎉 Quiz completed successfully!');
+                
+                // Animate the completion banner
+                const banner = document.querySelector('.completion-banner');
+                if (banner) {
+                    banner.style.animation = 'pulse-glow 1.5s ease-in-out infinite';
+                }
+            }
+            
+            // Update all quiz cards to show 100% completion
+            // This simulates that the user has completed all 20 questions
+        });
+        
+        // Special handler for the ICT Certification Exam quiz (Question 20 destination)
+        const certificationQuiz = document.querySelector('#ict-quiz-5');
+        if (certificationQuiz) {
+            certificationQuiz.addEventListener('click', function() {
+                alert('🏆 ICT Certification Exam - Completed with 100% score! 🏆\n\nYou have mastered all 20 ICT Computer Servicing concepts!\n\n• Input Devices (Keyboard, Mouse, Scanner)\n• Output Devices (Monitor, Printer, Speaker)\n• CPU (Brain of the Computer)\n• RAM (Volatile Memory)\n• ROM (Non-Volatile Memory)\n• Motherboard (Main Circuit Board)\n• Storage (HDD, SSD)\n• Portable Storage (USB Flash Drive)');
+            });
+        }
+        
+        // Add confetti effect on page load (optional celebration)
+        function createConfetti() {
+            // Simple confetti effect simulation
+            console.log('🎊 Congratulations! ICT Certification Achieved! 🎊');
+        }
+        
+        // Call confetti on page load
+        createConfetti();
+    </script>
+</body>
+</html>

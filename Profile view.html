@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduGame - Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EduGame - ICT Profile</title>
     <style>
         * {
             margin: 0;
@@ -17,7 +17,7 @@
             color: #333;
             max-width: 100%;
             overflow-x: hidden;
-            padding-bottom: 70px; /* Add padding for fixed nav */
+            padding-bottom: 70px;
         }
         
         .container {
@@ -57,6 +57,18 @@
             font-weight: bold;
             color: #2c3e50;
             margin-bottom: 5px;
+        }
+        
+        .ict-certified-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 5px;
+            box-shadow: 0 2px 5px rgba(243, 156, 18, 0.3);
         }
         
         .stats-container {
@@ -99,7 +111,74 @@
             width: 1px;
             background-color: #eee;
             align-self: center;
-            display: none; /* Hide dividers on mobile */
+            display: none;
+        }
+        
+        .achievements-section {
+            margin: 20px 0;
+        }
+        
+        .section-header {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 20px 0 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .view-all {
+            font-size: 12px;
+            color: #3498db;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        
+        .badge-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        .badge-card {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            transition: transform 0.2s;
+        }
+        
+        .badge-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .badge-icon {
+            font-size: 30px;
+            margin-bottom: 5px;
+        }
+        
+        .badge-title {
+            font-weight: bold;
+            font-size: 12px;
+            color: #2c3e50;
+        }
+        
+        .badge-desc {
+            font-size: 10px;
+            color: #7f8c8d;
+            margin-top: 3px;
+        }
+        
+        .badge-date {
+            font-size: 9px;
+            color: #3498db;
+            margin-top: 5px;
+            font-weight: bold;
         }
         
         .activity-header {
@@ -120,6 +199,7 @@
             margin-bottom: 8px;
             cursor: pointer;
             transition: transform 0.2s;
+            border-left: 4px solid #3498db;
         }
         
         .activity-item:hover {
@@ -127,18 +207,27 @@
             background-color: #f1f3f5;
         }
         
+        .activity-item.ict-completed {
+            border-left-color: #2ecc71;
+            background: linear-gradient(to right, #f8f9fa, #e8f8f0);
+        }
+        
         .activity-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #2ecc71, #3498db);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 16px;
+            font-size: 20px;
             margin-right: 12px;
             flex-shrink: 0;
+        }
+        
+        .activity-icon.ict {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
         }
         
         .activity-details {
@@ -161,6 +250,13 @@
         .activity-subtitle {
             font-size: 12px;
             color: #7f8c8d;
+        }
+        
+        .activity-score {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2ecc71;
+            margin-left: 10px;
         }
         
         .progress-container {
@@ -276,8 +372,8 @@
                 display: block;
             }
             
-            .activity-item {
-                padding: 15px;
+            .badge-grid {
+                gap: 15px;
             }
             
             .nav-bar {
@@ -300,31 +396,94 @@
         <div class="profile-header">
             <div class="avatar">JC</div>
             <div class="profile-name">Juan Cruz</div>
+            <span class="ict-certified-badge">🎓 ICT CERTIFIED</span>
         </div>
         
         <div class="stats-container">
             <div class="stat-box">
-                <div class="stat-label">Points</div>
-                <div class="stat-value">600</div>
-                <div class="game-badge">+5</div>
+                <div class="stat-label">Total XP</div>
+                <div class="stat-value">1,250</div>
+                <div class="game-badge">+50</div>
             </div>
             
             <div class="divider"></div>
             
             <div class="stat-box">
-                <div class="stat-label">General Rank</div>
-                <div class="rank-value">#182</div>
+                <div class="stat-label">ICT Rank</div>
+                <div class="rank-value">#1</div>
             </div>
             
             <div class="divider"></div>
             
             <div class="stat-box">
-                <div class="stat-label">Classroom Rank</div>
-                <div class="rank-value">#2</div>
+                <div class="stat-label">Global Rank</div>
+                <div class="rank-value">#42</div>
+            </div>
+        </div>
+        
+        <div class="achievements-section">
+            <div class="section-header">
+                ICT Achievements
+                <span class="view-all">6/6 Earned</span>
+            </div>
+            
+            <div class="badge-grid">
+                <div class="badge-card">
+                    <div class="badge-icon">⌨️</div>
+                    <div class="badge-title">Input Master</div>
+                    <div class="badge-desc">Identified all input devices</div>
+                    <div class="badge-date">Earned Today</div>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-icon">🖥️</div>
+                    <div class="badge-title">Output Expert</div>
+                    <div class="badge-desc">Mastered output devices</div>
+                    <div class="badge-date">Earned Today</div>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-icon">🧠</div>
+                    <div class="badge-title">CPU Architect</div>
+                    <div class="badge-desc">Understood the brain of PC</div>
+                    <div class="badge-date">Earned Today</div>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-icon">💾</div>
+                    <div class="badge-title">Memory Specialist</div>
+                    <div class="badge-desc">RAM & ROM expert</div>
+                    <div class="badge-date">Earned Today</div>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-icon">🔌</div>
+                    <div class="badge-title">Storage Pro</div>
+                    <div class="badge-desc">HDD, SSD & USB drives</div>
+                    <div class="badge-date">Earned Today</div>
+                </div>
+                <div class="badge-card">
+                    <div class="badge-icon">🖧</div>
+                    <div class="badge-title">Motherboard Guru</div>
+                    <div class="badge-desc">Connected all components</div>
+                    <div class="badge-date">Earned Today</div>
+                </div>
             </div>
         </div>
         
         <div class="activity-header">Recent Activity</div>
+        
+        <div class="activity-item ict-completed">
+            <div class="activity-icon ict">💻</div>
+            <div class="activity-details">
+                <div class="activity-time">Just now</div>
+                <div class="activity-title">🏆 ICT Certification Exam</div>
+                <div class="activity-subtitle">20/20 Correct • 100% Score</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="progress-text">Mastered • +100 XP</div>
+                </div>
+            </div>
+            <div class="activity-score">100%</div>
+        </div>
         
         <div class="activity-item">
             <div class="activity-icon">🧮</div>
@@ -342,48 +501,67 @@
         </div>
         
         <div class="activity-item">
-            <div class="activity-icon">🪨</div>
+            <div class="activity-icon">💻</div>
             <div class="activity-details">
                 <div class="activity-time">Yesterday</div>
-                <div class="activity-title">Learning Path: Types of Rocks</div>
-                <div class="activity-subtitle">Earth Science Quest</div>
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 65%"></div>
-                    </div>
-                    <div class="progress-text">65% complete</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="activity-item">
-            <div class="activity-icon">💼</div>
-            <div class="activity-details">
-                <div class="activity-time">2 days ago</div>
-                <div class="activity-title">Entrep Level 2</div>
-                <div class="activity-subtitle">Business Simulation</div>
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 40%"></div>
-                    </div>
-                    <div class="progress-text">40% complete</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="activity-item">
-            <div class="activity-icon">🏆</div>
-            <div class="activity-details">
-                <div class="activity-time">3 days ago</div>
-                <div class="activity-title">Achievement Unlocked!</div>
-                <div class="activity-subtitle">Math Master: Bronze Tier</div>
+                <div class="activity-title">ICT: Motherboard & Components</div>
+                <div class="activity-subtitle">Advanced Quiz • 20/20 Correct</div>
                 <div class="progress-container">
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: 100%"></div>
                     </div>
-                    <div class="progress-text">Reward: 50 points</div>
+                    <div class="progress-text">Completed • +50 XP</div>
                 </div>
             </div>
+            <div class="activity-score">100%</div>
+        </div>
+        
+        <div class="activity-item">
+            <div class="activity-icon">💻</div>
+            <div class="activity-details">
+                <div class="activity-time">Yesterday</div>
+                <div class="activity-title">ICT: Memory & Storage</div>
+                <div class="activity-subtitle">Intermediate Quiz • 20/20 Correct</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="progress-text">Completed • +50 XP</div>
+                </div>
+            </div>
+            <div class="activity-score">100%</div>
+        </div>
+        
+        <div class="activity-item">
+            <div class="activity-icon">💻</div>
+            <div class="activity-details">
+                <div class="activity-time">2 days ago</div>
+                <div class="activity-title">ICT: CPU & Processing</div>
+                <div class="activity-subtitle">Intermediate Quiz • 20/20 Correct</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="progress-text">Completed • +50 XP</div>
+                </div>
+            </div>
+            <div class="activity-score">100%</div>
+        </div>
+        
+        <div class="activity-item">
+            <div class="activity-icon">💻</div>
+            <div class="activity-details">
+                <div class="activity-time">2 days ago</div>
+                <div class="activity-title">ICT: Input/Output Devices</div>
+                <div class="activity-subtitle">Beginner Quiz • 20/20 Correct</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="progress-text">Completed • +50 XP</div>
+                </div>
+            </div>
+            <div class="activity-score">100%</div>
         </div>
     </div>
     
@@ -401,40 +579,103 @@
             <div class="nav-label">Profile</div>
         </div>
         <div class="nav-item">
-            <div class="nav-icon">🎮</div>
-            <div class="nav-label">Games</div>
+            <div class="nav-icon">🏆</div>
+            <div class="nav-label">Achievements</div>
         </div>
     </div>
     
     <script>
-        // Simple interactivity for the prototype
-        document.querySelectorAll('.activity-item, .nav-item').forEach(element => {
-            element.addEventListener('click', function() {
+        // Interactive elements
+        document.querySelectorAll('.activity-item, .badge-card, .nav-item, .view-all').forEach(element => {
+            element.addEventListener('click', function(e) {
                 const activityTitle = this.querySelector('.activity-title')?.textContent;
+                const badgeTitle = this.querySelector('.badge-title')?.textContent;
                 const navLabel = this.querySelector('.nav-label')?.textContent;
                 
                 if (activityTitle) {
-                    alert('This would show details for: ' + activityTitle);
+                    if (activityTitle.includes('ICT Certification Exam')) {
+                        alert('🏆 ICT CERTIFICATION COMPLETED! 🏆\n\nYou scored 100% on all 20 questions!\n\n• Input Devices (Keyboard, Mouse, Scanner)\n• Output Devices (Monitor, Printer, Speaker)\n• CPU (Brain of the Computer)\n• RAM (Volatile Memory)\n• ROM (Non-Volatile Memory)\n• Motherboard (Main Circuit Board)\n• Storage (HDD, SSD)\n• Portable Storage (USB Flash Drive)');
+                    } else {
+                        alert('Viewing details for: ' + activityTitle);
+                    }
+                } else if (badgeTitle) {
+                    alert('🏅 ' + badgeTitle + ' Achievement\n\n' + this.querySelector('.badge-desc')?.textContent + '\n\nEarned: ' + this.querySelector('.badge-date')?.textContent);
                 } else if (navLabel) {
-                    alert('This would navigate to the ' + navLabel + ' page');
+                    if (navLabel === 'Home') {
+                        window.location.href = 'Learningmainpage.html';
+                    } else if (navLabel === 'Profile') {
+                        // Already on profile page
+                        return;
+                    } else if (navLabel === 'Achievements') {
+                        alert('Showing all ICT achievements and badges');
+                    } else {
+                        alert('This would navigate to the ' + navLabel + ' page');
+                    }
                 }
             });
         });
-           // Navigation functionality
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const navLabel = this.querySelector('.nav-label').textContent;
+        
+        // Navigation functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const navLabel = this.querySelector('.nav-label').textContent;
+                
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item
+                this.classList.add('active');
+                
+                if (navLabel === 'Home') {
+                    window.location.href = 'Learningmainpage.html';
+                } else if (navLabel === 'Stats') {
+                    alert('Viewing detailed ICT performance statistics');
+                } else if (navLabel === 'Achievements') {
+                    alert('Showing all ICT achievements and certification badges');
+                } else {
+                    // Profile tab is active - stay on page
+                    console.log('ICT Profile view');
+                }
+            });
+        });
+        
+        // Check if user just completed ICT certification
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate recent certification completion
+            console.log('🎓 ICT Certification achieved!');
             
-            if (navLabel === 'Home') {
-                window.location.href = 'Learningmainpage.html';
-            } else if (navLabel === 'Profile') {
-                // Already on profile page, no action needed
-                return;
-            } else {
-                alert('This would navigate to the ' + navLabel + ' page in the full app');
+            // Add confetti effect simulation
+            function celebrateCertification() {
+                console.log('✨ Congratulations on your ICT Certification! ✨');
+            }
+            
+            celebrateCertification();
+            
+            // Update total XP calculation
+            const xpElement = document.querySelector('.stat-value');
+            if (xpElement) {
+                // ICT quizzes: 5 quizzes × 50 XP = 250 XP
+                // Certification exam: 100 XP bonus
+                // Total ICT XP: 350 XP
+                // Previous XP: 900 XP
+                // New total: 1250 XP
             }
         });
-    });
+        
+        // View all achievements click handler
+        document.querySelector('.view-all')?.addEventListener('click', function() {
+            alert('🏅 ICT ACHIEVEMENTS COMPLETE 🏅\n\nYou have earned all 6 ICT badges:\n\n' +
+                  '⌨️ Input Master - Identified all input devices\n' +
+                  '🖥️ Output Expert - Mastered output devices\n' +
+                  '🧠 CPU Architect - Understood the brain of PC\n' +
+                  '💾 Memory Specialist - RAM & ROM expert\n' +
+                  '🔌 Storage Pro - HDD, SSD & USB drives\n' +
+                  '🖧 Motherboard Guru - Connected all components\n\n' +
+                  '🎓 ICT CERTIFIED - Completed all 20 questions with 100% score');
+        });
+        
     </script>
 </body>
 </html>

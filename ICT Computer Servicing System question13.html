@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EduGame - ICT Computer Servicing Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 70px;
+        }
+        
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .quiz-progress {
+            font-size: 13px;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+        
+        .quiz-timer {
+            background-color: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .subject-badge {
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .streak-counter {
+            display: inline-flex;
+            align-items: center;
+            background-color: #f39c12;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+        
+        .cpu-icon {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .cpu-animation {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            padding: 15px 30px;
+            border-radius: 50% 50% 30% 30% / 60% 60% 40% 40%;
+            color: white;
+            font-weight: bold;
+            font-size: 28px;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4);
+            animation: pulse-cpu 2s ease-in-out infinite;
+            position: relative;
+            border: 4px solid rgba(255,255,255,0.3);
+        }
+        
+        .cpu-animation::before {
+            content: "⚡";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 30px;
+            animation: spark 1s ease-in-out infinite;
+        }
+        
+        .cpu-animation::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 20%;
+            width: 60%;
+            height: 8px;
+            background: #2c3e50;
+            border-radius: 4px;
+        }
+        
+        @keyframes pulse-cpu {
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 8px 20px rgba(52, 152, 219, 0.8); }
+        }
+        
+        @keyframes spark {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        .question-container {
+            margin-bottom: 20px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            padding: 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .option:hover {
+            border-color: #3498db;
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        
+        .option.selected {
+            border-color: #3498db;
+            background-color: #e8f4fc;
+        }
+        
+        .option.correct {
+            border-color: #2ecc71;
+            background-color: #e8f8f0;
+        }
+        
+        .option.incorrect {
+            border-color: #e74c3c;
+            background-color: #fef0f0;
+        }
+        
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            color: #7f8c8d;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+        
+        .option.selected .option-letter {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .option.correct .option-letter {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .option.incorrect .option-letter {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .nav-button {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+            min-width: 48%;
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
+        }
+        
+        .next-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .next-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .feedback {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 14px;
+        }
+        
+        .correct-feedback {
+            background-color: #e8f8f0;
+            border-left: 5px solid #2ecc71;
+            color: #27ae60;
+        }
+        
+        .incorrect-feedback {
+            background-color: #fef0f0;
+            border-left: 5px solid #e74c3c;
+            color: #c0392b;
+        }
+        
+        .feedback-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+        
+        .feedback-icon {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+        
+        .cpu-components {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .component-card {
+            background-color: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 4px solid #3498db;
+        }
+        
+        .component-card h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        .component-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .component-card li {
+            padding: 3px 0;
+            padding-left: 20px;
+            position: relative;
+            font-size: 13px;
+        }
+        
+        .component-card li:before {
+            content: "•";
+            position: absolute;
+            left: 5px;
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .cpu-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+        }
+        
+        .spec-item {
+            text-align: center;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .spec-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .tip-box {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #856404;
+        }
+        
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-width: 100%;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px 10px;
+            flex: 1;
+        }
+        
+        .nav-icon {
+            width: 22px;
+            height: 22px;
+            margin-bottom: 3px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .nav-item.active .nav-icon {
+            background-color: #3498db;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #3498db;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-header">
+            <div class="quiz-progress">
+                Question 13 of 15
+                <span class="subject-badge">ICT Computer Servicing</span>
+                <span class="streak-counter">🔥 12-day streak</span>
+            </div>
+            <div class="quiz-timer">⏱️ 1:00</div>
+        </div>
+        
+        <div class="cpu-icon">
+            <div class="cpu-animation">CPU</div>
+        </div>
+        
+        <div class="question-container">
+            <div class="question-text">
+                Q13. The CPU (Central Processing Unit) is called the "brain" of the computer because it performs calculations, executes instructions, and processes data.
+            </div>
+            
+            <div class="options-container">
+                <div class="option" data-option="A">
+                    <div class="option-letter">T</div>
+                    <div class="option-text">TRUE</div>
+                </div>
+                
+                <div class="option" data-option="B">
+                    <div class="option-letter">F</div>
+                    <div class="option-text">FALSE</div>
+                </div>
+            </div>
+            
+            <div class="feedback correct-feedback" id="correctFeedback">
+                <div class="feedback-title">
+                    <span class="feedback-icon">✅</span> Correct! CPU Mastered!
+                </div>
+                <div><strong>TRUE - The CPU is called the brain of the computer.</strong> Just like the human brain controls thinking and decision-making, the CPU controls all processing tasks. It fetches instructions from memory, decodes them, executes operations, and writes back results.</div>
+                
+                <div class="cpu-components">
+                    <div class="component-card">
+                        <h4>🧠 CPU Components</h4>
+                        <ul>
+                            <li><strong>CU:</strong> Control Unit - directs operations</li>
+                            <li><strong>ALU:</strong> Arithmetic Logic Unit - performs calculations</li>
+                            <li><strong>Registers:</strong> Quick-access memory locations</li>
+                            <li><strong>Cache:</strong> L1, L2, L3 - high-speed memory</li>
+                            <li><strong>Clock:</strong> Synchronizes operations</li>
+                        </ul>
+                    </div>
+                    <div class="component-card">
+                        <h4>📊 CPU Manufacturers</h4>
+                        <ul>
+                            <li><strong>Intel:</strong> Core i3/i5/i7/i9, Xeon</li>
+                            <li><strong>AMD:</strong> Ryzen, Threadripper, EPYC</li>
+                            <li><strong>Apple:</strong> M1, M2, M3 chips</li>
+                            <li><strong>ARM:</strong> Mobile processors</li>
+                            <li><strong>Qualcomm:</strong> Snapdragon</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="cpu-specs">
+                    <div class="spec-item">
+                        <div>⚡ Clock Speed</div>
+                        <div class="spec-value">2-5 GHz</div>
+                    </div>
+                    <div class="spec-item">
+                        <div>🧮 Cores</div>
+                        <div class="spec-value">2-64 cores</div>
+                    </div>
+                    <div class="spec-item">
+                        <div>💾 Cache</div>
+                        <div class="spec-value">4-256 MB</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 12px; padding: 8px; background-color: #e8f4fc; border-radius: 6px;">
+                    <strong>🔧 How a CPU Works:</strong> The CPU operates on the fetch-decode-execute cycle. It fetches instructions from RAM, decodes them to understand what to do, executes the operation using the ALU, and stores the result back in memory or registers. Modern CPUs can execute billions of cycles per second!
+                </div>
+                
+                <div class="tip-box">
+                    <strong>💡 Tech Tip:</strong> Clock speed (GHz) isn't the only measure of CPU performance. More cores allow better multitasking, and larger cache improves speed. For gaming, prioritize high clock speed. For video editing/rendering, prioritize more cores. The architecture (how the CPU is designed) is just as important as the specs!
+                </div>
+            </div>
+            
+            <div class="feedback incorrect-feedback" id="incorrectFeedback">
+                <div class="feedback-title">
+                    <span class="feedback-icon">❌</span> Not quite...
+                </div>
+                <div>The correct answer is <strong>TRUE</strong> (Option A).</div>
+                
+                <div style="margin-top: 8px;">
+                    <strong>📋 CPU Facts - Quick Reference:</strong><br>
+                    • <span style="color:#27ae60; font-weight:bold;">✓ CPU = Central Processing Unit</span><br>
+                    • <span style="color:#27ae60; font-weight:bold;">✓ Known as the "Brain" of the computer</span><br>
+                    • <span style="color:#27ae60; font-weight:bold;">✓ Performs all calculations and processing</span><br>
+                    • <span style="color:#27ae60; font-weight:bold;">✓ Executes instructions from programs</span><br>
+                    • <span style="color:#e74c3c;">✗ RAM</span> - Memory, not processing<br>
+                    • <span style="color:#e74c3c;">✗ Hard Drive</span> - Storage, not processing
+                </div>
+                
+                <div style="margin-top: 12px; padding: 10px; background-color: #f8f9fa; border-radius: 8px;">
+                    <strong>🔍 Did You Know?</strong> The first microprocessor, the Intel 4004, was released in 1971. It had only 2,300 transistors and ran at 740 kHz (0.00074 GHz). Today's CPUs like the AMD Ryzen Threadripper have over 26 billion transistors and run at speeds over 5 GHz - that's over 6,700 times faster! If car speed had improved at the same rate, we could drive around the Earth in under 1 second!
+                </div>
+                
+                <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e74c3c;">
+                    <span style="font-weight: bold;">📝 Fun Fact:</span> The CPU doesn't actually "understand" anything - it simply follows instructions blindly. It can only perform basic operations like ADD, SUBTRACT, MOVE, COMPARE, and JUMP. Complex programs are built from millions of these simple operations executed incredibly fast!
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation-buttons">
+            <button class="nav-button submit-btn" id="submitBtn">Submit Answer</button>
+            <button class="nav-button next-btn" id="nextBtn" disabled>Next →</button>
+        </div>
+        
+        <div class="nav-bar">
+            <div class="nav-item">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📚</div>
+                <div class="nav-label">Lessons</div>
+            </div>
+            <div class="nav-item active">
+                <div class="nav-icon">💻</div>
+                <div class="nav-label">ICT Quiz</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Quiz functionality for ICT Computer Servicing - Question 13
+        let selectedOption = null;
+        const correctAnswer = "A"; // TRUE - CPU is the brain of the computer
+        
+        // Get DOM elements
+        const options = document.querySelectorAll('.option');
+        const submitBtn = document.getElementById('submitBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const correctFeedback = document.getElementById('correctFeedback');
+        const incorrectFeedback = document.getElementById('incorrectFeedback');
+        
+        // Log where the correct answer is placed
+        console.log(`🔐 Q13 Correct answer is option ${correctAnswer} (TRUE - CPU is the brain of the computer)`);
+        
+        // Add click event to options
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selection from all options
+                options.forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Select this option
+                this.classList.add('selected');
+                selectedOption = this.getAttribute('data-option');
+                submitBtn.disabled = false;
+                
+                // Visual feedback for selection
+                this.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+        
+        // Submit answer
+        submitBtn.addEventListener('click', function() {
+            if (selectedOption) {
+                // Disable all options
+                options.forEach(opt => {
+                    opt.style.pointerEvents = 'none';
+                });
+                
+                // Mark correct answer (A)
+                document.querySelector(`.option[data-option="${correctAnswer}"]`).classList.add('correct');
+                
+                // Hide any previously shown feedback
+                correctFeedback.style.display = 'none';
+                incorrectFeedback.style.display = 'none';
+                
+                // Check if selected answer is correct
+                if (selectedOption === correctAnswer) {
+                    correctFeedback.style.display = 'block';
+                    
+                    // Update button style for success
+                    submitBtn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                    
+                    // Add XP notification
+                    const xpToast = document.createElement('div');
+                    xpToast.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#3498db,#2980b9); color:white; padding:10px 20px; border-radius:25px; font-weight:bold; z-index:2000; animation:slideDown 0.5s, fadeOut 0.5s 2s forwards; box-shadow:0 4px 12px rgba(0,0,0,0.2);';
+                    xpToast.textContent = '+30 XP • CPU Architecture Mastered! 🖥️';
+                    document.body.appendChild(xpToast);
+                    
+                    setTimeout(() => {
+                        xpToast.remove();
+                    }, 2500);
+                    
+                    // Animate CPU
+                    document.querySelector('.cpu-animation').style.animation = 'none';
+                    document.querySelector('.cpu-animation').style.transform = 'scale(1.2)';
+                    document.querySelector('.cpu-animation').style.boxShadow = '0 8px 25px rgba(52, 152, 219, 0.9)';
+                    setTimeout(() => {
+                        document.querySelector('.cpu-animation').style.transform = 'scale(1)';
+                        document.querySelector('.cpu-animation').style.animation = 'pulse-cpu 2s ease-in-out infinite';
+                    }, 300);
+                    
+                } else {
+                    // Mark incorrect answer
+                    document.querySelector(`.option[data-option="${selectedOption}"]`).classList.add('incorrect');
+                    incorrectFeedback.style.display = 'block';
+                    
+                    // Update button style for error
+                    submitBtn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                    
+                    // Shake animation for incorrect answer
+                    document.querySelector('.cpu-animation').style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        document.querySelector('.cpu-animation').style.animation = 'pulse-cpu 2s ease-in-out infinite';
+                    }, 500);
+                }
+                
+                // Enable next button
+                nextBtn.disabled = false;
+                this.disabled = true;
+            }
+        });
+        
+        // Next question
+        nextBtn.addEventListener('click', function() {
+            // Navigate to question 14 - ICT Computer Servicing
+            window.location.href = 'ICT Computer Servicing System question14.html';
+        });
+        
+        // Navigation items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const navLabel = this.querySelector('.nav-label').textContent;
+                
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item
+                this.classList.add('active');
+                
+                if (navLabel === 'Home') {
+                    window.location.href = 'Learningmainpage.html';
+                } else if (navLabel === 'Profile') {
+                    window.location.href = 'Profile view.html';
+                } else if (navLabel === 'Lessons') {
+                    window.location.href = 'Subjects.html';
+                } else {
+                    // ICT Quiz tab is active
+                }
+            });
+        });
+        
+        // Timer functionality
+        let timeLeft = 60; // 1:00 in seconds
+        const timerElement = document.querySelector('.quiz-timer');
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Warning when 30 seconds left
+            if (timeLeft === 30) {
+                timerElement.style.backgroundColor = '#fef0f0';
+                timerElement.style.color = '#e74c3c';
+                timerElement.style.animation = 'pulse 1s';
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert('⏰ Time\'s up! The statement is TRUE - the CPU is called the brain of the computer.');
+                
+                // Auto-show correct answer
+                options.forEach(opt => {
+                    opt.style.pointerEvents = 'none';
+                });
+                document.querySelector(`.option[data-option="${correctAnswer}"]`).classList.add('correct');
+                incorrectFeedback.style.display = 'block';
+                nextBtn.disabled = false;
+                submitBtn.disabled = true;
+            }
+            
+            timeLeft--;
+        }
+        
+        // Start timer
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // Clear timer when leaving page
+        window.addEventListener('beforeunload', function() {
+            clearInterval(timerInterval);
+        });
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+            @keyframes fadeOut {
+                to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            }
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize streak counter
+        document.addEventListener('DOMContentLoaded', function() {
+            const streakElement = document.querySelector('.streak-counter');
+            if (streakElement) {
+                streakElement.textContent = '🔥 12-day streak';
+            }
+        });
+        
+    </script>
+</body>
+</html>

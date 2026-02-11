@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EduGame - ICT Computer Servicing Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 70px;
+        }
+        
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .quiz-progress {
+            font-size: 13px;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+        
+        .quiz-timer {
+            background-color: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .subject-badge {
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .streak-counter {
+            display: inline-flex;
+            align-items: center;
+            background-color: #f39c12;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+        
+        .storage-icon {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .hdd-module {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            padding: 15px 30px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 26px;
+            box-shadow: 0 4px 10px rgba(44, 62, 80, 0.4);
+            animation: spin-hdd 4s linear infinite;
+            position: relative;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        .ssd-module {
+            background: linear-gradient(135deg, #16a085, #1abc9c);
+            padding: 15px 30px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 26px;
+            box-shadow: 0 4px 10px rgba(22, 160, 133, 0.4);
+            animation: pulse-ssd 2s ease-in-out infinite;
+            position: relative;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        @keyframes spin-hdd {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+        
+        @keyframes pulse-ssd {
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 10px rgba(22, 160, 133, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 8px 20px rgba(22, 160, 133, 0.8); }
+        }
+        
+        .question-container {
+            margin-bottom: 20px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #34495e;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            padding: 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .option:hover {
+            border-color: #3498db;
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        
+        .option.selected {
+            border-color: #3498db;
+            background-color: #e8f4fc;
+        }
+        
+        .option.correct {
+            border-color: #2ecc71;
+            background-color: #e8f8f0;
+        }
+        
+        .option.incorrect {
+            border-color: #e74c3c;
+            background-color: #fef0f0;
+        }
+        
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            color: #7f8c8d;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+        
+        .option.selected .option-letter {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .option.correct .option-letter {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .option.incorrect .option-letter {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .nav-button {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+            min-width: 48%;
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
+        }
+        
+        .next-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .next-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .feedback {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 14px;
+        }
+        
+        .correct-feedback {
+            background-color: #e8f8f0;
+            border-left: 5px solid #2ecc71;
+            color: #27ae60;
+        }
+        
+        .incorrect-feedback {
+            background-color: #fef0f0;
+            border-left: 5px solid #e74c3c;
+            color: #c0392b;
+        }
+        
+        .feedback-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+        
+        .feedback-icon {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+        
+        .storage-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .storage-card {
+            background-color: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .storage-card.hdd {
+            border-left: 4px solid #34495e;
+            background-color: #f8f9fa;
+        }
+        
+        .storage-card.ssd {
+            border-left: 4px solid #16a085;
+            background-color: #e8f8f0;
+        }
+        
+        .storage-card h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        .storage-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .storage-card li {
+            padding: 3px 0;
+            padding-left: 20px;
+            position: relative;
+            font-size: 13px;
+        }
+        
+        .storage-card.hdd li:before {
+            content: "💿";
+            position: absolute;
+            left: 0;
+            color: #34495e;
+        }
+        
+        .storage-card.ssd li:before {
+            content: "⚡";
+            position: absolute;
+            left: 0;
+            color: #16a085;
+        }
+        
+        .storage-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .spec-item {
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        .spec-value {
+            font-weight: bold;
+            color: #34495e;
+            font-size: 14px;
+        }
+        
+        .tip-box {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #856404;
+        }
+        
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-width: 100%;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px 10px;
+            flex: 1;
+        }
+        
+        .nav-icon {
+            width: 22px;
+            height: 22px;
+            margin-bottom: 3px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .nav-item.active .nav-icon {
+            background-color: #3498db;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #3498db;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-header">
+            <div class="quiz-progress">
+                Question 20 of 20
+                <span class="subject-badge">ICT Computer Servicing</span>
+                <span class="streak-counter">🔥 19-day streak</span>
+            </div>
+            <div class="quiz-timer">⏱️ 0:25</div>
+        </div>
+        
+        <div class="storage-icon">
+            <div class="hdd-module">HDD</div>
+            <div class="ssd-module">SSD</div>
+        </div>
+        
+        <div class="question-container">
+            <div class="question-text">
+                Q20. A hard drive (HDD) and solid state drive (SSD) are non-volatile storage devices used for permanent storage of files, programs, and the operating system.
+            </div>
+            
+            <div class="options-container">
+                <div class="option" data-option="A">
+                    <div class="option-letter">T</div>
+                    <div class="option-text">TRUE</div>
+                </div>
+                
+                <div class="option" data-option="B">
+                    <div class="option-letter">F</div>
+                    <div class="option-text">FALSE</div>
+                </div>
+            </div>
+            
+            <div class="feedback correct-feedback" id="correctFeedback">
+                <div class="feedback-title">
+                    <span class="feedback-icon">✅</span> Correct! Storage Technology Mastered!
+                </div>
+                <div><strong>TRUE - Hard drives and SSDs are permanent storage devices.</strong> They are non-volatile, meaning they retain data even when the computer is turned off. This is where your operating system, applications, documents, photos, and videos live.</div>
+                
+                <div class="storage-comparison">
+                    <div class="storage-card hdd">
+                        <h4>💿 HDD (Hard Disk Drive)</h4>
+                        <ul>
+                            <li>Magnetic spinning platters</li>
+                            <li>Mechanical moving parts</li>
+                            <li>Slower read/write speeds</li>
+                            <li>Lower cost per GB</li>
+                            <li>Larger capacities (up to 20TB+)</li>
+                            <li>Vulnerable to physical shock</li>
+                        </ul>
+                    </div>
+                    <div class="storage-card ssd">
+                        <h4>⚡ SSD (Solid State Drive)</h4>
+                        <ul>
+                            <li>NAND flash memory</li>
+                            <li>No moving parts</li>
+                            <li>Faster read/write speeds</li>
+                            <li>Higher cost per GB</li>
+                            <li>Smaller capacities (up to 8TB+)</li>
+                            <li>Durable, shock-resistant</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="storage-specs">
+                    <div class="spec-item">
+                        <div>💿 HDD Speed</div>
+                        <div class="spec-value">5400 - 7200 RPM</div>
+                    </div>
+                    <div class="spec-item">
+                        <div>⚡ SSD Speed</div>
+                        <div class="spec-value">500 - 7000 MB/s</div>
+                    </div>
+                    <div class="spec-item">
+                        <div>🔌 Interface</div>
+                        <div class="spec-value">SATA / NVMe</div>
+                    </div>
+                    <div class="spec-item">
+                        <div>📏 Form Factor</div>
+                        <div class="spec-value">3.5" / 2.5" / M.2</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 12px; padding: 8px; background-color: #e8f4fc; border-radius: 6px;">
+                    <strong>🔧 Storage Hierarchy:</strong> For optimal performance, install your operating system and frequently used programs on an SSD for fast boot times and quick loading. Use an HDD for mass storage of large files like videos, photos, backups, and archives. Many computers use both!
+                </div>
+                
+                <div class="tip-box">
+                    <strong>💡 Tech Tip:</strong> Unlike RAM, storage drives are non-volatile - they don't need power to retain data. However, SSDs have a limited number of write cycles (typically 300-3000 full drive writes). Modern SSDs manage this with wear leveling and will typically last 5-10 years under normal use. Always back up important data!
+                </div>
+            </div>
+            
+            <div class="feedback incorrect-feedback" id="incorrectFeedback">
+                <div class="feedback-title">
+                    <span class="feedback-icon">❌</span> Not quite...
+                </div>
+                <div>The correct answer is <strong>TRUE</strong> (Option A).</div>
+                
+                <div style="margin-top: 8px;">
+                    <strong>📋 Storage Facts - Quick Reference:</strong><br>
+                    • <span style="color:#27ae60; font-weight:bold;">✓ NON-VOLATILE</span> - Retains data without power<br>
+                    • <span style="color:#27ae60; font-weight:bold;">✓ Permanent storage</span> - Files stay until deleted<br>
+                    • <span style="color:#27ae60; font-weight:bold;">✓ HDD</span> - Magnetic platters, mechanical<br>
+                    • <span style="color:#27ae60; font-weight:bold;">✓ SSD</span> - Flash memory, no moving parts<br>
+                    • <span style="color:#e74c3c;">✗ RAM</span> - Volatile, temporary, cleared on power-off<br>
+                    • <span style="color:#e74c3c;">✗ Cache</span> - Very fast, volatile CPU memory<br>
+                    • <span style="color:#e74c3c;">✗ Register</span> - Inside CPU, extremely fast, volatile
+                </div>
+                
+                <div style="margin-top: 12px; padding: 10px; background-color: #f8f9fa; border-radius: 8px;">
+                    <strong>🔍 Did You Know?</strong> The first hard drive, the IBM 350, was released in 1956 as part of the RAMAC 305 system. It stored 3.75MB of data, used fifty 24-inch platters, and was about the size of two refrigerators! It cost $50,000 per megabyte. Today, you can buy a 1TB microSD card smaller than your fingernail for under $100 - that's 250,000 times more capacity at 0.00001¢ per megabyte!
+                </div>
+                
+                <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e74c3c;">
+                    <span style="font-weight: bold;">📝 Memory Trick:</span> 
+                    <br><strong>HDD</strong> = <strong>H</strong>eavy, <strong>D</strong>iscs <strong>D</strong>riving (spinning platters)
+                    <br><strong>SSD</strong> = <strong>S</strong>uper <strong>S</strong>peedy <strong>D</strong>rive (no moving parts)
+                    <br><strong>Storage</strong> = <strong>S</strong>tays <strong>T</strong>here <strong>O</strong>riginally <strong>R</strong>eliably <strong>A</strong>fter <strong>G</strong>etting <strong>E</strong>nergy (off)
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation-buttons">
+            <button class="nav-button submit-btn" id="submitBtn">Submit Answer</button>
+            <button class="nav-button next-btn" id="nextBtn" disabled>Complete Quiz →</button>
+        </div>
+        
+        <div class="nav-bar">
+            <div class="nav-item">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📚</div>
+                <div class="nav-label">Lessons</div>
+            </div>
+            <div class="nav-item active">
+                <div class="nav-icon">💻</div>
+                <div class="nav-label">ICT Quiz</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Quiz functionality for ICT Computer Servicing - Question 20
+        let selectedOption = null;
+        const correctAnswer = "A"; // TRUE - Hard drives are permanent storage
+        
+        // Get DOM elements
+        const options = document.querySelectorAll('.option');
+        const submitBtn = document.getElementById('submitBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const correctFeedback = document.getElementById('correctFeedback');
+        const incorrectFeedback = document.getElementById('incorrectFeedback');
+        
+        // Log where the correct answer is placed
+        console.log(`🔐 Q20 Correct answer is option ${correctAnswer} (TRUE - Hard drives are permanent storage devices)`);
+        console.log(`🎉 FINAL QUESTION! Complete the ICT Computer Servicing Quiz!`);
+        
+        // Add click event to options
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selection from all options
+                options.forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Select this option
+                this.classList.add('selected');
+                selectedOption = this.getAttribute('data-option');
+                submitBtn.disabled = false;
+                
+                // Visual feedback for selection
+                this.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+        
+        // Submit answer
+        submitBtn.addEventListener('click', function() {
+            if (selectedOption) {
+                // Disable all options
+                options.forEach(opt => {
+                    opt.style.pointerEvents = 'none';
+                });
+                
+                // Mark correct answer (A)
+                document.querySelector(`.option[data-option="${correctAnswer}"]`).classList.add('correct');
+                
+                // Hide any previously shown feedback
+                correctFeedback.style.display = 'none';
+                incorrectFeedback.style.display = 'none';
+                
+                // Check if selected answer is correct
+                if (selectedOption === correctAnswer) {
+                    correctFeedback.style.display = 'block';
+                    
+                    // Update button style for success
+                    submitBtn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                    
+                    // Add XP notification - bonus for final question
+                    const xpToast = document.createElement('div');
+                    xpToast.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#34495e,#2c3e50); color:white; padding:15px 30px; border-radius:25px; font-weight:bold; z-index:2000; animation:slideDown 0.5s, fadeOut 0.5s 4s forwards; box-shadow:0 4px 12px rgba(0,0,0,0.2); border:2px solid gold;';
+                    xpToast.textContent = '🏆 +100 XP • QUIZ COMPLETE! • ICT CERTIFIED PROFESSIONAL! 🏆';
+                    document.body.appendChild(xpToast);
+                    
+                    setTimeout(() => {
+                        xpToast.remove();
+                    }, 4500);
+                    
+                    // Animate storage devices
+                    document.querySelector('.hdd-module').style.animation = 'none';
+                    document.querySelector('.ssd-module').style.animation = 'none';
+                    document.querySelector('.hdd-module').style.transform = 'rotateY(180deg) scale(1.1)';
+                    document.querySelector('.ssd-module').style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        document.querySelector('.hdd-module').style.transform = 'rotateY(0deg) scale(1)';
+                        document.querySelector('.ssd-module').style.transform = 'scale(1)';
+                        document.querySelector('.hdd-module').style.animation = 'spin-hdd 4s linear infinite';
+                        document.querySelector('.ssd-module').style.animation = 'pulse-ssd 2s ease-in-out infinite';
+                    }, 500);
+                    
+                } else {
+                    // Mark incorrect answer
+                    document.querySelector(`.option[data-option="${selectedOption}"]`).classList.add('incorrect');
+                    incorrectFeedback.style.display = 'block';
+                    
+                    // Update button style for error
+                    submitBtn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                    
+                    // Shake animation for incorrect answer
+                    document.querySelector('.hdd-module').style.animation = 'shake 0.5s';
+                    document.querySelector('.ssd-module').style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        document.querySelector('.hdd-module').style.animation = 'spin-hdd 4s linear infinite';
+                        document.querySelector('.ssd-module').style.animation = 'pulse-ssd 2s ease-in-out infinite';
+                    }, 500);
+                }
+                
+                // Enable next button
+                nextBtn.disabled = false;
+                this.disabled = true;
+            }
+        });
+        
+        // Next button - Complete Quiz
+        nextBtn.addEventListener('click', function() {
+            // Navigate to completion/results page
+            window.location.href = 'Tree of Progress ICT.html';
+        });
+        
+        // Navigation items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const navLabel = this.querySelector('.nav-label').textContent;
+                
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item
+                this.classList.add('active');
+                
+                if (navLabel === 'Home') {
+                    window.location.href = 'Learningmainpage.html';
+                } else if (navLabel === 'Profile') {
+                    window.location.href = 'Profile view.html';
+                } else if (navLabel === 'Lessons') {
+                    window.location.href = 'Subjects.html';
+                } else {
+                    // ICT Quiz tab is active
+                }
+            });
+        });
+        
+        // Timer functionality
+        let timeLeft = 25; // 0:25 in seconds
+        const timerElement = document.querySelector('.quiz-timer');
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Warning when 30 seconds left
+            if (timeLeft === 30) {
+                timerElement.style.backgroundColor = '#fef0f0';
+                timerElement.style.color = '#e74c3c';
+                timerElement.style.animation = 'pulse 1s';
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert('⏰ Time\'s up! The statement is TRUE - hard drives and SSDs are permanent, non-volatile storage devices.');
+                
+                // Auto-show correct answer
+                options.forEach(opt => {
+                    opt.style.pointerEvents = 'none';
+                });
+                document.querySelector(`.option[data-option="${correctAnswer}"]`).classList.add('correct');
+                incorrectFeedback.style.display = 'block';
+                nextBtn.disabled = false;
+                submitBtn.disabled = true;
+            }
+            
+            timeLeft--;
+        }
+        
+        // Start timer
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // Clear timer when leaving page
+        window.addEventListener('beforeunload', function() {
+            clearInterval(timerInterval);
+        });
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+            @keyframes fadeOut {
+                to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            }
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize streak counter
+        document.addEventListener('DOMContentLoaded', function() {
+            const streakElement = document.querySelector('.streak-counter');
+            if (streakElement) {
+                streakElement.textContent = '🔥 19-day streak';
+            }
+            
+            // Fix the question number in header (was showing 14 of 15, now 20 of 20)
+            const progressElement = document.querySelector('.quiz-progress');
+            if (progressElement) {
+                progressElement.innerHTML = progressElement.innerHTML.replace('Question 14 of 15', 'Question 20 of 20');
+            }
+        });
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EduGame - ICT Computer Servicing Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 70px;
+        }
+        
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .quiz-progress {
+            font-size: 13px;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+        
+        .quiz-timer {
+            background-color: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .subject-badge {
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .streak-counter {
+            display: inline-flex;
+            align-items: center;
+            background-color: #f39c12;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+            font-weight: bold;
+        }
+        
+        .portable-icon {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .usb-drive {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            padding: 12px 25px;
+            border-radius: 30px 10px 10px 30px;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4);
+            animation: slide 2s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .usb-drive::before {
+            content: "🔌";
+            position: absolute;
+            left: -15px;
+            top: 8px;
+            font-size: 24px;
+        }
+        
+        .sd-card {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(230, 126, 34, 0.4);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes slide {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .question-container {
+            margin-bottom: 20px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            padding: 12px 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            border-color: #3498db;
+            background-color: #f8f9fa;
+        }
+        
+        .option.selected {
+            border-color: #3498db;
+            background-color: #e8f4fc;
+        }
+        
+        .option.correct {
+            border-color: #2ecc71;
+            background-color: #e8f8f0;
+        }
+        
+        .option.incorrect {
+            border-color: #e74c3c;
+            background-color: #fef0f0;
+        }
+        
+        .option-letter {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            color: #7f8c8d;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+        
+        .option.selected .option-letter {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .option.correct .option-letter {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .option.incorrect .option-letter {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 16px;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .nav-button {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+            min-width: 48%;
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
+        }
+        
+        .next-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .next-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .feedback {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 14px;
+        }
+        
+        .correct-feedback {
+            background-color: #e8f8f0;
+            border-left: 5px solid #2ecc71;
+            color: #27ae60;
+        }
+        
+        .incorrect-feedback {
+            background-color: #fef0f0;
+            border-left: 5px solid #e74c3c;
+            color: #c0392b;
+        }
+        
+        .feedback-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+        
+        .feedback-icon {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+        
+        .portable-comparison {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 12px;
+            padding: 12px;
+            background-color: white;
+            border-radius: 8px;
+            gap: 10px;
+        }
+        
+        .device-card {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .device-card.usb {
+            background-color: #e8f4fc;
+            border: 2px solid #3498db;
+        }
+        
+        .device-card.sd {
+            background-color: #fef0e8;
+            border: 2px solid #e67e22;
+        }
+        
+        .device-card.external {
+            background-color: #e8f8f0;
+            border: 2px solid #2ecc71;
+        }
+        
+        .device-card.internal {
+            background-color: #fef0f0;
+            border: 2px solid #e74c3c;
+        }
+        
+        .tip-box {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #856404;
+        }
+        
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-width: 100%;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px 10px;
+            flex: 1;
+        }
+        
+        .nav-icon {
+            width: 22px;
+            height: 22px;
+            margin-bottom: 3px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .nav-item.active .nav-icon {
+            background-color: #3498db;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #3498db;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-header">
+            <div class="quiz-progress">
+                Question 8 of 15
+                <span class="subject-badge">ICT Computer Servicing</span>
+                <span class="streak-counter">🔥 7-day streak</span>
+            </div>
+            <div class="quiz-timer">⏱️ 1:25</div>
+        </div>
+        
+        <div class="portable-icon">
+            <div class="usb-drive">USB 3.0</div>
+            <div class="sd-card">SD CARD</div>
+        </div>
+        
+        <div class="question-container">
+            <div class="question-text">
+                Q8. Which device is considered portable, external, and hot-swappable storage that can be easily transported and connected via USB port?
+            </div>
+            
+            <div class="options-container">
+                <div class="option" data-option="A">
+                    <div class="option-letter">A</div>
+                    <div class="option-text">Internal Hard Drive (HDD/SSD)</div>
+                </div>
+                
+                <div class="option" data-option="B">
+                    <div class="option-letter">B</div>
+                    <div class="option-text">USB Flash Drive</div>
+                </div>
+                
+                <div class="option" data-option="C">
+                    <div class="option-letter">C</div>
+                    <div class="option-text">Motherboard</div>
+                </div>
+                
+                <div class="option" data-option="D">
+                    <div class="option-letter">D</div>
+                    <div class="option-text">CPU (Central Processing Unit)</div>
+                </div>
+            </div>
+            
+            <div class="feedback correct-feedback" id="correctFeedback">
+                <div class="feedback-title">
+                    <span class="feedback-icon">✅</span> Correct! Portable Storage Mastered!
+                </div>
+                <div><strong>USB Flash Drive</strong> is the classic example of portable storage. It is:
+                    <br>✓ External - connects via USB port
+                    <br>✓ Portable - small enough to fit in your pocket
+                    <br>✓ Hot-swappable - can be connected/disconnected while computer is running
+                    <br>✓ Non-volatile - retains data without power
+                </div>
+                
+                <div class="portable-comparison">
+                    <div class="device-card usb">
+                        <strong>🔵 USB Flash Drive</strong><br>
+                        ✓ Portable<br>
+                        ✓ Hot-swappable<br>
+                        ✓ No power needed<br>
+                        ✓ 4GB - 2TB
+                    </div>
+                    <div class="device-card sd">
+                        <strong>🟠 SD Card</strong><br>
+                        ✓ Portable<br>
+                        ✓ For cameras/phones<br>
+                        ✓ Needs adapter<br>
+                        ✓ 4GB - 1TB
+                    </div>
+                    <div class="device-card external">
+                        <strong>🟢 External HDD/SSD</strong><br>
+                        ✓ Portable<br>
+                        ✓ Requires USB cable<br>
+                        ✓ Larger capacity<br>
+                        ✓ 500GB - 20TB
+                    </div>
+                    <div class="device-card internal">
+                        <strong>🔴 Internal Drive</strong><br>
+                        ✗ Not portable<br>
+                        ✗ Installed inside PC<br>
+                        ✗ Requires installation<br>
+                        ✗ Fixed location
+                    </div>
+                </div>
+                
+                <div style="margin-top: 12px; padding: 8px; background-color: #e8f4fc; border-radius: 6px;">
+                    <strong>🔧 Hot-Swappable Definition:</strong> Hot-swappable devices can be connected and disconnected without shutting down the computer. USB Flash Drives, external hard drives, and most USB devices support this feature.
+                </div>
+                
+                <div class="tip-box">
+                    <strong>💡 Tech Tip:</strong> Always "eject" or "safely remove" your USB flash drive before unplugging it! This ensures all data writes are completed and prevents file corruption.
+                </div>
+            </div>
+            
+            <div class="feedback incorrect-feedback" id="incorrectFeedback">
+                <div class="feedback-title">
+                    <span class="feedback-icon">❌</span> Not quite...
+                </div>
+                <div>The correct answer is <strong>USB Flash Drive</strong>.</div>
+                
+                <div style="margin-top: 8px;">
+                    <strong>📋 Portable vs Non-Portable - Quick Reference:</strong><br>
+                    • <span style="color:#27ae60; font-weight:bold;">✓ USB Flash Drive</span> - Portable, external, hot-swappable<br>
+                    • <span style="color:#e74c3c;">✗ Internal HDD/SSD</span> - Fixed inside computer, not portable<br>
+                    • <span style="color:#e74c3c;">✗ Motherboard</span> - Main circuit board, permanently installed<br>
+                    • <span style="color:#e74c3c;">✗ CPU</span> - Processor, permanently installed in socket
+                </div>
+                
+                <div style="margin-top: 12px; padding: 10px; background-color: #f8f9fa; border-radius: 8px;">
+                    <strong>🔍 Did You Know?</strong> The first USB flash drive was invented in 1999 by IBM and Trek Technology. It had 8MB of storage - that's 8,000 times less than a common 64GB drive today! It was called the "ThumbDrive" because of its size.
+                </div>
+                
+                <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e74c3c;">
+                    <span style="font-weight: bold;">📝 Other Portable Storage:</span> SD cards, MicroSD cards, external SSDs, and portable hard drives are also portable, but the USB Flash Drive is the most common and universally recognized portable storage device.
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation-buttons">
+            <button class="nav-button submit-btn" id="submitBtn">Submit Answer</button>
+            <button class="nav-button next-btn" id="nextBtn" disabled>Next →</button>
+        </div>
+        
+        <div class="nav-bar">
+            <div class="nav-item">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Home</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📚</div>
+                <div class="nav-label">Lessons</div>
+            </div>
+            <div class="nav-item active">
+                <div class="nav-icon">💻</div>
+                <div class="nav-label">ICT Quiz</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">Profile</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Quiz functionality for ICT Computer Servicing - Question 8
+        let selectedOption = null;
+        const correctAnswer = "B"; // USB Flash Drive is the correct answer (placed on B as requested)
+        
+        // Get DOM elements
+        const options = document.querySelectorAll('.option');
+        const submitBtn = document.getElementById('submitBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const correctFeedback = document.getElementById('correctFeedback');
+        const incorrectFeedback = document.getElementById('incorrectFeedback');
+        
+        // Log where the correct answer is placed (for transparency)
+        console.log(`🔐 Q8 Correct answer is option ${correctAnswer} (USB Flash Drive) - placed on B as requested`);
+        
+        // Add click event to options
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selection from all options
+                options.forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Select this option
+                this.classList.add('selected');
+                selectedOption = this.getAttribute('data-option');
+                submitBtn.disabled = false;
+                
+                // Visual feedback for selection
+                this.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+        
+        // Submit answer
+        submitBtn.addEventListener('click', function() {
+            if (selectedOption) {
+                // Disable all options
+                options.forEach(opt => {
+                    opt.style.pointerEvents = 'none';
+                });
+                
+                // Mark correct answer (B)
+                document.querySelector(`.option[data-option="${correctAnswer}"]`).classList.add('correct');
+                
+                // Hide any previously shown feedback
+                correctFeedback.style.display = 'none';
+                incorrectFeedback.style.display = 'none';
+                
+                // Check if selected answer is correct
+                if (selectedOption === correctAnswer) {
+                    correctFeedback.style.display = 'block';
+                    
+                    // Update button style for success
+                    submitBtn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                    
+                    // Add XP notification
+                    const xpToast = document.createElement('div');
+                    xpToast.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#3498db,#2980b9); color:white; padding:10px 20px; border-radius:25px; font-weight:bold; z-index:2000; animation:slideDown 0.5s, fadeOut 0.5s 2s forwards; box-shadow:0 4px 12px rgba(0,0,0,0.2);';
+                    xpToast.textContent = '+25 XP • Portable Storage Unlocked! 🔌';
+                    document.body.appendChild(xpToast);
+                    
+                    setTimeout(() => {
+                        xpToast.remove();
+                    }, 2500);
+                    
+                    // Animate USB drive
+                    document.querySelector('.usb-drive').style.animation = 'none';
+                    document.querySelector('.usb-drive').style.transform = 'translateX(20px) scale(1.2)';
+                    setTimeout(() => {
+                        document.querySelector('.usb-drive').style.transform = 'translateX(0) scale(1)';
+                        document.querySelector('.usb-drive').style.animation = 'slide 2s ease-in-out infinite';
+                    }, 300);
+                    
+                } else {
+                    // Mark incorrect answer
+                    document.querySelector(`.option[data-option="${selectedOption}"]`).classList.add('incorrect');
+                    incorrectFeedback.style.display = 'block';
+                    
+                    // Update button style for error
+                    submitBtn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                    
+                    // Shake animation for incorrect answer
+                    document.querySelector('.usb-drive').style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        document.querySelector('.usb-drive').style.animation = 'slide 2s ease-in-out infinite';
+                    }, 500);
+                }
+                
+                // Enable next button
+                nextBtn.disabled = false;
+                this.disabled = true;
+            }
+        });
+        
+        // Next question
+        nextBtn.addEventListener('click', function() {
+            // Navigate to question 9 - ICT Computer Servicing
+            window.location.href = 'ICT Computer Servicing System question9.html';
+        });
+        
+        // Navigation items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const navLabel = this.querySelector('.nav-label').textContent;
+                
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item
+                this.classList.add('active');
+                
+                if (navLabel === 'Home') {
+                    window.location.href = 'Learningmainpage.html';
+                } else if (navLabel === 'Profile') {
+                    window.location.href = 'Profile view.html';
+                } else if (navLabel === 'Lessons') {
+                    window.location.href = 'Subjects.html';
+                } else {
+                    // ICT Quiz tab is active
+                }
+            });
+        });
+        
+        // Timer functionality
+        let timeLeft = 85; // 1:25 in seconds
+        const timerElement = document.querySelector('.quiz-timer');
+        
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Warning when 30 seconds left
+            if (timeLeft === 30) {
+                timerElement.style.backgroundColor = '#fef0f0';
+                timerElement.style.color = '#e74c3c';
+                timerElement.style.animation = 'pulse 1s';
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert('⏰ Time\'s up! USB Flash Drive is the correct answer for portable storage.');
+                
+                // Auto-show correct answer
+                options.forEach(opt => {
+                    opt.style.pointerEvents = 'none';
+                });
+                document.querySelector(`.option[data-option="${correctAnswer}"]`).classList.add('correct');
+                incorrectFeedback.style.display = 'block';
+                nextBtn.disabled = false;
+                submitBtn.disabled = true;
+            }
+            
+            timeLeft--;
+        }
+        
+        // Start timer
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // Clear timer when leaving page
+        window.addEventListener('beforeunload', function() {
+            clearInterval(timerInterval);
+        });
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+            @keyframes fadeOut {
+                to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            }
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize streak counter
+        document.addEventListener('DOMContentLoaded', function() {
+            const streakElement = document.querySelector('.streak-counter');
+            if (streakElement) {
+                streakElement.textContent = '🔥 7-day streak';
+            }
+            
+            // Answer position indicator
+            console.log('🎯 Answer placement: Option B (as requested)');
+            
+            // Fix the stray "o" character in option A
+            const optionAText = document.querySelector('.option[data-option="A"] .option-text');
+            if (optionAText && optionAText.innerHTML.includes('Hard Driveo')) {
+                optionAText.innerHTML = 'Internal Hard Drive (HDD/SSD)';
+            }
+        });
+        
+    </script>
+</body>
+</html>
