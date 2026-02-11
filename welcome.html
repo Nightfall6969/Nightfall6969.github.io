@@ -159,7 +159,6 @@
             100% {transform: translateY(-100px) rotate(360deg);}
         }
         
-        /* Responsive adjustments */
         @media (min-width: 768px) {
             .login-container {
                 max-width: 450px;
@@ -220,8 +219,9 @@
             alert('This would authenticate with Google in the real app');
         });
         
+        // ✅ Navigation: Welcome → Tell Us More
         document.getElementById('loginLink').addEventListener('click', function() {
-            alert('This would navigate to the login page');
+            window.location.href = 'tell us more.html';
         });
         
         // Add slight animation to buttons on load
