@@ -102,6 +102,35 @@
             font-size: 13px;
         }
         
+        /* NEW: Select dropdown styling */
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background-color: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233498db'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+        
+        .form-select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .form-select.error {
+            border-color: #e74c3c;
+            background-color: #fdf3f2;
+        }
+        
         .submit-btn {
             width: 100%;
             padding: 14px;
@@ -123,6 +152,13 @@
         .submit-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         .submit-icon {
@@ -177,36 +213,141 @@
             100% {transform: translateY(-100px) rotate(360deg);}
         }
         
-        /* Extra small devices (phones under 360px) */
         @media (max-width: 360px) {
             .profile-header {
                 padding: 20px 10px;
             }
-            
             .profile-title {
                 font-size: 22px;
             }
-            
             .profile-subtitle {
                 font-size: 13px;
             }
-            
             .profile-content {
                 padding: 15px;
             }
-            
-            .form-input {
+            .form-input, .form-select {
                 padding: 10px;
             }
-            
             .submit-btn {
                 padding: 12px;
                 font-size: 15px;
             }
-            
             .progress-container {
                 margin: 15px 0;
             }
+        }
+        
+        /* Error message styles */
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+            align-items: center;
+            gap: 4px;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .error-message.show {
+            display: flex;
+        }
+        
+        .error-icon {
+            font-size: 14px;
+        }
+        
+        .form-input.error, .form-select.error {
+            border-color: #e74c3c;
+            background-color: #fdf3f2;
+        }
+        
+        .form-input.error:focus, .form-select.error:focus {
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.3s ease-in-out;
+        }
+        
+        /* Retry badge */
+        .retry-badge {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.9; }
+            50% { opacity: 1; transform: scale(1.02); }
+            100% { opacity: 0.9; }
+        }
+        
+        /* Success animation */
+        .submit-btn.success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            pointer-events: none;
+        }
+        
+        /* Required field indicator */
+        .required-star {
+            color: #e74c3c;
+            margin-left: 4px;
+            font-size: 14px;
+        }
+        
+        /* Counter badge */
+        .counter-badge {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        /* Email attempt counter */
+        .attempt-counter {
+            font-size: 11px;
+            color: #7f8c8d;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .attempt-counter.warning {
+            color: #e74c3c;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -221,93 +362,455 @@
         
         <div class="profile-header">
             <div class="profile-icon">👤</div>
-            <h1 class="profile-title">Tell us more</h1>
-            <div class="profile-subtitle">Fill in the details below to tell us more about you</div>
+            <h1 class="profile-title">ICT Student Registration</h1>
+            <div class="profile-subtitle">Grade 12</div>
         </div>
         
         <div class="profile-content">
             <div class="progress-container">
-                <div class="progress-text">Profile completion: 25%</div>
+                <div class="progress-text">Profile completion: <span id="completionPercentage">25%</span></div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: 25%"></div>
+                    <div class="progress-fill" id="progressFill" style="width: 25%"></div>
                 </div>
             </div>
             
+            <div class="counter-badge" id="counterBadge">
+                <span>📋</span>
+                <span id="counterText">3 fields required</span>
+            </div>
+            
+            <!-- EMAIL FIELD - With enhanced protective barrier -->
             <div class="form-group">
                 <label class="form-label">
                     <span class="form-icon">✉️</span>
                     Email Address
+                    <span class="required-star">*</span>
                 </label>
-                <input type="email" class="form-input" placeholder="JuanCruz@email.com" value="JuanCruz@email.com">
+                <input type="email" class="form-input" placeholder="example123@gmail.com" value="" id="email">
+                <div class="error-message" id="emailError">
+                    <span class="error-icon">⚠️</span>
+                    <span class="error-text"></span>
+                </div>
+                <div class="attempt-counter" id="emailAttemptCounter">
+                    <span>🔄</span>
+                    <span id="attemptText">Please enter a valid Gmail address</span>
+                </div>
             </div>
             
+            <!-- FULL NAME FIELD -->
             <div class="form-group">
                 <label class="form-label">
                     <span class="form-icon">👤</span>
                     Full Name
+                    <span class="required-star">*</span>
                 </label>
-                <input type="text" class="form-input" placeholder="Your full name">
+                <input type="text" class="form-input" placeholder="Enter your full name" id="fullName">
+                <div class="error-message" id="nameError">
+                    <span class="error-icon">⚠️</span>
+                    <span class="error-text"></span>
+                </div>
             </div>
             
+            <!-- GRADE LEVEL FIELD - REPLACED WITH ICT 12-N2/N3 SELECTION -->
             <div class="form-group">
                 <label class="form-label">
                     <span class="form-icon">🎓</span>
-                    Grade Level
+                    Grade & Section
+                    <span class="required-star">*</span>
                 </label>
-                <input type="text" class="form-input" placeholder="Select your grade">
+                <select class="form-select" id="grade">
+                    <option value="" disabled selected>-- Select your ICT section --</option>
+                    <option value="ICT 12-N2">📡 ICT 12-N2</option>
+                    <option value="ICT 12-N3">💻 ICT 12-N3</option>
+                </select>
+                <div class="error-message" id="gradeError">
+                    <span class="error-icon">⚠️</span>
+                    <span class="error-text"></span>
+                </div>
             </div>
             
-            <div class="form-group">
-                <label class="form-label">
-                    <span class="form-icon">❤️</span>
-                    Interests
-                </label>
-                <input type="text" class="form-input" placeholder="What subjects interest you?">
+            <div class="retry-badge" id="retryBadge" style="display: none;">
+                <span>🔄</span>
+                <span id="retryMessage">Please fix the errors and try again</span>
             </div>
             
             <button class="submit-btn" id="submitBtn">
                 <span class="submit-icon">🚀</span>
-                Complete Profile
+                Register ICT Student
             </button>
         </div>
     </div>
     
     <script>
-        // Interactive form elements
-        document.getElementById('submitBtn').addEventListener('click', function() {
-            // Simulate saving profile information
-            alert('Profile information saved successfully!');
-            
-            // Simulate progress update
-            document.querySelector('.progress-fill').style.width = '100%';
-            document.querySelector('.progress-text').textContent = 'Profile completion: 100%';
-            
-            // Redirect to learning main page after a short delay
-            setTimeout(() => {
-                window.location.href = 'Learningmainpage.html';
-            }, 1000);
-        });
-        
-        // Add focus effects to inputs
-        document.querySelectorAll('.form-input').forEach(input => {
+        // === ORIGINAL FOCUS EFFECTS (UNCHANGED) ===
+        document.querySelectorAll('.form-input, .form-select').forEach(input => {
             input.addEventListener('focus', function() {
-                this.parentElement.querySelector('.form-icon').style.transform = 'scale(1.2)';
-                this.parentElement.querySelector('.form-icon').style.color = '#9b59b6';
+                if (this.parentElement.querySelector('.form-icon')) {
+                    this.parentElement.querySelector('.form-icon').style.transform = 'scale(1.2)';
+                    this.parentElement.querySelector('.form-icon').style.color = '#9b59b6';
+                }
             });
             
             input.addEventListener('blur', function() {
-                this.parentElement.querySelector('.form-icon').style.transform = 'scale(1)';
-                this.parentElement.querySelector('.form-icon').style.color = '#3498db';
+                if (this.parentElement.querySelector('.form-icon')) {
+                    this.parentElement.querySelector('.form-icon').style.transform = 'scale(1)';
+                    this.parentElement.querySelector('.form-icon').style.color = '#3498db';
+                }
             });
         });
         
-        // Add slight animation to submit button on load
         setTimeout(() => {
             document.getElementById('submitBtn').style.transform = 'translateY(-5px)';
             setTimeout(() => {
                 document.getElementById('submitBtn').style.transform = 'translateY(0)';
             }, 300);
         }, 500);
+        
+        // === REVISED VALIDATION RULES ===
+        const validationRules = {
+            email: {
+                pattern: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
+                message: "❌ Only Gmail addresses are allowed",
+                required: true,
+                minLength: 11,
+                antiMisinformation: [
+                    { value: "test@gmail.com", message: "Please use your real Gmail address" },
+                    { value: "asdf@gmail.com", message: "Please enter a valid Gmail address" },
+                    { value: "1234@gmail.com", message: "Please enter a real Gmail address" },
+                    { value: "admin@gmail.com", message: "Please use your personal Gmail" },
+                    { value: "user@gmail.com", message: "Please use your real Gmail address" },
+                    { value: "a@gmail.com", message: "Gmail address is too short" },
+                    { value: "email@gmail.com", message: "Please use your actual Gmail address" },
+                    { value: "name@gmail.com", message: "Please enter your specific Gmail address" }
+                ],
+                forbiddenDomains: ["yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "aol.com"],
+                requiredDomain: "gmail.com"
+            },
+            fullName: {
+                pattern: /^[A-Za-z\s]{2,50}$/,
+                message: "Name must contain only letters and spaces (2-50 characters)",
+                required: true,
+                minLength: 2,
+                antiMisinformation: [
+                    { value: "test", message: "Please enter your real name" },
+                    { value: "asdf", message: "Please enter your real name" },
+                    { value: "qwerty", message: "Please enter your real name" },
+                    { value: "1234", message: "Name cannot contain numbers" },
+                    { value: "admin", message: "Please enter your real name" },
+                    { value: "user", message: "Please enter your real name" },
+                    { value: "a", message: "Name must be at least 2 characters" }
+                ]
+            },
+            grade: {
+                required: true,
+                validOptions: ["ICT 12-N2", "ICT 12-N3"],
+                message: "Please select your ICT section (N2 or N3)"
+            }
+        };
+        
+        // Get DOM elements
+        const emailInput = document.getElementById('email');
+        const nameInput = document.getElementById('fullName');
+        const gradeSelect = document.getElementById('grade');
+        const retryBadge = document.getElementById('retryBadge');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.querySelector('.progress-text');
+        const counterText = document.getElementById('counterText');
+        const counterBadge = document.getElementById('counterBadge');
+        const attemptCounter = document.getElementById('emailAttemptCounter');
+        const attemptText = document.getElementById('attemptText');
+        
+        // Track email attempts
+        let emailAttempts = 0;
+        const MAX_EMAIL_ATTEMPTS = 5;
+        let emailBlocked = false;
+        
+        // Error display functions
+        function showError(input, message) {
+            const errorDiv = document.getElementById(`${input.id}Error`);
+            if (!errorDiv) return;
+            const errorText = errorDiv.querySelector('.error-text');
+            errorText.textContent = message;
+            errorDiv.classList.add('show');
+            input.classList.add('error');
+            
+            input.classList.add('shake');
+            setTimeout(() => input.classList.remove('shake'), 300);
+        }
+        
+        function hideError(input) {
+            const errorDiv = document.getElementById(`${input.id}Error`);
+            if (!errorDiv) return;
+            errorDiv.classList.remove('show');
+            input.classList.remove('error');
+        }
+        
+        // EMAIL VALIDATION - STRICT GMAIL ONLY
+        function validateEmail(input) {
+            hideError(input);
+            const value = input.value.trim();
+            
+            // Check if empty
+            if (value === '') {
+                showError(input, "Gmail address is required");
+                attemptText.textContent = "⚠️ Please enter your Gmail address";
+                attemptCounter.classList.add('warning');
+                return false;
+            }
+            
+            // Check if blocked after too many attempts
+            if (emailBlocked) {
+                showError(input, "Too many invalid attempts. Please refresh the page.");
+                input.disabled = true;
+                return false;
+            }
+            
+            // Check if it's a Gmail address
+            if (!value.toLowerCase().endsWith('@gmail.com')) {
+                emailAttempts++;
+                attemptText.textContent = `❌ Must be @gmail.com (Attempt ${emailAttempts}/${MAX_EMAIL_ATTEMPTS})`;
+                attemptCounter.classList.add('warning');
+                
+                if (emailAttempts >= MAX_EMAIL_ATTEMPTS) {
+                    emailBlocked = true;
+                    showError(input, "⚠️ ACCOUNT BLOCKED: Too many invalid Gmail attempts. Please refresh.");
+                    input.disabled = true;
+                    return false;
+                }
+                
+                showError(input, `❌ Only @gmail.com addresses allowed (${MAX_EMAIL_ATTEMPTS - emailAttempts} attempts left)`);
+                return false;
+            }
+            
+            // Check minimum length
+            if (value.length < 11) {
+                emailAttempts++;
+                showError(input, "Gmail address is too short");
+                return false;
+            }
+            
+            // Check format
+            if (!validationRules.email.pattern.test(value)) {
+                emailAttempts++;
+                showError(input, "Invalid Gmail format (e.g., username@gmail.com)");
+                return false;
+            }
+            
+            // Anti-misinformation check
+            for (let item of validationRules.email.antiMisinformation) {
+                if (value.toLowerCase() === item.value.toLowerCase()) {
+                    emailAttempts++;
+                    showError(input, item.message);
+                    return false;
+                }
+            }
+            
+            // Check if username part is too generic
+            const username = value.split('@')[0];
+            if (username.length < 3) {
+                emailAttempts++;
+                showError(input, "Gmail username must be at least 3 characters");
+                return false;
+            }
+            
+            // Success - reset attempt counter
+            emailAttempts = 0;
+            attemptText.textContent = "✅ Valid Gmail address";
+            attemptCounter.classList.remove('warning');
+            attemptCounter.style.color = '#27ae60';
+            return true;
+        }
+        
+        // GRADE VALIDATION - SELECT ONLY
+        function validateGrade(input) {
+            hideError(input);
+            const value = input.value;
+            
+            if (!value || value === '') {
+                showError(input, "Please select your ICT section");
+                return false;
+            }
+            
+            if (!validationRules.grade.validOptions.includes(value)) {
+                showError(input, "Please select either ICT 12-N2 or ICT 12-N3");
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // NAME VALIDATION
+        function validateName(input) {
+            hideError(input);
+            const value = input.value.trim();
+            
+            if (value === '') {
+                showError(input, "Full name is required");
+                return false;
+            }
+            
+            if (value.length < 2) {
+                showError(input, "Name must be at least 2 characters");
+                return false;
+            }
+            
+            for (let item of validationRules.fullName.antiMisinformation) {
+                if (value.toLowerCase() === item.value.toLowerCase()) {
+                    showError(input, item.message);
+                    return false;
+                }
+            }
+            
+            if (!validationRules.fullName.pattern.test(value)) {
+                showError(input, validationRules.fullName.message);
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Calculate completion percentage
+        function calculateCompletion() {
+            let validCount = 0;
+            
+            if (validateEmail(emailInput) === true) validCount++;
+            if (validateName(nameInput) === true) validCount++;
+            if (validateGrade(gradeSelect) === true) validCount++;
+            
+            return Math.round((validCount / 3) * 100);
+        }
+        
+        // Update progress and counter
+        function updateProgressAndCounter() {
+            const completion = calculateCompletion();
+            progressFill.style.width = completion + '%';
+            progressText.innerHTML = `Profile completion: ${completion}%`;
+            
+            const isEmailValid = validateEmail(emailInput) === true;
+            const isNameValid = validateName(nameInput) === true;
+            const isGradeValid = validateGrade(gradeSelect) === true;
+            
+            const validFields = [isEmailValid, isNameValid, isGradeValid].filter(Boolean).length;
+            
+            if (validFields === 3) {
+                counterText.textContent = `✅ All fields ready!`;
+                counterBadge.style.background = 'linear-gradient(135deg, #27ae60, #229954)';
+            } else {
+                counterText.textContent = `${3 - validFields} field${(3 - validFields) !== 1 ? 's' : ''} remaining`;
+                counterBadge.style.background = 'linear-gradient(135deg, #3498db, #2980b9)';
+            }
+        }
+        
+        // Validate all fields
+        function validateAllFields() {
+            const isEmailValid = validateEmail(emailInput);
+            const isNameValid = validateName(nameInput);
+            const isGradeValid = validateGrade(gradeSelect);
+            
+            const allValid = isEmailValid === true && isNameValid === true && isGradeValid === true;
+            
+            if (allValid) {
+                retryBadge.style.display = 'none';
+            }
+            
+            return allValid;
+        }
+        
+        // Event listeners
+        emailInput.addEventListener('blur', function() {
+            validateEmail(this);
+            updateProgressAndCounter();
+        });
+        
+        emailInput.addEventListener('input', function() {
+            hideError(this);
+            retryBadge.style.display = 'none';
+            updateProgressAndCounter();
+        });
+        
+        nameInput.addEventListener('blur', function() {
+            validateName(this);
+            updateProgressAndCounter();
+        });
+        
+        nameInput.addEventListener('input', function() {
+            hideError(this);
+            retryBadge.style.display = 'none';
+            updateProgressAndCounter();
+        });
+        
+        gradeSelect.addEventListener('change', function() {
+            validateGrade(this);
+            updateProgressAndCounter();
+            retryBadge.style.display = 'none';
+        });
+        
+        // Submit button handler - STRICT PROTECTION
+        submitBtn.onclick = function(event) {
+            const isEmailValid = validateEmail(emailInput);
+            const isNameValid = validateName(nameInput);
+            const isGradeValid = validateGrade(gradeSelect);
+            
+            const allValid = isEmailValid === true && isNameValid === true && isGradeValid === true;
+            
+            updateProgressAndCounter();
+            
+            if (!allValid) {
+                retryBadge.style.display = 'flex';
+                
+                // Custom retry messages
+                if (!isEmailValid) {
+                    document.getElementById('retryMessage').textContent = '❌ Please enter a valid Gmail address';
+                    emailInput.focus();
+                } else if (!isNameValid) {
+                    document.getElementById('retryMessage').textContent = '❌ Please enter your full name';
+                    nameInput.focus();
+                } else if (!isGradeValid) {
+                    document.getElementById('retryMessage').textContent = '❌ Please select ICT 12-N2 or ICT 12-N3';
+                    gradeSelect.focus();
+                }
+                
+                submitBtn.classList.add('shake');
+                setTimeout(() => submitBtn.classList.remove('shake'), 300);
+                
+                return; // 🛑 BLOCK NAVIGATION
+            }
+            
+            // ✅ ALL FIELDS VALID - PROCEED
+            alert('✅ Registration Successful!\n\nICT Student: ' + nameInput.value.trim() + 
+                  '\nSection: ' + gradeSelect.value + 
+                  '\nGmail: ' + emailInput.value);
+            
+            progressFill.style.width = '100%';
+            progressText.innerHTML = 'Profile completion: 100%';
+            
+            submitBtn.classList.add('success');
+            submitBtn.innerHTML = '<span class="submit-icon">🎉</span> Registration Complete!';
+            
+            retryBadge.style.display = 'none';
+            counterBadge.style.background = 'linear-gradient(135deg, #27ae60, #229954)';
+            counterText.textContent = '✅ Ready to continue!';
+            
+            setTimeout(() => {
+                window.location.href = 'Learningmainpage.html';
+            }, 1500);
+        };
+        
+        // Initialize
+        function initialize() {
+            hideError(emailInput);
+            hideError(nameInput);
+            hideError(gradeSelect);
+            
+            // Set default state for email counter
+            attemptText.textContent = "📧 Enter your Gmail address";
+            
+            console.log('🛡️ ICT GRADE SELECTION ACTIVATED - N2/N3 Only');
+            console.log('📧 STRICT GMAIL PROTECTION ENABLED');
+        }
+        
+        initialize();
     </script>
 </body>
 </html>
