@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ICT Computer Servicing · full quiz (20 questions)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 80px;
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: white;
+            min-height: 100vh;
+        }
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+        }
+        .quiz-progress {
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .subject-badge {
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .streak-counter {
+            background-color: #f39c12;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .quiz-timer {
+            background-color: #f8f9fa;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .student-info {
+            background-color: #e8f4fc;
+            padding: 12px;
+            border-radius: 12px;
+            margin: 10px 0 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .student-input {
+            flex: 2;
+            min-width: 180px;
+            padding: 10px 15px;
+            border: 2px solid #b0d4f0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+        .student-input:focus {
+            border-color: #3498db;
+        }
+        .start-btn, .save-score-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .start-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        /* keyboard animation div removed */
+        .question-container {
+            margin-bottom: 20px;
+        }
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #34495e;
+        }
+        .options-container {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .option {
+            padding: 12px 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        .option:hover { border-color: #3498db; background-color: #f8f9fa; }
+        .option.selected { border-color: #3498db; background-color: #e8f4fc; }
+        .option.correct { border-color: #2ecc71; background-color: #e8f8f0; }
+        .option.incorrect { border-color: #e74c3c; background-color: #fef0f0; }
+        .option-letter {
+            width: 28px; height: 28px; border-radius: 50%;
+            background-color: #ecf0f1; display: flex; align-items: center; justify-content: center;
+            margin-right: 12px; font-weight: bold; color: #7f8c8d; flex-shrink: 0;
+        }
+        .option.selected .option-letter { background-color: #3498db; color: white; }
+        .option.correct .option-letter { background-color: #2ecc71; color: white; }
+        .option.incorrect .option-letter { background-color: #e74c3c; color: white; }
+        .option-text { flex: 1; font-size: 16px; }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            display: none;
+            font-size: 14px;
+        }
+        .correct-feedback { background-color: #e8f8f0; border-left: 5px solid #2ecc71; }
+        .incorrect-feedback { background-color: #fef0f0; border-left: 5px solid #e74c3c; }
+        .feedback-title { font-weight: bold; margin-bottom: 8px; font-size: 16px; }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .nav-button {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+            flex: 1;
+            transition: 0.2s;
+        }
+        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .prev-btn { background: #ecf0f1; color: #2c3e50; }
+        .submit-btn { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; }
+        .next-btn { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+
+        .scoreboard {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 20px;
+            margin: 20px 0;
+            border: 2px dashed #3498db;
+        }
+        .leaderboard {
+            background: #fff7e6;
+            padding: 15px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+        .leaderboard h3 { color: #e67e22; margin-bottom: 8px; }
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #ffe6b3;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 1000;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; flex: 1; }
+        .nav-icon { width: 24px; height: 24px; background-color: #bdc3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; margin-bottom: 4px; }
+        .nav-item.active .nav-icon { background-color: #3498db; }
+        .nav-label { font-size: 11px; color: #7f8c8d; }
+        .nav-item.active .nav-label { color: #3498db; font-weight: bold; }
+
+        .hidden { display: none; }
+        .result-highlight { font-size: 24px; font-weight: bold; color: #27ae60; }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <!-- header -->
+    <div class="quiz-header">
+        <div class="quiz-progress">
+            <span id="qCounter">Question 1 / 20</span>
+            <span class="subject-badge">ICT Servicing</span>
+            <span class="streak-counter" id="streakDisplay">🔥 0 streak</span>
+        </div>
+        <div class="quiz-timer" id="timerDisplay">⏱️ 3:00</div>
+    </div>
+
+    <!-- student name & start section (always visible) -->
+    <div class="student-info" id="studentPanel">
+        <input type="text" id="studentNameInput" class="student-input" placeholder="Enter your name (e.g., Write Name Here)" value="Write Name Here">
+        <button id="startQuizBtn" class="start-btn">▶ Start / Reset quiz</button>
+        <button id="saveScoreBtn" class="save-score-btn" disabled>💾 Save my score</button>
+    </div>
+
+    <!-- keyboard animation (removed as requested) -->
+
+    <!-- main quiz area (visible only after start) -->
+    <div id="quizArea" style="display: none;">
+        <div class="question-container">
+            <div class="question-text" id="questionText">Loading...</div>
+            <div class="options-container" id="optionsContainer"></div>
+            <div class="feedback correct-feedback" id="correctFeedback"></div>
+            <div class="feedback incorrect-feedback" id="incorrectFeedback"></div>
+        </div>
+
+        <div class="navigation-buttons">
+            <button class="nav-button prev-btn" id="prevBtn" disabled>← Previous</button>
+            <button class="nav-button submit-btn" id="submitBtn" disabled>Submit Answer</button>
+            <button class="nav-button next-btn" id="nextBtn" disabled>Next →</button>
+        </div>
+    </div>
+
+    <!-- score & leaderboard area -->
+    <div id="scoreArea" style="margin-top: 25px;">
+        <div class="scoreboard" id="liveScoreBoard">
+            <strong>📊 current score:</strong> <span id="scoreDisplay">0</span> / 20
+        </div>
+        <div class="leaderboard" id="leaderboard">
+            <h3>🏆 recorded scores</h3>
+            <div id="leaderboardList">(no scores yet)</div>
+            <button id="clearScoresBtn" style="background:#e74c3c; color:white; border:none; padding:6px 12px; border-radius:20px; margin-top:8px; font-size:12px; cursor:pointer;">clear history</button>
+        </div>
+    </div>
+
+    <!-- bottom nav (static) -->
+    <div class="nav-bar">
+        <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+        <div class="nav-item"><div class="nav-icon">📚</div><div class="nav-label">Lessons</div></div>
+        <div class="nav-item active"><div class="nav-icon">💻</div><div class="nav-label">ICT Quiz</div></div>
+        <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- 20 CORRECTED QUESTIONS (ICT fundamentals) ----------
+        const questions = [
+            { // Q1
+                question: "Q1. Which of the following is an input device?",
+                options: ["Keyboard", "Monitor", "Printer", "Speaker"],
+                correct: "A",
+                explanation: "Keyboard is an input device. It allows users to enter data and commands by pressing keys.",
+                detailed: "✅ Keyboard: Each key press generates a unique scan code. The QWERTY layout was designed in 1870s to prevent typewriter jams!"
+            },
+            { // Q2
+                question: "Q2. Which of the following is an output device?",
+                options: ["Mouse", "Monitor", "Keyboard", "Scanner"],
+                correct: "B",
+                explanation: "Monitor is an output device. It displays visual information from the computer.",
+                detailed: "Monitor (screen) – primary visual output. Other options: Mouse (input), Keyboard (input), Scanner (input)."
+            },
+            { // Q3
+                question: "Q3. What is the CPU also known as?",
+                options: ["Brain of the computer", "Memory of the computer", "Storage of the computer", "Input device"],
+                correct: "A",
+                explanation: "CPU is the brain of the computer, executing instructions.",
+                detailed: "CPU performs arithmetic, logic, control, and I/O operations."
+            },
+            { // Q4
+                question: "Q4. Which type of memory is temporary while the computer is running?",
+                options: ["RAM", "ROM", "Hard Drive", "USB Flash Drive"],
+                correct: "A",
+                explanation: "RAM = Random Access Memory. It is volatile, used for temporary data while computer is on.",
+                detailed: "RAM loses data when power off. Contrast with ROM (Read Only Memory)."
+            },
+            { // Q5
+                question: "Q5. Which type of memory is permanent and stores essential instructions?",
+                options: ["Monitor", "RAM", "Keyboard", "ROM"],
+                correct: "D",
+                explanation: "ROM (Read-Only Memory) is non-volatile and stores firmware.",
+                detailed: "BIOS/UEFI is stored in ROM."
+            },
+            { // Q6
+                question: "Q6. Which part of the computer connects all components?",
+                options: ["CPU", "Hard Drive", "Motherboard", "RAM"],
+                correct: "C",
+                explanation: "Motherboard connects CPU, RAM, storage, and peripherals.",
+                detailed: "It provides data and power connections."
+            },
+            { // Q7
+                question: "Q7. Which device is used for permanent storage of files?",
+                options: ["USB Flash Drive", "RAM", "Hard Drive", "Monitor"],
+                correct: "C",
+                explanation: "Hard Disk Drive (HDD) is the primary permanent storage inside most computers.",
+                detailed: "SSDs also serve same purpose but are faster."
+            },
+            { // Q8
+                question: "Q8. Which device is considered portable storage?",
+                options: ["Hard Drive", "USB Flash Drive", "Motherboard", "CPU"],
+                correct: "B",
+                explanation: "USB flash drives are portable storage.",
+                detailed: "They use NAND flash memory."
+            },
+            { // Q9
+                question: "Q9. Which of the following is an input device?",
+                options: ["Scanner", "Printer", "Speaker", "Monitor"],
+                correct: "A",
+                explanation: "Scanner captures images/text and sends to computer → input.",
+                detailed: "Printer, plotter, projector are output devices."
+            },
+            { // Q10
+                question: "Q10. A keyboard is an input device.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Keyboard is an input device; it sends data to computer.",
+                detailed: "Keyboards can be mechanical, membrane, or virtual."
+            },
+            { // Q11
+                question: "Q11. A printer is an output device.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Printer produces hard copy output.",
+                detailed: "Printers can be inkjet, laser, or dot matrix."
+            },
+            { // Q12
+                question: "Q12. The CPU is called the brain of the computer.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "CPU is indeed called the brain because it controls all functions.",
+                detailed: "It fetches, decodes, and executes instructions."
+            },
+            { // Q13
+                question: "Q13. RAM stores data permanently.",
+                options: ["TRUE", "FALSE"],
+                correct: "B",
+                explanation: "RAM is volatile; it loses data when power is off.",
+                detailed: "Permanent storage is HDD/SSD."
+            },
+            { // Q14
+                question: "Q14. ROM stores essential instructions permanently.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "ROM retains data without power; it stores boot instructions.",
+                detailed: "PROM, EPROM variants exist."
+            },
+            { // Q15
+                question: "Q15. The motherboard connects all computer components.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Motherboard is the main circuit board connecting all parts.",
+                detailed: "It houses CPU, RAM, and expansion slots."
+            },
+            { // Q16
+                question: "Q16. A USB flash drive is used for portable storage.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "USB flash drives are portable storage.",
+                detailed: "They connect via USB and use flash memory."
+            },
+            { // Q17
+                question: "Q17. A scanner is an input device.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Scanner converts physical documents to digital images.",
+                detailed: "It is an input device."
+            },
+            { // Q18
+                question: "Q18. A monitor is an output device.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Monitor displays visual output.",
+                detailed: "Types include LCD, LED, OLED."
+            },
+            { // Q19
+                question: "Q19. SSD (Solid State Drive) contains moving mechanical parts.",
+                options: ["TRUE", "FALSE"],
+                correct: "B",
+                explanation: "SSDs have no moving parts; they use flash memory.",
+                detailed: "SSDs are faster, quieter, and more durable than HDDs."
+            },
+            { // Q20
+                question: "Q20. A hard drive (HDD) and solid state drive (SSD) are non-volatile storage devices used for permanent storage of files, programs, and the operating system.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "TRUE. Both are non-volatile (retain data without power) and used for permanent storage.",
+                detailed: "First HDD (IBM 350, 1956) stored 3.75MB with 50 platters! Today 1TB microSD exists."
+            }
+        ];
+
+        // ensure exactly 20
+        if(questions.length !== 20) console.warn('need 20 questions');
+
+        // ---------- state ----------
+        let currentIndex = 0;                // 0-based
+        let userAnswers = new Array(20).fill(null); // store selected option letter (A,B,C,D) or null
+        let submitted = new Array(20).fill(false);  // whether answer was submitted
+        let quizActive = false;
+        let timerSeconds = 180;               // 3 minutes countdown (changed)
+        let timerInterval = null;
+        let studentName = "student One";
+
+        // DOM elements
+        const qCounter = document.getElementById('qCounter');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const correctFeedback = document.getElementById('correctFeedback');
+        const incorrectFeedback = document.getElementById('incorrectFeedback');
+        const submitBtn = document.getElementById('submitBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const quizArea = document.getElementById('quizArea');
+        const studentNameInput = document.getElementById('studentNameInput');
+        const startQuizBtn = document.getElementById('startQuizBtn');
+        const saveScoreBtn = document.getElementById('saveScoreBtn');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const leaderboardList = document.getElementById('leaderboardList');
+        const clearScoresBtn = document.getElementById('clearScoresBtn');
+        const streakDisplay = document.getElementById('streakDisplay');
+
+        // ---------- helper functions ----------
+        function stopTimer() {
+            if(timerInterval) clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function startTimer() {
+            stopTimer();
+            timerSeconds = 180; // reset to 3:00
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                if (timerSeconds > 0) {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                } else {
+                    // time's up – stop timer but do nothing else (can be extended later)
+                    stopTimer();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            timerDisplay.textContent = `⏱️ ${mins}:${secs.toString().padStart(2,'0')}`;
+        }
+
+        function calculateScore() {
+            let correctCount = 0;
+            for(let i=0; i<20; i++) {
+                if(submitted[i] && userAnswers[i] === questions[i].correct) correctCount++;
+            }
+            return correctCount;
+        }
+
+        function updateScoreUI() {
+            const score = calculateScore();
+            scoreDisplay.textContent = score;
+            streakDisplay.textContent = `🔥 ${score} correct`;
+        }
+
+        // render current question (index)
+        function renderQuestion() {
+            const q = questions[currentIndex];
+            questionText.textContent = q.question;
+            let htmlStr = '';
+            const letters = ['A','B','C','D'];
+            for(let i=0; i<q.options.length; i++) {
+                let optClass = 'option';
+                const optLetter = letters[i];
+                if(userAnswers[currentIndex] === optLetter) optClass += ' selected';
+                if(submitted[currentIndex]) {
+                    if(optLetter === q.correct) optClass += ' correct';
+                    else if(userAnswers[currentIndex] === optLetter && userAnswers[currentIndex] !== q.correct) optClass += ' incorrect';
+                }
+                htmlStr += `<div class="${optClass}" data-opt="${optLetter}">
+                    <div class="option-letter">${optLetter}</div>
+                    <div class="option-text">${q.options[i]}</div>
+                </div>`;
+            }
+            optionsContainer.innerHTML = htmlStr;
+
+            // attach click listeners
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.addEventListener('click', function() {
+                    if(submitted[currentIndex]) return; // cannot change after submit
+                    const letter = this.getAttribute('data-opt');
+                    // remove selected from others
+                    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    userAnswers[currentIndex] = letter;
+                    submitBtn.disabled = false; // enable submit
+                });
+            });
+
+            // set feedback visibility based on submitted
+            if(submitted[currentIndex]) {
+                if(userAnswers[currentIndex] === q.correct) showCorrectFeedback();
+                else showIncorrectFeedback();
+            } else {
+                correctFeedback.style.display = 'none';
+                incorrectFeedback.style.display = 'none';
+            }
+
+            // update buttons
+            submitBtn.disabled = submitted[currentIndex] || !userAnswers[currentIndex];
+            nextBtn.disabled = !submitted[currentIndex]; // can go next only if answered
+            prevBtn.disabled = (currentIndex === 0);
+
+            qCounter.textContent = `Question ${currentIndex+1} / 20`;
+        }
+
+        function showCorrectFeedback() {
+            const q = questions[currentIndex];
+            correctFeedback.innerHTML = `<div class="feedback-title">✅ Correct! ${q.explanation}</div>
+                <div style="margin-top:8px">${q.detailed || ''}</div>`;
+            correctFeedback.style.display = 'block';
+            incorrectFeedback.style.display = 'none';
+        }
+
+        function showIncorrectFeedback() {
+            const q = questions[currentIndex];
+            incorrectFeedback.innerHTML = `<div class="feedback-title">❌ Not quite. Correct: ${q.correct} - ${q.options[ q.correct.charCodeAt(0)-65 ]}</div>
+                <div style="margin-top:8px">${q.explanation} ${q.detailed ? '<br>'+q.detailed : ''}</div>`;
+            incorrectFeedback.style.display = 'block';
+            correctFeedback.style.display = 'none';
+        }
+
+        function submitCurrent() {
+            if(!userAnswers[currentIndex]) return;
+            submitted[currentIndex] = true;
+            const q = questions[currentIndex];
+            if(userAnswers[currentIndex] === q.correct) {
+                showCorrectFeedback();
+            } else {
+                showIncorrectFeedback();
+            }
+            // re-render to show correct/incorrect classes
+            renderQuestion();
+            updateScoreUI();
+            // enable next
+            nextBtn.disabled = false;
+            submitBtn.disabled = true;
+        }
+
+        // navigation
+        function goNext() {
+            if(currentIndex < 19) {
+                currentIndex++;
+                renderQuestion();
+            } else {
+                // finished last question
+                alert(`🏁 Quiz completed! Your score: ${calculateScore()}/20`);
+            }
+        }
+
+        function goPrev() {
+            if(currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        // ---------- leaderboard with localStorage ----------
+        function loadLeaderboard() {
+            const stored = localStorage.getItem('ict_leaderboard');
+            if(stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch { return []; }
+            }
+            return []; // array of {name, score, date}
+        }
+
+        function saveLeaderboard(data) {
+            localStorage.setItem('ict_leaderboard', JSON.stringify(data));
+        }
+
+        function displayLeaderboard() {
+            const data = loadLeaderboard();
+            if(data.length === 0) {
+                leaderboardList.textContent = '(no scores yet)';
+                return;
+            }
+            // sort descending score, then newest first
+            data.sort((a,b) => b.score - a.score || new Date(b.date) - new Date(a.date));
+            let html = '';
+            data.slice(0, 5).forEach(entry => {
+                const shortDate = entry.date ? new Date(entry.date).toLocaleDateString() : '';
+                html += `<div class="leaderboard-item"><span>${entry.name}</span> <strong>${entry.score}/20</strong> <small>${shortDate}</small></div>`;
+            });
+            leaderboardList.innerHTML = html;
+        }
+
+        function addCurrentScoreToLeaderboard() {
+            if(!quizActive) {
+                alert('Please start a quiz first.');
+                return;
+            }
+            const name = studentNameInput.value.trim() || 'Anonymous';
+            const score = calculateScore();
+            const entry = { name, score, date: new Date().toISOString() };
+            const data = loadLeaderboard();
+            data.push(entry);
+            saveLeaderboard(data);
+            displayLeaderboard();
+            alert(`Score ${score}/20 saved for ${name}`);
+        }
+
+        function resetQuiz() {
+            stopTimer();
+            // reset arrays
+            userAnswers = new Array(20).fill(null);
+            submitted = new Array(20).fill(false);
+            currentIndex = 0;
+            quizActive = true;
+            startTimer();               // starts 3-minute countdown
+            // enable quiz area
+            quizArea.style.display = 'block';
+            renderQuestion();
+            updateScoreUI();
+            saveScoreBtn.disabled = false;
+        }
+
+        // event listeners
+        startQuizBtn.addEventListener('click', () => {
+            studentName = studentNameInput.value.trim() || 'student';
+            resetQuiz();
+        });
+
+        submitBtn.addEventListener('click', submitCurrent);
+        nextBtn.addEventListener('click', goNext);
+        prevBtn.addEventListener('click', goPrev);
+
+        saveScoreBtn.addEventListener('click', addCurrentScoreToLeaderboard);
+
+        clearScoresBtn.addEventListener('click', () => {
+            if(confirm('Delete all saved scores?')) {
+                localStorage.removeItem('ict_leaderboard');
+                displayLeaderboard();
+            }
+        });
+
+        // initial leaderboard render
+        displayLeaderboard();
+
+        // timer placeholder (already 3:00 in HTML)
+        updateTimerDisplay();
+
+        // ---------- UPDATED BOTTOM NAVIGATION (Home & Profile link to external files) ----------
+        document.querySelectorAll('.nav-item').forEach((item, idx) => {
+            item.addEventListener('click', () => {
+                // update active class
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                item.classList.add('active');
+
+                if(idx === 0) {
+                    // Home -> Learningmainpage.html
+                    window.location.href = 'Learningmainpage.html';
+                } else if(idx === 1) {
+                    // Lessons (demo alert, no navigation)
+                    alert('Lessons (demo)');
+                } else if(idx === 2) {
+                    // ICT Quiz (current page) - do nothing, stay here
+                    // You could also scroll to top or refresh if needed, but it's fine.
+                } else if(idx === 3) {
+                    // Profile -> Profile view.html (note the space in filename)
+                    window.location.href = 'Profile view.html';
+                }
+            });
+        });
+    })();
+</script>
+</body>
+</html>
