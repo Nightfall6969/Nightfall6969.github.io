@@ -102,7 +102,6 @@
             font-size: 13px;
         }
         
-        /* NEW: Select dropdown styling */
         .form-select {
             width: 100%;
             padding: 12px;
@@ -238,7 +237,6 @@
             }
         }
         
-        /* Error message styles */
         .error-message {
             color: #e74c3c;
             font-size: 12px;
@@ -288,7 +286,6 @@
             animation: shake 0.3s ease-in-out;
         }
         
-        /* Retry badge */
         .retry-badge {
             background: linear-gradient(135deg, #f39c12, #e67e22);
             color: white;
@@ -309,20 +306,17 @@
             100% { opacity: 0.9; }
         }
         
-        /* Success animation */
         .submit-btn.success {
             background: linear-gradient(135deg, #27ae60, #229954);
             pointer-events: none;
         }
         
-        /* Required field indicator */
         .required-star {
             color: #e74c3c;
             margin-left: 4px;
             font-size: 14px;
         }
         
-        /* Counter badge */
         .counter-badge {
             background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
@@ -333,21 +327,6 @@
             align-items: center;
             gap: 5px;
             margin-bottom: 10px;
-        }
-        
-        /* Email attempt counter */
-        .attempt-counter {
-            font-size: 11px;
-            color: #7f8c8d;
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .attempt-counter.warning {
-            color: #e74c3c;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -379,7 +358,7 @@
                 <span id="counterText">3 fields required</span>
             </div>
             
-            <!-- EMAIL FIELD - With enhanced protective barrier -->
+            <!-- EMAIL FIELD - No attempt tracking -->
             <div class="form-group">
                 <label class="form-label">
                     <span class="form-icon">✉️</span>
@@ -391,10 +370,7 @@
                     <span class="error-icon">⚠️</span>
                     <span class="error-text"></span>
                 </div>
-                <div class="attempt-counter" id="emailAttemptCounter">
-                    <span>🔄</span>
-                    <span id="attemptText">Please enter a valid Gmail address</span>
-                </div>
+                <!-- Attempt counter removed -->
             </div>
             
             <!-- FULL NAME FIELD -->
@@ -411,7 +387,7 @@
                 </div>
             </div>
             
-            <!-- GRADE LEVEL FIELD - REPLACED WITH ICT 12-N2/N3 SELECTION -->
+            <!-- GRADE LEVEL FIELD - ICT 12-N2/N3 SELECTION -->
             <div class="form-group">
                 <label class="form-label">
                     <span class="form-icon">🎓</span>
@@ -442,7 +418,7 @@
     </div>
     
     <script>
-        // === ORIGINAL FOCUS EFFECTS (UNCHANGED) ===
+        // Original focus effects (unchanged)
         document.querySelectorAll('.form-input, .form-select').forEach(input => {
             input.addEventListener('focus', function() {
                 if (this.parentElement.querySelector('.form-icon')) {
@@ -466,7 +442,7 @@
             }, 300);
         }, 500);
         
-        // === REVISED VALIDATION RULES ===
+        // Validation rules (unchanged, except removal of attempt‑related data)
         const validationRules = {
             email: {
                 pattern: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
@@ -518,15 +494,8 @@
         const progressText = document.querySelector('.progress-text');
         const counterText = document.getElementById('counterText');
         const counterBadge = document.getElementById('counterBadge');
-        const attemptCounter = document.getElementById('emailAttemptCounter');
-        const attemptText = document.getElementById('attemptText');
         
-        // Track email attempts
-        let emailAttempts = 0;
-        const MAX_EMAIL_ATTEMPTS = 5;
-        let emailBlocked = false;
-        
-        // Error display functions
+        // Error display functions (unchanged)
         function showError(input, message) {
             const errorDiv = document.getElementById(`${input.id}Error`);
             if (!errorDiv) return;
@@ -546,7 +515,7 @@
             input.classList.remove('error');
         }
         
-        // EMAIL VALIDATION - STRICT GMAIL ONLY
+        // EMAIL VALIDATION - STRICT GMAIL ONLY (no attempt tracking)
         function validateEmail(input) {
             hideError(input);
             const value = input.value.trim();
@@ -554,45 +523,23 @@
             // Check if empty
             if (value === '') {
                 showError(input, "Gmail address is required");
-                attemptText.textContent = "⚠️ Please enter your Gmail address";
-                attemptCounter.classList.add('warning');
-                return false;
-            }
-            
-            // Check if blocked after too many attempts
-            if (emailBlocked) {
-                showError(input, "Too many invalid attempts. Please refresh the page.");
-                input.disabled = true;
                 return false;
             }
             
             // Check if it's a Gmail address
             if (!value.toLowerCase().endsWith('@gmail.com')) {
-                emailAttempts++;
-                attemptText.textContent = `❌ Must be @gmail.com (Attempt ${emailAttempts}/${MAX_EMAIL_ATTEMPTS})`;
-                attemptCounter.classList.add('warning');
-                
-                if (emailAttempts >= MAX_EMAIL_ATTEMPTS) {
-                    emailBlocked = true;
-                    showError(input, "⚠️ ACCOUNT BLOCKED: Too many invalid Gmail attempts. Please refresh.");
-                    input.disabled = true;
-                    return false;
-                }
-                
-                showError(input, `❌ Only @gmail.com addresses allowed (${MAX_EMAIL_ATTEMPTS - emailAttempts} attempts left)`);
+                showError(input, "❌ Only @gmail.com addresses allowed");
                 return false;
             }
             
             // Check minimum length
             if (value.length < 11) {
-                emailAttempts++;
                 showError(input, "Gmail address is too short");
                 return false;
             }
             
             // Check format
             if (!validationRules.email.pattern.test(value)) {
-                emailAttempts++;
                 showError(input, "Invalid Gmail format (e.g., username@gmail.com)");
                 return false;
             }
@@ -600,7 +547,6 @@
             // Anti-misinformation check
             for (let item of validationRules.email.antiMisinformation) {
                 if (value.toLowerCase() === item.value.toLowerCase()) {
-                    emailAttempts++;
                     showError(input, item.message);
                     return false;
                 }
@@ -609,20 +555,14 @@
             // Check if username part is too generic
             const username = value.split('@')[0];
             if (username.length < 3) {
-                emailAttempts++;
                 showError(input, "Gmail username must be at least 3 characters");
                 return false;
             }
             
-            // Success - reset attempt counter
-            emailAttempts = 0;
-            attemptText.textContent = "✅ Valid Gmail address";
-            attemptCounter.classList.remove('warning');
-            attemptCounter.style.color = '#27ae60';
             return true;
         }
         
-        // GRADE VALIDATION - SELECT ONLY
+        // GRADE VALIDATION - unchanged
         function validateGrade(input) {
             hideError(input);
             const value = input.value;
@@ -640,7 +580,7 @@
             return true;
         }
         
-        // NAME VALIDATION
+        // NAME VALIDATION - unchanged
         function validateName(input) {
             hideError(input);
             const value = input.value.trim();
@@ -746,7 +686,7 @@
             retryBadge.style.display = 'none';
         });
         
-        // Submit button handler - STRICT PROTECTION
+        // Submit button handler - no attempt tracking
         submitBtn.onclick = function(event) {
             const isEmailValid = validateEmail(emailInput);
             const isNameValid = validateName(nameInput);
@@ -774,7 +714,7 @@
                 submitBtn.classList.add('shake');
                 setTimeout(() => submitBtn.classList.remove('shake'), 300);
                 
-                return; // 🛑 BLOCK NAVIGATION
+                return; // Block navigation
             }
             
             // ✅ ALL FIELDS VALID - PROCEED
@@ -803,11 +743,8 @@
             hideError(nameInput);
             hideError(gradeSelect);
             
-            // Set default state for email counter
-            attemptText.textContent = "📧 Enter your Gmail address";
-            
             console.log('🛡️ ICT GRADE SELECTION ACTIVATED - N2/N3 Only');
-            console.log('📧 STRICT GMAIL PROTECTION ENABLED');
+            console.log('📧 STRICT GMAIL VALIDATION ENABLED (no attempt limits)');
         }
         
         initialize();
