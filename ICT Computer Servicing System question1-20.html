@@ -106,7 +106,21 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-        /* keyboard animation div removed */
+
+        /* --- Video Section Styling --- */
+        .video-container {
+            margin: 15px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        video {
+            width: 100%;
+            display: block;
+        }
+        /* ---------------------------- */
+
         .question-container {
             margin-bottom: 20px;
         }
@@ -219,12 +233,10 @@
         .nav-item.active .nav-label { color: #3498db; font-weight: bold; }
 
         .hidden { display: none; }
-        .result-highlight { font-size: 24px; font-weight: bold; color: #27ae60; }
     </style>
 </head>
 <body>
 <div class="container" id="app">
-    <!-- header -->
     <div class="quiz-header">
         <div class="quiz-progress">
             <span id="qCounter">Question 1 / 20</span>
@@ -234,16 +246,18 @@
         <div class="quiz-timer" id="timerDisplay">⏱️ 3:00</div>
     </div>
 
-    <!-- student name & start section (always visible) -->
     <div class="student-info" id="studentPanel">
-        <input type="text" id="studentNameInput" class="student-input" placeholder="Enter your name (e.g., Write Name Here)" value="Write Name Here">
+        <input type="text" id="studentNameInput" class="student-input" placeholder="Enter your name (e.g., Write Name & Section here)" value="Write Name Here">
         <button id="startQuizBtn" class="start-btn">▶ Start / Reset quiz</button>
         <button id="saveScoreBtn" class="save-score-btn" disabled>💾 Save my score</button>
     </div>
 
-    <!-- keyboard animation (removed as requested) -->
+    <div class="video-container" id="introVideoContainer">
+        <video id="introVideo" controls>
+            <source src="Video Lesson.mp4" type="video/mp4">
+        </video>
+    </div>
 
-    <!-- main quiz area (visible only after start) -->
     <div id="quizArea" style="display: none;">
         <div class="question-container">
             <div class="question-text" id="questionText">Loading...</div>
@@ -259,7 +273,6 @@
         </div>
     </div>
 
-    <!-- score & leaderboard area -->
     <div id="scoreArea" style="margin-top: 25px;">
         <div class="scoreboard" id="liveScoreBoard">
             <strong>📊 current score:</strong> <span id="scoreDisplay">0</span> / 20
@@ -271,7 +284,6 @@
         </div>
     </div>
 
-    <!-- bottom nav (static) -->
     <div class="nav-bar">
         <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
         <div class="nav-item"><div class="nav-icon">📚</div><div class="nav-label">Lessons</div></div>
@@ -282,163 +294,36 @@
 
 <script>
     (function() {
-        // ---------- 20 CORRECTED QUESTIONS (ICT fundamentals) ----------
         const questions = [
-            { // Q1
-                question: "Q1. Which of the following is an input device?",
-                options: ["Keyboard", "Monitor", "Printer", "Speaker"],
-                correct: "A",
-                explanation: "Keyboard is an input device. It allows users to enter data and commands by pressing keys.",
-                detailed: "✅ Keyboard: Each key press generates a unique scan code. The QWERTY layout was designed in 1870s to prevent typewriter jams!"
-            },
-            { // Q2
-                question: "Q2. Which of the following is an output device?",
-                options: ["Mouse", "Monitor", "Keyboard", "Scanner"],
-                correct: "B",
-                explanation: "Monitor is an output device. It displays visual information from the computer.",
-                detailed: "Monitor (screen) – primary visual output. Other options: Mouse (input), Keyboard (input), Scanner (input)."
-            },
-            { // Q3
-                question: "Q3. What is the CPU also known as?",
-                options: ["Brain of the computer", "Memory of the computer", "Storage of the computer", "Input device"],
-                correct: "A",
-                explanation: "CPU is the brain of the computer, executing instructions.",
-                detailed: "CPU performs arithmetic, logic, control, and I/O operations."
-            },
-            { // Q4
-                question: "Q4. Which type of memory is temporary while the computer is running?",
-                options: ["RAM", "ROM", "Hard Drive", "USB Flash Drive"],
-                correct: "A",
-                explanation: "RAM = Random Access Memory. It is volatile, used for temporary data while computer is on.",
-                detailed: "RAM loses data when power off. Contrast with ROM (Read Only Memory)."
-            },
-            { // Q5
-                question: "Q5. Which type of memory is permanent and stores essential instructions?",
-                options: ["Monitor", "RAM", "Keyboard", "ROM"],
-                correct: "D",
-                explanation: "ROM (Read-Only Memory) is non-volatile and stores firmware.",
-                detailed: "BIOS/UEFI is stored in ROM."
-            },
-            { // Q6
-                question: "Q6. Which part of the computer connects all components?",
-                options: ["CPU", "Hard Drive", "Motherboard", "RAM"],
-                correct: "C",
-                explanation: "Motherboard connects CPU, RAM, storage, and peripherals.",
-                detailed: "It provides data and power connections."
-            },
-            { // Q7
-                question: "Q7. Which device is used for permanent storage of files?",
-                options: ["USB Flash Drive", "RAM", "Hard Drive", "Monitor"],
-                correct: "C",
-                explanation: "Hard Disk Drive (HDD) is the primary permanent storage inside most computers.",
-                detailed: "SSDs also serve same purpose but are faster."
-            },
-            { // Q8
-                question: "Q8. Which device is considered portable storage?",
-                options: ["Hard Drive", "USB Flash Drive", "Motherboard", "CPU"],
-                correct: "B",
-                explanation: "USB flash drives are portable storage.",
-                detailed: "They use NAND flash memory."
-            },
-            { // Q9
-                question: "Q9. Which of the following is an input device?",
-                options: ["Scanner", "Printer", "Speaker", "Monitor"],
-                correct: "A",
-                explanation: "Scanner captures images/text and sends to computer → input.",
-                detailed: "Printer, plotter, projector are output devices."
-            },
-            { // Q10
-                question: "Q10. A keyboard is an input device.",
-                options: ["TRUE", "FALSE"],
-                correct: "A",
-                explanation: "Keyboard is an input device; it sends data to computer.",
-                detailed: "Keyboards can be mechanical, membrane, or virtual."
-            },
-            { // Q11
-                question: "Q11. A printer is an output device.",
-                options: ["TRUE", "FALSE"],
-                correct: "A",
-                explanation: "Printer produces hard copy output.",
-                detailed: "Printers can be inkjet, laser, or dot matrix."
-            },
-            { // Q12
-                question: "Q12. The CPU is called the brain of the computer.",
-                options: ["TRUE", "FALSE"],
-                correct: "A",
-                explanation: "CPU is indeed called the brain because it controls all functions.",
-                detailed: "It fetches, decodes, and executes instructions."
-            },
-            { // Q13
-                question: "Q13. RAM stores data permanently.",
-                options: ["TRUE", "FALSE"],
-                correct: "B",
-                explanation: "RAM is volatile; it loses data when power is off.",
-                detailed: "Permanent storage is HDD/SSD."
-            },
-            { // Q14
-                question: "Q14. ROM stores essential instructions permanently.",
-                options: ["TRUE", "FALSE"],
-                correct: "A",
-                explanation: "ROM retains data without power; it stores boot instructions.",
-                detailed: "PROM, EPROM variants exist."
-            },
-            { // Q15
-                question: "Q15. The motherboard connects all computer components.",
-                options: ["TRUE", "FALSE"],
-                correct: "A",
-                explanation: "Motherboard is the main circuit board connecting all parts.",
-                detailed: "It houses CPU, RAM, and expansion slots."
-            },
-            { // Q16
-                question: "Q16. A USB flash drive is used for portable storage.",
-                options: ["TRUE", "FALSE"],
-                correct: "A",
-                explanation: "USB flash drives are portable storage.",
-                detailed: "They connect via USB and use flash memory."
-            },
-            { // Q17
-                question: "Q17. A scanner is an input device.",
-                options: ["TRUE", "FALSE"],
-                correct: "A",
-                explanation: "Scanner converts physical documents to digital images.",
-                detailed: "It is an input device."
-            },
-            { // Q18
-                question: "Q18. A monitor is an output device.",
-                options: ["TRUE", "FALSE"],
-                correct: "A",
-                explanation: "Monitor displays visual output.",
-                detailed: "Types include LCD, LED, OLED."
-            },
-            { // Q19
-                question: "Q19. SSD (Solid State Drive) contains moving mechanical parts.",
-                options: ["TRUE", "FALSE"],
-                correct: "B",
-                explanation: "SSDs have no moving parts; they use flash memory.",
-                detailed: "SSDs are faster, quieter, and more durable than HDDs."
-            },
-            { // Q20
-                question: "Q20. A hard drive (HDD) and solid state drive (SSD) are non-volatile storage devices used for permanent storage of files, programs, and the operating system.",
-                options: ["TRUE", "FALSE"],
-                correct: "A",
-                explanation: "TRUE. Both are non-volatile (retain data without power) and used for permanent storage.",
-                detailed: "First HDD (IBM 350, 1956) stored 3.75MB with 50 platters! Today 1TB microSD exists."
-            }
+            { question: "Q1. Which of the following is an input device?", options: ["Keyboard", "Monitor", "Printer", "Speaker"], correct: "A", explanation: "Keyboard is an input device.", detailed: "✅ Keyboard: Each key press generates a unique scan code." },
+            { question: "Q2. Which of the following is an output device?", options: ["Mouse", "Monitor", "Keyboard", "Scanner"], correct: "B", explanation: "Monitor is an output device.", detailed: "Monitor (screen) – primary visual output." },
+            { question: "Q3. What is the CPU also known as?", options: ["Brain of the computer", "Memory of the computer", "Storage of the computer", "Input device"], correct: "A", explanation: "CPU is the brain of the computer.", detailed: "CPU performs arithmetic, logic, and control operations." },
+            { question: "Q4. Which type of memory is temporary while the computer is running?", options: ["RAM", "ROM", "Hard Drive", "USB Flash Drive"], correct: "A", explanation: "RAM is volatile/temporary.", detailed: "RAM loses data when power is off." },
+            { question: "Q5. Which type of memory is permanent and stores essential instructions?", options: ["Monitor", "RAM", "Keyboard", "ROM"], correct: "D", explanation: "ROM is non-volatile.", detailed: "BIOS/UEFI is stored in ROM." },
+            { question: "Q6. Which part of the computer connects all components?", options: ["CPU", "Hard Drive", "Motherboard", "RAM"], correct: "C", explanation: "Motherboard connects everything.", detailed: "It provides data and power connections." },
+            { question: "Q7. Which device is used for permanent storage of files?", options: ["USB Flash Drive", "RAM", "Hard Drive", "Monitor"], correct: "C", explanation: "Hard Disk Drive is primary permanent storage.", detailed: "SSDs also serve the same purpose." },
+            { question: "Q8. Which device is considered portable storage?", options: ["Hard Drive", "USB Flash Drive", "Motherboard", "CPU"], correct: "B", explanation: "USB flash drives are portable.", detailed: "They use NAND flash memory." },
+            { question: "Q9. Which of the following is an input device?", options: ["Scanner", "Printer", "Speaker", "Monitor"], correct: "A", explanation: "Scanner sends data to computer.", detailed: "It is an input device." },
+            { question: "Q10. A keyboard is an input device.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
+            { question: "Q11. A printer is an output device.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
+            { question: "Q12. The CPU is called the brain of the computer.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
+            { question: "Q13. RAM stores data permanently.", options: ["TRUE", "FALSE"], correct: "B", explanation: "RAM is volatile.", detailed: "" },
+            { question: "Q14. ROM stores essential instructions permanently.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
+            { question: "Q15. The motherboard connects all computer components.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
+            { question: "Q16. A USB flash drive is used for portable storage.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
+            { question: "Q17. A scanner is an input device.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
+            { question: "Q18. A monitor is an output device.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
+            { question: "Q19. SSD contains moving mechanical parts.", options: ["TRUE", "FALSE"], correct: "B", explanation: "SSDs have no moving parts.", detailed: "" },
+            { question: "Q20. HDD and SSD are non-volatile storage devices.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" }
         ];
 
-        // ensure exactly 20
-        if(questions.length !== 20) console.warn('need 20 questions');
-
-        // ---------- state ----------
-        let currentIndex = 0;                // 0-based
-        let userAnswers = new Array(20).fill(null); // store selected option letter (A,B,C,D) or null
-        let submitted = new Array(20).fill(false);  // whether answer was submitted
+        let currentIndex = 0;
+        let userAnswers = new Array(20).fill(null);
+        let submitted = new Array(20).fill(false);
         let quizActive = false;
-        let timerSeconds = 180;               // 3 minutes countdown (changed)
+        let timerSeconds = 180;
         let timerInterval = null;
-        let studentName = "student One";
 
-        // DOM elements
         const qCounter = document.getElementById('qCounter');
         const timerDisplay = document.getElementById('timerDisplay');
         const questionText = document.getElementById('questionText');
@@ -449,32 +334,21 @@
         const nextBtn = document.getElementById('nextBtn');
         const prevBtn = document.getElementById('prevBtn');
         const quizArea = document.getElementById('quizArea');
-        const studentNameInput = document.getElementById('studentNameInput');
         const startQuizBtn = document.getElementById('startQuizBtn');
         const saveScoreBtn = document.getElementById('saveScoreBtn');
         const scoreDisplay = document.getElementById('scoreDisplay');
-        const leaderboardList = document.getElementById('leaderboardList');
-        const clearScoresBtn = document.getElementById('clearScoresBtn');
-        const streakDisplay = document.getElementById('streakDisplay');
+        const introVideo = document.getElementById('introVideo');
+        const introVideoContainer = document.getElementById('introVideoContainer');
 
-        // ---------- helper functions ----------
-        function stopTimer() {
-            if(timerInterval) clearInterval(timerInterval);
-            timerInterval = null;
-        }
-
+        function stopTimer() { if(timerInterval) clearInterval(timerInterval); timerInterval = null; }
+        
         function startTimer() {
             stopTimer();
-            timerSeconds = 180; // reset to 3:00
+            timerSeconds = 180;
             updateTimerDisplay();
             timerInterval = setInterval(() => {
-                if (timerSeconds > 0) {
-                    timerSeconds--;
-                    updateTimerDisplay();
-                } else {
-                    // time's up – stop timer but do nothing else (can be extended later)
-                    stopTimer();
-                }
+                if (timerSeconds > 0) { timerSeconds--; updateTimerDisplay(); }
+                else { stopTimer(); alert("Time's up!"); }
             }, 1000);
         }
 
@@ -485,20 +359,17 @@
         }
 
         function calculateScore() {
-            let correctCount = 0;
-            for(let i=0; i<20; i++) {
-                if(submitted[i] && userAnswers[i] === questions[i].correct) correctCount++;
-            }
-            return correctCount;
+            let count = 0;
+            for(let i=0; i<20; i++) { if(submitted[i] && userAnswers[i] === questions[i].correct) count++; }
+            return count;
         }
 
         function updateScoreUI() {
             const score = calculateScore();
             scoreDisplay.textContent = score;
-            streakDisplay.textContent = `🔥 ${score} correct`;
+            document.getElementById('streakDisplay').textContent = `🔥 ${score} correct`;
         }
 
-        // render current question (index)
         function renderQuestion() {
             const q = questions[currentIndex];
             questionText.textContent = q.question;
@@ -510,7 +381,7 @@
                 if(userAnswers[currentIndex] === optLetter) optClass += ' selected';
                 if(submitted[currentIndex]) {
                     if(optLetter === q.correct) optClass += ' correct';
-                    else if(userAnswers[currentIndex] === optLetter && userAnswers[currentIndex] !== q.correct) optClass += ' incorrect';
+                    else if(userAnswers[currentIndex] === optLetter) optClass += ' incorrect';
                 }
                 htmlStr += `<div class="${optClass}" data-opt="${optLetter}">
                     <div class="option-letter">${optLetter}</div>
@@ -519,195 +390,105 @@
             }
             optionsContainer.innerHTML = htmlStr;
 
-            // attach click listeners
             document.querySelectorAll('.option').forEach(opt => {
                 opt.addEventListener('click', function() {
-                    if(submitted[currentIndex]) return; // cannot change after submit
-                    const letter = this.getAttribute('data-opt');
-                    // remove selected from others
-                    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-                    this.classList.add('selected');
-                    userAnswers[currentIndex] = letter;
-                    submitBtn.disabled = false; // enable submit
+                    if(submitted[currentIndex]) return;
+                    userAnswers[currentIndex] = this.getAttribute('data-opt');
+                    renderQuestion();
+                    submitBtn.disabled = false;
                 });
             });
 
-            // set feedback visibility based on submitted
             if(submitted[currentIndex]) {
-                if(userAnswers[currentIndex] === q.correct) showCorrectFeedback();
-                else showIncorrectFeedback();
+                const isCorrect = userAnswers[currentIndex] === q.correct;
+                correctFeedback.style.display = isCorrect ? 'block' : 'none';
+                incorrectFeedback.style.display = isCorrect ? 'none' : 'block';
+                if(isCorrect) correctFeedback.innerHTML = `<div class="feedback-title">✅ Correct!</div>${q.explanation}`;
+                else incorrectFeedback.innerHTML = `<div class="feedback-title">❌ Incorrect</div>Correct: ${q.correct}`;
             } else {
                 correctFeedback.style.display = 'none';
                 incorrectFeedback.style.display = 'none';
             }
 
-            // update buttons
             submitBtn.disabled = submitted[currentIndex] || !userAnswers[currentIndex];
-            nextBtn.disabled = !submitted[currentIndex]; // can go next only if answered
+            nextBtn.disabled = !submitted[currentIndex];
             prevBtn.disabled = (currentIndex === 0);
-
             qCounter.textContent = `Question ${currentIndex+1} / 20`;
         }
 
-        function showCorrectFeedback() {
-            const q = questions[currentIndex];
-            correctFeedback.innerHTML = `<div class="feedback-title">✅ Correct! ${q.explanation}</div>
-                <div style="margin-top:8px">${q.detailed || ''}</div>`;
-            correctFeedback.style.display = 'block';
-            incorrectFeedback.style.display = 'none';
-        }
-
-        function showIncorrectFeedback() {
-            const q = questions[currentIndex];
-            incorrectFeedback.innerHTML = `<div class="feedback-title">❌ Not quite. Correct: ${q.correct} - ${q.options[ q.correct.charCodeAt(0)-65 ]}</div>
-                <div style="margin-top:8px">${q.explanation} ${q.detailed ? '<br>'+q.detailed : ''}</div>`;
-            incorrectFeedback.style.display = 'block';
-            correctFeedback.style.display = 'none';
-        }
-
-        function submitCurrent() {
-            if(!userAnswers[currentIndex]) return;
-            submitted[currentIndex] = true;
-            const q = questions[currentIndex];
-            if(userAnswers[currentIndex] === q.correct) {
-                showCorrectFeedback();
+        // --- UPDATED LOGIC HERE ---
+        function handleQuizButton() {
+            if (!quizActive) {
+                // STARTING FOR THE FIRST TIME
+                startQuiz();
             } else {
-                showIncorrectFeedback();
-            }
-            // re-render to show correct/incorrect classes
-            renderQuestion();
-            updateScoreUI();
-            // enable next
-            nextBtn.disabled = false;
-            submitBtn.disabled = true;
-        }
-
-        // navigation
-        function goNext() {
-            if(currentIndex < 19) {
-                currentIndex++;
-                renderQuestion();
-            } else {
-                // finished last question
-                alert(`🏁 Quiz completed! Your score: ${calculateScore()}/20`);
+                // RESETTING
+                resetToVideo();
             }
         }
 
-        function goPrev() {
-            if(currentIndex > 0) {
-                currentIndex--;
-                renderQuestion();
-            }
-        }
-
-        // ---------- leaderboard with localStorage ----------
-        function loadLeaderboard() {
-            const stored = localStorage.getItem('ict_leaderboard');
-            if(stored) {
-                try {
-                    return JSON.parse(stored);
-                } catch { return []; }
-            }
-            return []; // array of {name, score, date}
-        }
-
-        function saveLeaderboard(data) {
-            localStorage.setItem('ict_leaderboard', JSON.stringify(data));
-        }
-
-        function displayLeaderboard() {
-            const data = loadLeaderboard();
-            if(data.length === 0) {
-                leaderboardList.textContent = '(no scores yet)';
-                return;
-            }
-            // sort descending score, then newest first
-            data.sort((a,b) => b.score - a.score || new Date(b.date) - new Date(a.date));
-            let html = '';
-            data.slice(0, 5).forEach(entry => {
-                const shortDate = entry.date ? new Date(entry.date).toLocaleDateString() : '';
-                html += `<div class="leaderboard-item"><span>${entry.name}</span> <strong>${entry.score}/20</strong> <small>${shortDate}</small></div>`;
-            });
-            leaderboardList.innerHTML = html;
-        }
-
-        function addCurrentScoreToLeaderboard() {
-            if(!quizActive) {
-                alert('Please start a quiz first.');
-                return;
-            }
-            const name = studentNameInput.value.trim() || 'Anonymous';
-            const score = calculateScore();
-            const entry = { name, score, date: new Date().toISOString() };
-            const data = loadLeaderboard();
-            data.push(entry);
-            saveLeaderboard(data);
-            displayLeaderboard();
-            alert(`Score ${score}/20 saved for ${name}`);
-        }
-
-        function resetQuiz() {
-            stopTimer();
-            // reset arrays
+        function startQuiz() {
+            introVideo.pause();
+            introVideoContainer.style.display = 'none';
+            
             userAnswers = new Array(20).fill(null);
             submitted = new Array(20).fill(false);
             currentIndex = 0;
             quizActive = true;
-            startTimer();               // starts 3-minute countdown
-            // enable quiz area
+            
+            startTimer();
             quizArea.style.display = 'block';
             renderQuestion();
             updateScoreUI();
             saveScoreBtn.disabled = false;
+            startQuizBtn.textContent = "🔄 Reset & Watch Video";
         }
 
-        // event listeners
-        startQuizBtn.addEventListener('click', () => {
-            studentName = studentNameInput.value.trim() || 'student';
-            resetQuiz();
+        function resetToVideo() {
+            stopTimer();
+            quizActive = false;
+            quizArea.style.display = 'none';
+            
+            // Bring video back
+            introVideoContainer.style.display = 'block';
+            introVideo.currentTime = 0; // Rewind video
+            
+            startQuizBtn.textContent = "▶ Start Quiz";
+            updateScoreUI();
+        }
+
+        startQuizBtn.addEventListener('click', handleQuizButton);
+        // -------------------------
+
+        submitBtn.addEventListener('click', () => {
+            submitted[currentIndex] = true;
+            renderQuestion();
+            updateScoreUI();
         });
 
-        submitBtn.addEventListener('click', submitCurrent);
-        nextBtn.addEventListener('click', goNext);
-        prevBtn.addEventListener('click', goPrev);
-
-        saveScoreBtn.addEventListener('click', addCurrentScoreToLeaderboard);
-
-        clearScoresBtn.addEventListener('click', () => {
-            if(confirm('Delete all saved scores?')) {
-                localStorage.removeItem('ict_leaderboard');
-                displayLeaderboard();
+        nextBtn.addEventListener('click', () => { 
+            if(currentIndex < 19) { 
+                currentIndex++; 
+                renderQuestion(); 
+            } else { 
+                alert('Quiz Finished!'); 
             }
         });
 
-        // initial leaderboard render
-        displayLeaderboard();
+        prevBtn.addEventListener('click', () => { 
+            if(currentIndex > 0) { 
+                currentIndex--; 
+                renderQuestion(); 
+            }
+        });
 
-        // timer placeholder (already 3:00 in HTML)
-        updateTimerDisplay();
-
-        // ---------- UPDATED BOTTOM NAVIGATION (Home & Profile link to external files) ----------
         document.querySelectorAll('.nav-item').forEach((item, idx) => {
             item.addEventListener('click', () => {
-                // update active class
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                item.classList.add('active');
-
-                if(idx === 0) {
-                    // Home -> Learningmainpage.html
-                    window.location.href = 'Learningmainpage.html';
-                } else if(idx === 1) {
-                    // Lessons (demo alert, no navigation)
-                    alert('Lessons (demo)');
-                } else if(idx === 2) {
-                    // ICT Quiz (current page) - do nothing, stay here
-                    // You could also scroll to top or refresh if needed, but it's fine.
-                } else if(idx === 3) {
-                    // Profile -> Profile view.html (note the space in filename)
-                    window.location.href = 'Profile view.html';
-                }
+                if(idx === 0) window.location.href = 'Learningmainpage.html';
+                else if(idx === 3) window.location.href = 'Profile view.html';
             });
         });
+
     })();
 </script>
 </body>
