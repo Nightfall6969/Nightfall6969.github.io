@@ -241,7 +241,7 @@
         <div class="quiz-progress">
             <span id="qCounter">Question 1 / 20</span>
             <span class="subject-badge">ICT Servicing</span>
-            <span class="streak-counter" id="streakDisplay">🔥 0 streak</span>
+            <span class="streak-counter" id="streakDisplay">🔥 0 correct</span>
         </div>
         <div class="quiz-timer" id="timerDisplay">⏱️ 3:00</div>
     </div>
@@ -255,6 +255,7 @@
     <div class="video-container" id="introVideoContainer">
         <video id="introVideo" controls>
             <source src="Video Lesson.mp4" type="video/mp4">
+            Your browser does not support the video tag.
         </video>
     </div>
 
@@ -294,6 +295,7 @@
 
 <script>
     (function() {
+        // ========== 20 QUESTIONS ==========
         const questions = [
             { question: "Q1. Which of the following is an input device?", options: ["Keyboard", "Monitor", "Printer", "Speaker"], correct: "A", explanation: "Keyboard is an input device.", detailed: "✅ Keyboard: Each key press generates a unique scan code." },
             { question: "Q2. Which of the following is an output device?", options: ["Mouse", "Monitor", "Keyboard", "Scanner"], correct: "B", explanation: "Monitor is an output device.", detailed: "Monitor (screen) – primary visual output." },
@@ -317,6 +319,7 @@
             { question: "Q20. HDD and SSD are non-volatile storage devices.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" }
         ];
 
+        // ========== STATE ==========
         let currentIndex = 0;
         let userAnswers = new Array(20).fill(null);
         let submitted = new Array(20).fill(false);
@@ -324,6 +327,7 @@
         let timerSeconds = 180;
         let timerInterval = null;
 
+        // ========== DOM ELEMENTS ==========
         const qCounter = document.getElementById('qCounter');
         const timerDisplay = document.getElementById('timerDisplay');
         const questionText = document.getElementById('questionText');
@@ -339,16 +343,70 @@
         const scoreDisplay = document.getElementById('scoreDisplay');
         const introVideo = document.getElementById('introVideo');
         const introVideoContainer = document.getElementById('introVideoContainer');
+        const studentNameInput = document.getElementById('studentNameInput');
+        const leaderboardList = document.getElementById('leaderboardList');
+        const clearScoresBtn = document.getElementById('clearScoresBtn');
+        const streakDisplay = document.getElementById('streakDisplay');
 
-        function stopTimer() { if(timerInterval) clearInterval(timerInterval); timerInterval = null; }
+        // ========== LOCAL STORAGE FUNCTIONS ==========
+        function loadScores() {
+            const stored = localStorage.getItem('ict_scores');
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function saveScoreToLocal(name, score) {
+            const scores = loadScores();
+            const date = new Date().toLocaleDateString();
+            scores.push({ name, score, date });
+            localStorage.setItem('ict_scores', JSON.stringify(scores));
+            displayLeaderboard();
+        }
+
+        function displayLeaderboard() {
+            const scores = loadScores();
+            if (scores.length === 0) {
+                leaderboardList.innerHTML = '(no scores yet)';
+                return;
+            }
+            // Sort by score descending
+            scores.sort((a, b) => b.score - a.score);
+            let html = '';
+            scores.forEach(entry => {
+                html += `<div class="leaderboard-item">
+                    <span>${entry.name}</span>
+                    <strong>${entry.score}/20</strong>
+                    <small>${entry.date}</small>
+                </div>`;
+            });
+            leaderboardList.innerHTML = html;
+        }
+
+        function clearAllScores() {
+            if (confirm('Delete all recorded scores?')) {
+                localStorage.removeItem('ict_scores');
+                displayLeaderboard();
+            }
+        }
+
+        // ========== TIMER FUNCTIONS ==========
+        function stopTimer() { 
+            if(timerInterval) clearInterval(timerInterval); 
+            timerInterval = null; 
+        }
         
         function startTimer() {
             stopTimer();
             timerSeconds = 180;
             updateTimerDisplay();
             timerInterval = setInterval(() => {
-                if (timerSeconds > 0) { timerSeconds--; updateTimerDisplay(); }
-                else { stopTimer(); alert("Time's up!"); }
+                if (timerSeconds > 0) { 
+                    timerSeconds--; 
+                    updateTimerDisplay(); 
+                }
+                else { 
+                    stopTimer(); 
+                    alert("Time's up!"); 
+                }
             }, 1000);
         }
 
@@ -358,18 +416,22 @@
             timerDisplay.textContent = `⏱️ ${mins}:${secs.toString().padStart(2,'0')}`;
         }
 
+        // ========== SCORE FUNCTIONS ==========
         function calculateScore() {
             let count = 0;
-            for(let i=0; i<20; i++) { if(submitted[i] && userAnswers[i] === questions[i].correct) count++; }
+            for(let i=0; i<20; i++) { 
+                if(submitted[i] && userAnswers[i] === questions[i].correct) count++; 
+            }
             return count;
         }
 
         function updateScoreUI() {
             const score = calculateScore();
             scoreDisplay.textContent = score;
-            document.getElementById('streakDisplay').textContent = `🔥 ${score} correct`;
+            streakDisplay.textContent = `🔥 ${score} correct`;
         }
 
+        // ========== RENDER QUESTION ==========
         function renderQuestion() {
             const q = questions[currentIndex];
             questionText.textContent = q.question;
@@ -381,7 +443,7 @@
                 if(userAnswers[currentIndex] === optLetter) optClass += ' selected';
                 if(submitted[currentIndex]) {
                     if(optLetter === q.correct) optClass += ' correct';
-                    else if(userAnswers[currentIndex] === optLetter) optClass += ' incorrect';
+                    else if(userAnswers[currentIndex] === optLetter && userAnswers[currentIndex] !== q.correct) optClass += ' incorrect';
                 }
                 htmlStr += `<div class="${optClass}" data-opt="${optLetter}">
                     <div class="option-letter">${optLetter}</div>
@@ -403,8 +465,12 @@
                 const isCorrect = userAnswers[currentIndex] === q.correct;
                 correctFeedback.style.display = isCorrect ? 'block' : 'none';
                 incorrectFeedback.style.display = isCorrect ? 'none' : 'block';
-                if(isCorrect) correctFeedback.innerHTML = `<div class="feedback-title">✅ Correct!</div>${q.explanation}`;
-                else incorrectFeedback.innerHTML = `<div class="feedback-title">❌ Incorrect</div>Correct: ${q.correct}`;
+                if(isCorrect) {
+                    correctFeedback.innerHTML = `<div class="feedback-title">✅ Correct!</div>${q.explanation}<br><small>${q.detailed}</small>`;
+                } else {
+                    const correctAnswer = q.options[q.correct.charCodeAt(0)-65];
+                    incorrectFeedback.innerHTML = `<div class="feedback-title">❌ Incorrect</div>Correct answer: ${q.correct} - ${correctAnswer}<br><small>${q.explanation}</small>`;
+                }
             } else {
                 correctFeedback.style.display = 'none';
                 incorrectFeedback.style.display = 'none';
@@ -416,7 +482,7 @@
             qCounter.textContent = `Question ${currentIndex+1} / 20`;
         }
 
-        // --- UPDATED LOGIC HERE ---
+        // ========== QUIZ CONTROL ==========
         function handleQuizButton() {
             if (!quizActive) {
                 // STARTING FOR THE FIRST TIME
@@ -428,8 +494,10 @@
         }
 
         function startQuiz() {
-            introVideo.pause();
-            introVideoContainer.style.display = 'none';
+            if (introVideo) {
+                introVideo.pause();
+                introVideoContainer.style.display = 'none';
+            }
             
             userAnswers = new Array(20).fill(null);
             submitted = new Array(20).fill(false);
@@ -449,16 +517,44 @@
             quizActive = false;
             quizArea.style.display = 'none';
             
-            // Bring video back
-            introVideoContainer.style.display = 'block';
-            introVideo.currentTime = 0; // Rewind video
+            if (introVideoContainer) {
+                introVideoContainer.style.display = 'block';
+                if (introVideo) introVideo.currentTime = 0;
+            }
             
             startQuizBtn.textContent = "▶ Start Quiz";
+            saveScoreBtn.disabled = true;
+            
+            // Reset answers but keep them in memory (optional)
+            userAnswers = new Array(20).fill(null);
+            submitted = new Array(20).fill(false);
             updateScoreUI();
         }
 
+        // ========== SAVE SCORE ==========
+        function saveCurrentScore() {
+            if (!quizActive) {
+                alert('Please start the quiz first!');
+                return;
+            }
+            
+            const name = studentNameInput.value.trim();
+            if (!name || name === 'Write Name Here') {
+                alert('Please enter your name before saving.');
+                return;
+            }
+            
+            const score = calculateScore();
+            saveScoreToLocal(name, score);
+            alert(`Score ${score}/20 saved for ${name}!`);
+        }
+
+        // ========== EVENT LISTENERS ==========
         startQuizBtn.addEventListener('click', handleQuizButton);
-        // -------------------------
+        
+        saveScoreBtn.addEventListener('click', saveCurrentScore);
+        
+        clearScoresBtn.addEventListener('click', clearAllScores);
 
         submitBtn.addEventListener('click', () => {
             submitted[currentIndex] = true;
@@ -471,7 +567,7 @@
                 currentIndex++; 
                 renderQuestion(); 
             } else { 
-                alert('Quiz Finished!'); 
+                alert('Quiz Finished! You can save your score now.'); 
             }
         });
 
@@ -482,12 +578,27 @@
             }
         });
 
+        // Navigation (keeping your existing links)
         document.querySelectorAll('.nav-item').forEach((item, idx) => {
             item.addEventListener('click', () => {
-                if(idx === 0) window.location.href = 'Learningmainpage.html';
-                else if(idx === 3) window.location.href = 'Profile view.html';
+                if(idx === 0) {
+                    if (confirm('Go to Home?')) window.location.href = 'Learningmainpage.html';
+                }
+                else if(idx === 3) {
+                    if (confirm('Go to Profile?')) window.location.href = 'Profile view.html';
+                }
             });
         });
+
+        // ========== INITIALIZE ==========
+        displayLeaderboard();
+        
+        // Handle video loading error
+        if (introVideo) {
+            introVideo.addEventListener('error', function() {
+                console.log('Video file not found. Please add "Video Lesson.mp4" to your folder.');
+            });
+        }
 
     })();
 </script>
