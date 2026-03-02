@@ -107,7 +107,6 @@
             cursor: not-allowed;
         }
 
-        /* --- Video Section Styling --- */
         .video-container {
             margin: 15px 0;
             border-radius: 12px;
@@ -119,7 +118,6 @@
             width: 100%;
             display: block;
         }
-        /* ---------------------------- */
 
         .question-container {
             margin-bottom: 20px;
@@ -208,12 +206,34 @@
             border-radius: 20px;
             margin-top: 20px;
         }
-        .leaderboard h3 { color: #e67e22; margin-bottom: 8px; }
+        .leaderboard h3 { 
+            color: #e67e22; 
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
         .leaderboard-item {
             display: flex;
             justify-content: space-between;
-            padding: 6px 0;
+            padding: 8px 0;
             border-bottom: 1px solid #ffe6b3;
+        }
+        .leaderboard-item.correct-answers {
+            background-color: #f0f9ff;
+            padding: 8px;
+            border-radius: 8px;
+            margin: 5px 0;
+        }
+        .correct-answers-detail {
+            font-size: 12px;
+            color: #27ae60;
+            display: block;
+        }
+        .wrong-answers-detail {
+            font-size: 12px;
+            color: #e74c3c;
+            display: block;
         }
 
         .nav-bar {
@@ -233,7 +253,38 @@
         .nav-item.active .nav-label { color: #3498db; font-weight: bold; }
 
         .hidden { display: none; }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+        
+        .export-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-left: 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
     </style>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <div class="container" id="app">
@@ -279,9 +330,12 @@
             <strong>📊 current score:</strong> <span id="scoreDisplay">0</span> / 20
         </div>
         <div class="leaderboard" id="leaderboard">
-            <h3>🏆 recorded scores</h3>
-            <div id="leaderboardList">(no scores yet)</div>
-            <button id="clearScoresBtn" style="background:#e74c3c; color:white; border:none; padding:6px 12px; border-radius:20px; margin-top:8px; font-size:12px; cursor:pointer;">clear history</button>
+            <h3>
+                🏆 Online Leaderboard
+                <button id="exportCSVBtn" class="export-btn" title="Export to CSV">📥 Export CSV</button>
+            </h3>
+            <div id="leaderboardList" class="loading">Loading scores from cloud...</div>
+            <button id="clearScoresBtn" class="delete-btn" style="background:#e74c3c; color:white; border:none; padding:6px 12px; border-radius:20px; margin-top:8px; font-size:12px; cursor:pointer;">⚠️ Clear all data</button>
         </div>
     </div>
 
@@ -295,6 +349,21 @@
 
 <script>
     (function() {
+        // ========== FIREBASE CONFIGURATION ==========
+        // REPLACE THIS WITH YOUR FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // ========== 20 QUESTIONS ==========
         const questions = [
             { question: "Q1. Which of the following is an input device?", options: ["Keyboard", "Monitor", "Printer", "Speaker"], correct: "A", explanation: "Keyboard is an input device.", detailed: "✅ Keyboard: Each key press generates a unique scan code." },
@@ -346,45 +415,159 @@
         const studentNameInput = document.getElementById('studentNameInput');
         const leaderboardList = document.getElementById('leaderboardList');
         const clearScoresBtn = document.getElementById('clearScoresBtn');
+        const exportCSVBtn = document.getElementById('exportCSVBtn');
         const streakDisplay = document.getElementById('streakDisplay');
 
-        // ========== LOCAL STORAGE FUNCTIONS ==========
-        function loadScores() {
-            const stored = localStorage.getItem('ict_scores');
-            return stored ? JSON.parse(stored) : [];
+        // ========== FIREBASE FUNCTIONS ==========
+        async function loadScoresFromFirebase() {
+            try {
+                leaderboardList.innerHTML = '<div class="loading">Loading scores from cloud...</div>';
+                
+                const snapshot = await db.collection('quiz_scores')
+                    .orderBy('score', 'desc')
+                    .orderBy('timestamp', 'desc')
+                    .get();
+                
+                const scores = [];
+                snapshot.forEach(doc => {
+                    scores.push({ id: doc.id, ...doc.data() });
+                });
+                
+                displayLeaderboard(scores);
+                return scores;
+            } catch (error) {
+                console.error("Error loading scores: ", error);
+                leaderboardList.innerHTML = '<div class="loading" style="color:#e74c3c;">Error loading scores. Please refresh.</div>';
+                return [];
+            }
         }
 
-        function saveScoreToLocal(name, score) {
-            const scores = loadScores();
-            const date = new Date().toLocaleDateString();
-            scores.push({ name, score, date });
-            localStorage.setItem('ict_scores', JSON.stringify(scores));
-            displayLeaderboard();
+        async function saveScoreToFirebase(name, score, correctAnswers, wrongAnswers, answers, submittedStatus) {
+            try {
+                // Get the current date and time
+                const now = new Date();
+                const dateStr = now.toLocaleDateString();
+                const timeStr = now.toLocaleTimeString();
+                
+                // Create the score document
+                const scoreData = {
+                    name: name,
+                    score: score,
+                    correctCount: correctAnswers,
+                    wrongCount: wrongAnswers,
+                    answers: answers, // Store all answers
+                    submitted: submittedStatus, // Store which were submitted
+                    date: dateStr,
+                    time: timeStr,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // Add to Firestore
+                await db.collection('quiz_scores').add(scoreData);
+                
+                // Reload the leaderboard
+                await loadScoresFromFirebase();
+                
+                return true;
+            } catch (error) {
+                console.error("Error saving score: ", error);
+                alert("Error saving score to cloud. Please check your internet connection.");
+                return false;
+            }
         }
 
-        function displayLeaderboard() {
-            const scores = loadScores();
-            if (scores.length === 0) {
-                leaderboardList.innerHTML = '(no scores yet)';
+        async function clearAllScoresFromFirebase() {
+            if (!confirm('⚠️ This will permanently delete ALL scores from the cloud. Are you sure?')) {
                 return;
             }
-            // Sort by score descending
-            scores.sort((a, b) => b.score - a.score);
+            
+            try {
+                const snapshot = await db.collection('quiz_scores').get();
+                const batch = db.batch();
+                
+                snapshot.docs.forEach((doc) => {
+                    batch.delete(doc.ref);
+                });
+                
+                await batch.commit();
+                await loadScoresFromFirebase();
+                alert('All scores have been cleared from the cloud.');
+            } catch (error) {
+                console.error("Error clearing scores: ", error);
+                alert('Error clearing scores. Please try again.');
+            }
+        }
+
+        function displayLeaderboard(scores) {
+            if (scores.length === 0) {
+                leaderboardList.innerHTML = '<div class="loading">No scores yet. Be the first to take the quiz!</div>';
+                return;
+            }
+            
             let html = '';
-            scores.forEach(entry => {
+            scores.forEach((entry, index) => {
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '📝';
+                
+                // Create detailed view for correct/wrong answers
+                const details = entry.answers ? 
+                    `<div class="correct-answers-detail">✅ Correct: ${entry.correctCount || 0}</div>
+                     <div class="wrong-answers-detail">❌ Wrong: ${entry.wrongCount || 0}</div>` : '';
+                
                 html += `<div class="leaderboard-item">
-                    <span>${entry.name}</span>
+                    <span>
+                        ${medal} ${entry.name}
+                        ${details}
+                    </span>
                     <strong>${entry.score}/20</strong>
-                    <small>${entry.date}</small>
+                    <small>${entry.date || ''} ${entry.time || ''}</small>
                 </div>`;
             });
+            
             leaderboardList.innerHTML = html;
         }
 
-        function clearAllScores() {
-            if (confirm('Delete all recorded scores?')) {
-                localStorage.removeItem('ict_scores');
-                displayLeaderboard();
+        function calculateDetailedScore() {
+            let correct = 0;
+            let wrong = 0;
+            
+            for(let i = 0; i < 20; i++) { 
+                if(submitted[i]) {
+                    if(userAnswers[i] === questions[i].correct) {
+                        correct++;
+                    } else {
+                        wrong++;
+                    }
+                }
+            }
+            
+            return { correct, wrong };
+        }
+
+        // ========== EXPORT TO CSV ==========
+        async function exportToCSV() {
+            try {
+                const snapshot = await db.collection('quiz_scores')
+                    .orderBy('score', 'desc')
+                    .orderBy('timestamp', 'desc')
+                    .get();
+                
+                let csvContent = "Name,Score,Correct Answers,Wrong Answers,Date,Time\n";
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    csvContent += `"${data.name || ''}",${data.score || 0},${data.correctCount || 0},${data.wrongCount || 0},${data.date || ''},${data.time || ''}\n`;
+                });
+                
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `quiz_scores_${new Date().toISOString().slice(0,10)}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error("Error exporting CSV: ", error);
+                alert('Error exporting data. Please try again.');
             }
         }
 
@@ -405,7 +588,7 @@
                 }
                 else { 
                     stopTimer(); 
-                    alert("Time's up!"); 
+                    alert("Time's up! You can still review your answers."); 
                 }
             }, 1000);
         }
@@ -485,10 +668,8 @@
         // ========== QUIZ CONTROL ==========
         function handleQuizButton() {
             if (!quizActive) {
-                // STARTING FOR THE FIRST TIME
                 startQuiz();
             } else {
-                // RESETTING
                 resetToVideo();
             }
         }
@@ -525,14 +706,13 @@
             startQuizBtn.textContent = "▶ Start Quiz";
             saveScoreBtn.disabled = true;
             
-            // Reset answers but keep them in memory (optional)
             userAnswers = new Array(20).fill(null);
             submitted = new Array(20).fill(false);
             updateScoreUI();
         }
 
-        // ========== SAVE SCORE ==========
-        function saveCurrentScore() {
+        // ========== SAVE SCORE TO FIREBASE ==========
+        async function saveCurrentScore() {
             if (!quizActive) {
                 alert('Please start the quiz first!');
                 return;
@@ -544,9 +724,22 @@
                 return;
             }
             
+            // Check if any answers have been submitted
+            const hasAnswers = submitted.some(s => s === true);
+            if (!hasAnswers) {
+                alert('Please answer at least one question before saving.');
+                return;
+            }
+            
             const score = calculateScore();
-            saveScoreToLocal(name, score);
-            alert(`Score ${score}/20 saved for ${name}!`);
+            const { correct, wrong } = calculateDetailedScore();
+            
+            // Save to Firebase
+            const success = await saveScoreToFirebase(name, score, correct, wrong, userAnswers, submitted);
+            
+            if (success) {
+                alert(`✅ Score saved to cloud!\n${name}: ${score}/20 (${correct} correct, ${wrong} wrong)`);
+            }
         }
 
         // ========== EVENT LISTENERS ==========
@@ -554,7 +747,9 @@
         
         saveScoreBtn.addEventListener('click', saveCurrentScore);
         
-        clearScoresBtn.addEventListener('click', clearAllScores);
+        clearScoresBtn.addEventListener('click', clearAllScoresFromFirebase);
+        
+        exportCSVBtn.addEventListener('click', exportToCSV);
 
         submitBtn.addEventListener('click', () => {
             submitted[currentIndex] = true;
@@ -567,7 +762,7 @@
                 currentIndex++; 
                 renderQuestion(); 
             } else { 
-                alert('Quiz Finished! You can save your score now.'); 
+                alert('Quiz Finished! Click "Save my score" to store your results in the cloud.'); 
             }
         });
 
@@ -578,7 +773,7 @@
             }
         });
 
-        // Navigation (keeping your existing links)
+        // Navigation
         document.querySelectorAll('.nav-item').forEach((item, idx) => {
             item.addEventListener('click', () => {
                 if(idx === 0) {
@@ -591,7 +786,8 @@
         });
 
         // ========== INITIALIZE ==========
-        displayLeaderboard();
+        // Load scores from Firebase when page loads
+        loadScoresFromFirebase();
         
         // Handle video loading error
         if (introVideo) {
@@ -599,6 +795,9 @@
                 console.log('Video file not found. Please add "Video Lesson.mp4" to your folder.');
             });
         }
+
+        // Refresh leaderboard every 30 seconds
+        setInterval(loadScoresFromFirebase, 30000);
 
     })();
 </script>
