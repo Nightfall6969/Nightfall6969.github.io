@@ -896,6 +896,7 @@
             }
 
             /** Save a score document to Firestore */
+            localStorage.setItem('eduquest_user', name);
             async function saveScoreToFirebase(name, score, correctCount, wrongCount,
                 answersArray, submittedArray) {
                 try {

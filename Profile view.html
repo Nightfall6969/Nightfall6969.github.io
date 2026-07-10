@@ -10,6 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js">
     </script>
     <style>
+        /* ... (all your existing styles, unchanged) ... */
         * {
             margin: 0;
             padding: 0;
@@ -488,6 +489,17 @@
     </div>
 
     <script>
+        // ================================================================
+        //  IMPORTANT: To avoid prompting for a name every time,
+        //  make sure your quiz page stores the student's name in 
+        //  localStorage with the key 'eduquest_user' when they save a score.
+        //  Add this line inside your quiz's saveScoreToFirebase function:
+        //
+        //     localStorage.setItem('eduquest_user', name);
+        //
+        //  Then this profile page will automatically use that name.
+        // ================================================================
+
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         //  1.  FIREBASE CONFIGURATION
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -504,7 +516,7 @@
         const db = firebase.firestore();
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        //  2.  GET CURRENT USER
+        //  2.  GET CURRENT USER — reads from localStorage, prompts only if missing
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         let currentUser = localStorage.getItem('eduquest_user');
 
@@ -542,10 +554,9 @@
                 const initials = currentUser.split(' ').map(n => n[0]).join('').toUpperCase();
                 avatarInitials.textContent = initials;
 
-                // Query Firestore for this user's scores
+                // Query Firestore for this user's scores (no orderBy to avoid composite index)
                 const snapshot = await db.collection('quiz_scores')
                     .where('name', '==', currentUser)
-                    .orderBy('timestamp', 'desc')
                     .get();
 
                 let scores = [];
@@ -562,6 +573,13 @@
                     totalQuizzes++;
                     if (score > bestScore) bestScore = score;
                     if (score === 20) perfectScores++;
+                });
+
+                // Sort scores by timestamp descending (most recent first) in JavaScript
+                scores.sort((a, b) => {
+                    const tA = a.timestamp?.toMillis?.() || 0;
+                    const tB = b.timestamp?.toMillis?.() || 0;
+                    return tB - tA;
                 });
 
                 // Update Stats
