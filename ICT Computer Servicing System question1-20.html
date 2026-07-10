@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ICT Computer Servicing · full quiz (20 questions)</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>ICT Computer Servicing · EduQuest (20 questions)</title>
+
+    <!-- ====== FIREBASE SDK ====== -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js">
+    </script>
+
     <style>
+        /* ── RESET & BASE ── */
         * {
             margin: 0;
             padding: 0;
@@ -12,794 +20,1330 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
+
         body {
-            background-color: #f5f7fa;
-            color: #333;
+            background: #f5f7fa;
+            color: #1e293b;
             max-width: 100%;
             overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
+
         .container {
-            width: 100%;
+            max-width: 820px;
             margin: 0 auto;
-            padding: 15px;
-            background-color: white;
+            padding: 16px 18px;
+            background: white;
             min-height: 100vh;
         }
+
+        /* ── HEADER ── */
         .quiz-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
             flex-wrap: wrap;
+            gap: 8px 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #eef2f6;
+            margin-bottom: 18px;
         }
+
         .quiz-progress {
             font-size: 14px;
-            color: #2c3e50;
-            font-weight: bold;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .subject-badge {
-            background: linear-gradient(135deg, #3498db, #9b59b6);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-        .streak-counter {
-            background-color: #f39c12;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-        .quiz-timer {
-            background-color: #f8f9fa;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-            color: #e74c3c;
-        }
-        .student-info {
-            background-color: #e8f4fc;
-            padding: 12px;
-            border-radius: 12px;
-            margin: 10px 0 20px;
-            display: flex;
             gap: 10px;
-            align-items: center;
             flex-wrap: wrap;
         }
-        .student-input {
+
+        .subject-badge {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: #fff;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .streak-counter {
+            background: #f59e0b;
+            color: #fff;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .quiz-timer {
+            background: #f1f5f9;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #dc2626;
+        }
+
+        /* ── STUDENT PANEL ── */
+        .student-panel {
+            background: #f0f7ff;
+            padding: 14px 16px;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #dbeafe;
+        }
+
+        .student-panel input {
             flex: 2;
-            min-width: 180px;
-            padding: 10px 15px;
-            border: 2px solid #b0d4f0;
-            border-radius: 25px;
+            min-width: 160px;
+            padding: 10px 16px;
+            border: 2px solid #b9d4f0;
+            border-radius: 40px;
             font-size: 14px;
             outline: none;
             transition: 0.2s;
-        }
-        .student-input:focus {
-            border-color: #3498db;
-        }
-        .start-btn, .save-score-btn {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .start-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+            background: white;
         }
 
-        .video-container {
-            margin: 15px 0;
-            border-radius: 12px;
-            overflow: hidden;
-            background: #000;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        .student-panel input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
-        video {
+
+        .btn {
+            border: none;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35);
+        }
+
+        .btn-blue {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+        .btn-blue:hover:not(:disabled) {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+        }
+
+        .btn-outline {
+            background: #eef2f6;
+            color: #1e293b;
+        }
+        .btn-outline:hover:not(:disabled) {
+            background: #e2e8f0;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-danger:hover:not(:disabled) {
+            background: #dc2626;
+            transform: scale(1.02);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+        .btn-gold:hover:not(:disabled) {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+        }
+
+        /* ── VIDEO ── */
+        .video-container {
+            border-radius: 14px;
+            overflow: hidden;
+            background: #0f172a;
+            margin-bottom: 18px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .video-container video {
             width: 100%;
             display: block;
         }
 
-        .question-container {
-            margin-bottom: 20px;
-        }
+        /* ── QUESTION ── */
         .question-text {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c3e50;
+            font-size: 19px;
+            font-weight: 700;
+            color: #0f172a;
+            padding: 16px 18px;
+            background: #f8fafc;
+            border-radius: 14px;
+            border-left: 6px solid #334155;
             margin-bottom: 20px;
-            line-height: 1.4;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            border-left: 5px solid #34495e;
+            line-height: 1.5;
         }
-        .options-container {
+
+        .options-grid {
             display: grid;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
+
         .option {
-            padding: 12px 15px;
-            border: 2px solid #ecf0f1;
-            border-radius: 10px;
+            padding: 14px 16px;
+            border: 2px solid #e9edf2;
+            border-radius: 14px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.15s;
             display: flex;
             align-items: center;
+            background: white;
         }
-        .option:hover { border-color: #3498db; background-color: #f8f9fa; }
-        .option.selected { border-color: #3498db; background-color: #e8f4fc; }
-        .option.correct { border-color: #2ecc71; background-color: #e8f8f0; }
-        .option.incorrect { border-color: #e74c3c; background-color: #fef0f0; }
-        .option-letter {
-            width: 28px; height: 28px; border-radius: 50%;
-            background-color: #ecf0f1; display: flex; align-items: center; justify-content: center;
-            margin-right: 12px; font-weight: bold; color: #7f8c8d; flex-shrink: 0;
-        }
-        .option.selected .option-letter { background-color: #3498db; color: white; }
-        .option.correct .option-letter { background-color: #2ecc71; color: white; }
-        .option.incorrect .option-letter { background-color: #e74c3c; color: white; }
-        .option-text { flex: 1; font-size: 16px; }
 
-        .feedback {
-            padding: 15px;
-            border-radius: 12px;
-            margin: 15px 0;
+        .option:hover:not(.disabled-opt) {
+            border-color: #3b82f6;
+            background: #f8faff;
+        }
+
+        .option.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .option.correct {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .option.incorrect {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .option.disabled-opt {
+            cursor: default;
+        }
+
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e9edf2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: #64748b;
+            flex-shrink: 0;
+            margin-right: 14px;
+            transition: 0.15s;
+        }
+
+        .option.selected .option-letter {
+            background: #3b82f6;
+            color: white;
+        }
+        .option.correct .option-letter {
+            background: #22c55e;
+            color: white;
+        }
+        .option.incorrect .option-letter {
+            background: #ef4444;
+            color: white;
+        }
+
+        .option-text {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* ── FEEDBACK ── */
+        .feedback-box {
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin: 14px 0;
             display: none;
             font-size: 14px;
+            line-height: 1.6;
         }
-        .correct-feedback { background-color: #e8f8f0; border-left: 5px solid #2ecc71; }
-        .incorrect-feedback { background-color: #fef0f0; border-left: 5px solid #e74c3c; }
-        .feedback-title { font-weight: bold; margin-bottom: 8px; font-size: 16px; }
 
-        .navigation-buttons {
+        .feedback-correct {
+            background: #f0fdf4;
+            border-left: 6px solid #22c55e;
+        }
+        .feedback-incorrect {
+            background: #fef2f2;
+            border-left: 6px solid #ef4444;
+        }
+
+        .feedback-box .fb-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .feedback-box .fb-detail {
+            font-size: 13px;
+            color: #475569;
+            margin-top: 4px;
+        }
+
+        /* ── NAVIGATION ── */
+        .nav-buttons {
             display: flex;
-            justify-content: space-between;
             gap: 10px;
-            margin: 20px 0;
+            margin: 18px 0 8px;
+            flex-wrap: wrap;
         }
-        .nav-button {
-            padding: 14px 20px;
-            border: none;
-            border-radius: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 15px;
-            flex: 1;
-            transition: 0.2s;
-        }
-        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
-        .prev-btn { background: #ecf0f1; color: #2c3e50; }
-        .submit-btn { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; }
-        .next-btn { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
 
+        .nav-buttons .btn {
+            flex: 1;
+            justify-content: center;
+            min-width: 80px;
+        }
+
+        /* ── SCOREBOARD ── */
         .scoreboard {
             background: #f0f7ff;
-            padding: 15px;
-            border-radius: 20px;
-            margin: 20px 0;
-            border: 2px dashed #3498db;
-        }
-        .leaderboard {
-            background: #fff7e6;
-            padding: 15px;
-            border-radius: 20px;
-            margin-top: 20px;
-        }
-        .leaderboard h3 { 
-            color: #e67e22; 
-            margin-bottom: 8px;
+            padding: 14px 18px;
+            border-radius: 16px;
+            border: 2px dashed #3b82f6;
+            margin: 18px 0 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        .leaderboard-item {
+
+        .scoreboard .score-num {
+            font-size: 26px;
+            font-weight: 800;
+            color: #2563eb;
+        }
+
+        /* ── LEADERBOARD ── */
+        .leaderboard {
+            background: #fffbeb;
+            padding: 16px 18px;
+            border-radius: 18px;
+            border: 1px solid #fde68a;
+            margin-top: 12px;
+        }
+
+        .leaderboard-header {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #ffe6b3;
-        }
-        .leaderboard-item.correct-answers {
-            background-color: #f0f9ff;
-            padding: 8px;
-            border-radius: 8px;
-            margin: 5px 0;
-        }
-        .correct-answers-detail {
-            font-size: 12px;
-            color: #27ae60;
-            display: block;
-        }
-        .wrong-answers-detail {
-            font-size: 12px;
-            color: #e74c3c;
-            display: block;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
         }
 
-        .nav-bar {
+        .leaderboard-header h3 {
+            font-size: 18px;
+            color: #b45309;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .leaderboard-header .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .leaderboard-header .actions .btn {
+            padding: 4px 14px;
+            font-size: 12px;
+            border-radius: 30px;
+        }
+
+        .lb-list {
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        .lb-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 4px;
+            border-bottom: 1px solid #fde68a;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .lb-item:last-child {
+            border-bottom: none;
+        }
+
+        .lb-item .lb-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .lb-item .lb-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .lb-item .lb-score {
+            font-weight: 800;
+            font-size: 17px;
+            color: #2563eb;
+            background: #eff6ff;
+            padding: 2px 14px;
+            border-radius: 30px;
+        }
+
+        .lb-item .lb-detail {
+            font-size: 12px;
+            color: #64748b;
+            display: flex;
+            gap: 12px;
+        }
+
+        .lb-item .lb-detail .correct-detail {
+            color: #16a34a;
+        }
+        .lb-item .lb-detail .wrong-detail {
+            color: #dc2626;
+        }
+
+        .lb-empty {
+            text-align: center;
+            padding: 24px 0;
+            color: #78716c;
+            font-size: 15px;
+        }
+
+        /* ── BOTTOM NAV ── */
+        .bottom-nav {
             display: flex;
             justify-content: space-around;
-            padding: 10px 0;
-            background-color: white;
-            border-top: 1px solid #eee;
+            padding: 10px 0 8px;
+            background: white;
+            border-top: 1px solid #e9edf2;
             position: fixed;
-            bottom: 0; left: 0; right: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
             z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; flex: 1; }
-        .nav-icon { width: 24px; height: 24px; background-color: #bdc3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; margin-bottom: 4px; }
-        .nav-item.active .nav-icon { background-color: #3498db; }
-        .nav-label { font-size: 11px; color: #7f8c8d; }
-        .nav-item.active .nav-label { color: #3498db; font-weight: bold; }
 
-        .hidden { display: none; }
-        
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #7f8c8d;
-        }
-        
-        .export-btn {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
-            margin-left: 10px;
-            font-size: 12px;
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             cursor: pointer;
-        }
-        
-        .delete-btn {
-            background: #e74c3c;
-            color: white;
+            flex: 1;
+            padding: 4px 0;
+            transition: 0.15s;
             border: none;
-            padding: 4px 8px;
-            border-radius: 15px;
+            background: transparent;
+        }
+
+        .nav-item .nav-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 2px;
+            transition: 0.15s;
+        }
+
+        .nav-item.active .nav-icon {
+            background: #3b82f6;
+        }
+
+        .nav-item .nav-label {
             font-size: 11px;
-            cursor: pointer;
-            margin-left: 10px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .nav-item.active .nav-label {
+            color: #3b82f6;
+            font-weight: 700;
+        }
+
+        /* ── UTILITIES ── */
+        .hidden {
+            display: none !important;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 18px;
+            color: #64748b;
+        }
+
+        .text-muted {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .mt-8 {
+            margin-top: 8px;
+        }
+
+        .gap-6 {
+            gap: 6px;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 540px) {
+            .container {
+                padding: 12px 14px;
+            }
+
+            .question-text {
+                font-size: 17px;
+                padding: 14px;
+            }
+
+            .option-text {
+                font-size: 15px;
+            }
+
+            .student-panel input {
+                min-width: 120px;
+                font-size: 13px;
+                padding: 8px 14px;
+            }
+
+            .btn {
+                font-size: 13px;
+                padding: 8px 16px;
+            }
+
+            .lb-item {
+                font-size: 14px;
+            }
+
+            .scoreboard .score-num {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .student-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .student-panel .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .nav-buttons .btn {
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+
+            .lb-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
         }
     </style>
-    <!-- Add Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
+
 <body>
-<div class="container" id="app">
-    <div class="quiz-header">
-        <div class="quiz-progress">
-            <span id="qCounter">Question 1 / 20</span>
-            <span class="subject-badge">ICT Servicing</span>
-            <span class="streak-counter" id="streakDisplay">🔥 0 correct</span>
-        </div>
-        <div class="quiz-timer" id="timerDisplay">⏱️ 3:00</div>
-    </div>
 
-    <div class="student-info" id="studentPanel">
-        <input type="text" id="studentNameInput" class="student-input" placeholder="Enter your name (e.g., Write Name & Section here)" value="Write Name Here">
-        <button id="startQuizBtn" class="start-btn">▶ Start / Reset quiz</button>
-        <button id="saveScoreBtn" class="save-score-btn" disabled>💾 Save my score</button>
-    </div>
+    <div class="container" id="app">
 
-    <div class="video-container" id="introVideoContainer">
-        <video id="introVideo" controls>
-            <source src="Video Lesson.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-    </div>
-
-    <div id="quizArea" style="display: none;">
-        <div class="question-container">
-            <div class="question-text" id="questionText">Loading...</div>
-            <div class="options-container" id="optionsContainer"></div>
-            <div class="feedback correct-feedback" id="correctFeedback"></div>
-            <div class="feedback incorrect-feedback" id="incorrectFeedback"></div>
+        <!-- ─── HEADER ─── -->
+        <div class="quiz-header">
+            <div class="quiz-progress">
+                <span id="qCounter">Question 1 / 20</span>
+                <span class="subject-badge">💻 ICT Servicing</span>
+                <span class="streak-counter" id="streakDisplay">🔥 0 correct</span>
+            </div>
+            <div class="quiz-timer" id="timerDisplay">⏱️ 3:00</div>
         </div>
 
-        <div class="navigation-buttons">
-            <button class="nav-button prev-btn" id="prevBtn" disabled>← Previous</button>
-            <button class="nav-button submit-btn" id="submitBtn" disabled>Submit Answer</button>
-            <button class="nav-button next-btn" id="nextBtn" disabled>Next →</button>
+        <!-- ─── STUDENT PANEL ─── -->
+        <div class="student-panel" id="studentPanel">
+            <input type="text" id="studentNameInput" class="student-input"
+            placeholder="Enter your name &amp; section (e.g. Juan Dela Cruz – 10-A)"
+            value="Write Name & Section" />
+            <button class="btn btn-primary" id="startQuizBtn">▶ Start / Reset</button>
+            <button class="btn btn-gold" id="saveScoreBtn" disabled>💾 Save Score</button>
         </div>
+
+        <!-- ─── VIDEO ─── -->
+        <div class="video-container" id="introVideoContainer">
+            <video id="introVideo" controls preload="metadata">
+                <source src="Video Lesson.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+        <!-- ─── QUIZ AREA ─── -->
+        <div id="quizArea" class="hidden">
+            <div class="question-text" id="questionText">Loading…</div>
+
+            <div class="options-grid" id="optionsContainer"></div>
+
+            <div class="feedback-box feedback-correct" id="correctFeedback">
+                <div class="fb-title">✅ Correct!</div>
+                <div id="correctFeedbackText"></div>
+            </div>
+            <div class="feedback-box feedback-incorrect" id="incorrectFeedback">
+                <div class="fb-title">❌ Incorrect</div>
+                <div id="incorrectFeedbackText"></div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-outline" id="prevBtn" disabled>← Prev</button>
+                <button class="btn btn-blue" id="submitBtn" disabled>Submit</button>
+                <button class="btn btn-primary" id="nextBtn" disabled>Next →</button>
+            </div>
+        </div>
+
+        <!-- ─── SCOREBOARD & LEADERBOARD ─── -->
+        <div id="scoreArea">
+            <div class="scoreboard">
+                <span><strong>📊 Your Score:</strong></span>
+                <span class="score-num" id="scoreDisplay">0</span>
+                <span class="text-muted">/ 20</span>
+            </div>
+
+            <div class="leaderboard" id="leaderboard">
+                <div class="leaderboard-header">
+                    <h3>🏆 Online Leaderboard</h3>
+                    <div class="actions">
+                        <button class="btn btn-blue" id="exportCSVBtn" style="font-size:12px;padding:4px 14px;">📥 CSV</button>
+                        <button class="btn btn-danger" id="clearScoresBtn" style="font-size:12px;padding:4px 14px;">🗑️ Clear</button>
+                    </div>
+                </div>
+                <div class="lb-list" id="leaderboardList">
+                    <div class="loading-spinner">Loading scores from cloud…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── BOTTOM NAV ─── -->
+        <div class="bottom-nav">
+            <button class="nav-item" data-nav="home">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Home</span>
+            </button>
+            <button class="nav-item" data-nav="lessons">
+                <span class="nav-icon">📚</span>
+                <span class="nav-label">Lessons</span>
+            </button>
+            <button class="nav-item active" data-nav="quiz">
+                <span class="nav-icon">💻</span>
+                <span class="nav-label">ICT Quiz</span>
+            </button>
+            <button class="nav-item" data-nav="profile">
+                <span class="nav-icon">👤</span>
+                <span class="nav-label">Profile</span>
+            </button>
+        </div>
+
     </div>
 
-    <div id="scoreArea" style="margin-top: 25px;">
-        <div class="scoreboard" id="liveScoreBoard">
-            <strong>📊 current score:</strong> <span id="scoreDisplay">0</span> / 20
-        </div>
-        <div class="leaderboard" id="leaderboard">
-            <h3>
-                🏆 Online Leaderboard
-                <button id="exportCSVBtn" class="export-btn" title="Export to CSV">📥 Export CSV</button>
-            </h3>
-            <div id="leaderboardList" class="loading">Loading scores from cloud...</div>
-            <button id="clearScoresBtn" class="delete-btn" style="background:#e74c3c; color:white; border:none; padding:6px 12px; border-radius:20px; margin-top:8px; font-size:12px; cursor:pointer;">⚠️ Clear all data</button>
-        </div>
-    </div>
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!--  JAVASCRIPT — FIREBASE + QUIZ LOGIC                         -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <script>
+        (function() {
 
-    <div class="nav-bar">
-        <div class="nav-item"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
-        <div class="nav-item"><div class="nav-icon">📚</div><div class="nav-label">Lessons</div></div>
-        <div class="nav-item active"><div class="nav-icon">💻</div><div class="nav-label">ICT Quiz</div></div>
-        <div class="nav-item"><div class="nav-icon">👤</div><div class="nav-label">Profile</div></div>
-    </div>
-</div>
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  1.  FIREBASE CONFIGURATION
+            //      Replace the values below with YOUR Firebase project’s
+            //      config.  You can find these in the Firebase Console
+            //      → Project Settings → Your apps → SDK setup.
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-<script>
-    (function() {
-        // ========== FIREBASE CONFIGURATION ==========
-        // REPLACE THIS WITH YOUR FIREBASE CONFIGURATION
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+            const firebaseConfig = {
+                apiKey: "AIzaSyA7AkFq_AWnA5Gn-WbtbeuZ76hDvo4uGlQ",
+                authDomain: "eduquest-1096b.firebaseapp.com",
+                projectId: "eduquest-1096b",
+                storageBucket: "eduquest-1096b.firebasestorage.app",
+                messagingSenderId: "939570939207",
+                appId: "1:939570939207:web:ba25d7dd07810e94bb7862"
+            };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+            // ── Initialize Firebase ──
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
 
-        // ========== 20 QUESTIONS ==========
-        const questions = [
-            { question: "Q1. Which of the following is an input device?", options: ["Keyboard", "Monitor", "Printer", "Speaker"], correct: "A", explanation: "Keyboard is an input device.", detailed: "✅ Keyboard: Each key press generates a unique scan code." },
-            { question: "Q2. Which of the following is an output device?", options: ["Mouse", "Monitor", "Keyboard", "Scanner"], correct: "B", explanation: "Monitor is an output device.", detailed: "Monitor (screen) – primary visual output." },
-            { question: "Q3. What is the CPU also known as?", options: ["Brain of the computer", "Memory of the computer", "Storage of the computer", "Input device"], correct: "A", explanation: "CPU is the brain of the computer.", detailed: "CPU performs arithmetic, logic, and control operations." },
-            { question: "Q4. Which type of memory is temporary while the computer is running?", options: ["RAM", "ROM", "Hard Drive", "USB Flash Drive"], correct: "A", explanation: "RAM is volatile/temporary.", detailed: "RAM loses data when power is off." },
-            { question: "Q5. Which type of memory is permanent and stores essential instructions?", options: ["Monitor", "RAM", "Keyboard", "ROM"], correct: "D", explanation: "ROM is non-volatile.", detailed: "BIOS/UEFI is stored in ROM." },
-            { question: "Q6. Which part of the computer connects all components?", options: ["CPU", "Hard Drive", "Motherboard", "RAM"], correct: "C", explanation: "Motherboard connects everything.", detailed: "It provides data and power connections." },
-            { question: "Q7. Which device is used for permanent storage of files?", options: ["USB Flash Drive", "RAM", "Hard Drive", "Monitor"], correct: "C", explanation: "Hard Disk Drive is primary permanent storage.", detailed: "SSDs also serve the same purpose." },
-            { question: "Q8. Which device is considered portable storage?", options: ["Hard Drive", "USB Flash Drive", "Motherboard", "CPU"], correct: "B", explanation: "USB flash drives are portable.", detailed: "They use NAND flash memory." },
-            { question: "Q9. Which of the following is an input device?", options: ["Scanner", "Printer", "Speaker", "Monitor"], correct: "A", explanation: "Scanner sends data to computer.", detailed: "It is an input device." },
-            { question: "Q10. A keyboard is an input device.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
-            { question: "Q11. A printer is an output device.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
-            { question: "Q12. The CPU is called the brain of the computer.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
-            { question: "Q13. RAM stores data permanently.", options: ["TRUE", "FALSE"], correct: "B", explanation: "RAM is volatile.", detailed: "" },
-            { question: "Q14. ROM stores essential instructions permanently.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
-            { question: "Q15. The motherboard connects all computer components.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
-            { question: "Q16. A USB flash drive is used for portable storage.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
-            { question: "Q17. A scanner is an input device.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
-            { question: "Q18. A monitor is an output device.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" },
-            { question: "Q19. SSD contains moving mechanical parts.", options: ["TRUE", "FALSE"], correct: "B", explanation: "SSDs have no moving parts.", detailed: "" },
-            { question: "Q20. HDD and SSD are non-volatile storage devices.", options: ["TRUE", "FALSE"], correct: "A", explanation: "Correct.", detailed: "" }
-        ];
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  2.  QUIZ DATA — 20 questions
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-        // ========== STATE ==========
-        let currentIndex = 0;
-        let userAnswers = new Array(20).fill(null);
-        let submitted = new Array(20).fill(false);
-        let quizActive = false;
-        let timerSeconds = 180;
-        let timerInterval = null;
+            const QUESTIONS = [{
+                question: "Q1. Which of the following is an input device?",
+                options: ["Keyboard", "Monitor", "Printer", "Speaker"],
+                correct: "A",
+                explanation: "Keyboard is an input device.",
+                detail: "Each key press generates a unique scan code."
+            }, {
+                question: "Q2. Which of the following is an output device?",
+                options: ["Mouse", "Monitor", "Keyboard", "Scanner"],
+                correct: "B",
+                explanation: "Monitor is an output device.",
+                detail: "The screen is the primary visual output."
+            }, {
+                question: "Q3. What is the CPU also known as?",
+                options: ["Brain of the computer", "Memory of the computer",
+                    "Storage of the computer", "Input device"
+                ],
+                correct: "A",
+                explanation: "CPU is the brain of the computer.",
+                detail: "It performs arithmetic, logic, and control operations."
+            }, {
+                question: "Q4. Which type of memory is temporary while the computer is running?",
+                options: ["RAM", "ROM", "Hard Drive", "USB Flash Drive"],
+                correct: "A",
+                explanation: "RAM is volatile / temporary.",
+                detail: "RAM loses data when power is off."
+            }, {
+                question: "Q5. Which type of memory is permanent and stores essential instructions?",
+                options: ["Monitor", "RAM", "Keyboard", "ROM"],
+                correct: "D",
+                explanation: "ROM is non-volatile.",
+                detail: "BIOS / UEFI is stored in ROM."
+            }, {
+                question: "Q6. Which part of the computer connects all components?",
+                options: ["CPU", "Hard Drive", "Motherboard", "RAM"],
+                correct: "C",
+                explanation: "Motherboard connects everything.",
+                detail: "It provides data and power connections."
+            }, {
+                question: "Q7. Which device is used for permanent storage of files?",
+                options: ["USB Flash Drive", "RAM", "Hard Drive", "Monitor"],
+                correct: "C",
+                explanation: "Hard Disk Drive is primary permanent storage.",
+                detail: "SSDs also serve the same purpose."
+            }, {
+                question: "Q8. Which device is considered portable storage?",
+                options: ["Hard Drive", "USB Flash Drive", "Motherboard", "CPU"],
+                correct: "B",
+                explanation: "USB flash drives are portable.",
+                detail: "They use NAND flash memory."
+            }, {
+                question: "Q9. Which of the following is an input device?",
+                options: ["Scanner", "Printer", "Speaker", "Monitor"],
+                correct: "A",
+                explanation: "Scanner sends data to the computer.",
+                detail: "It is an input device."
+            }, {
+                question: "Q10. A keyboard is an input device.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Correct.",
+                detail: "Keyboards are input devices."
+            }, {
+                question: "Q11. A printer is an output device.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Correct.",
+                detail: "Printers produce physical output."
+            }, {
+                question: "Q12. The CPU is called the brain of the computer.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Correct.",
+                detail: "CPU processes all instructions."
+            }, {
+                question: "Q13. RAM stores data permanently.",
+                options: ["TRUE", "FALSE"],
+                correct: "B",
+                explanation: "RAM is volatile.",
+                detail: "Data is lost when power is off."
+            }, {
+                question: "Q14. ROM stores essential instructions permanently.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Correct.",
+                detail: "ROM retains data without power."
+            }, {
+                question: "Q15. The motherboard connects all computer components.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Correct.",
+                detail: "It's the main circuit board."
+            }, {
+                question: "Q16. A USB flash drive is used for portable storage.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Correct.",
+                detail: "It's a common portable storage device."
+            }, {
+                question: "Q17. A scanner is an input device.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Correct.",
+                detail: "Scanners digitize physical documents."
+            }, {
+                question: "Q18. A monitor is an output device.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Correct.",
+                detail: "Monitors display visual output."
+            }, {
+                question: "Q19. SSD contains moving mechanical parts.",
+                options: ["TRUE", "FALSE"],
+                correct: "B",
+                explanation: "SSDs have no moving parts.",
+                detail: "They use flash memory."
+            }, {
+                question: "Q20. HDD and SSD are non-volatile storage devices.",
+                options: ["TRUE", "FALSE"],
+                correct: "A",
+                explanation: "Correct.",
+                detail: "Both retain data without power."
+            }];
 
-        // ========== DOM ELEMENTS ==========
-        const qCounter = document.getElementById('qCounter');
-        const timerDisplay = document.getElementById('timerDisplay');
-        const questionText = document.getElementById('questionText');
-        const optionsContainer = document.getElementById('optionsContainer');
-        const correctFeedback = document.getElementById('correctFeedback');
-        const incorrectFeedback = document.getElementById('incorrectFeedback');
-        const submitBtn = document.getElementById('submitBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const quizArea = document.getElementById('quizArea');
-        const startQuizBtn = document.getElementById('startQuizBtn');
-        const saveScoreBtn = document.getElementById('saveScoreBtn');
-        const scoreDisplay = document.getElementById('scoreDisplay');
-        const introVideo = document.getElementById('introVideo');
-        const introVideoContainer = document.getElementById('introVideoContainer');
-        const studentNameInput = document.getElementById('studentNameInput');
-        const leaderboardList = document.getElementById('leaderboardList');
-        const clearScoresBtn = document.getElementById('clearScoresBtn');
-        const exportCSVBtn = document.getElementById('exportCSVBtn');
-        const streakDisplay = document.getElementById('streakDisplay');
+            const TOTAL = QUESTIONS.length;
 
-        // ========== FIREBASE FUNCTIONS ==========
-        async function loadScoresFromFirebase() {
-            try {
-                leaderboardList.innerHTML = '<div class="loading">Loading scores from cloud...</div>';
-                
-                const snapshot = await db.collection('quiz_scores')
-                    .orderBy('score', 'desc')
-                    .orderBy('timestamp', 'desc')
-                    .get();
-                
-                const scores = [];
-                snapshot.forEach(doc => {
-                    scores.push({ id: doc.id, ...doc.data() });
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  3.  STATE
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            let currentIndex = 0;
+            let userAnswers = new Array(TOTAL).fill(null); // 'A','B','C','D' or null
+            let submitted = new Array(TOTAL).fill(false);
+            let quizActive = false;
+            let timerSeconds = 180;
+            let timerInterval = null;
+
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  4.  DOM REFS
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            const $ = id => document.getElementById(id);
+            const qCounter = $('qCounter');
+            const timerDisplay = $('timerDisplay');
+            const questionText = $('questionText');
+            const optionsContainer = $('optionsContainer');
+            const correctFeedback = $('correctFeedback');
+            const incorrectFeedback = $('incorrectFeedback');
+            const correctFeedbackText = $('correctFeedbackText');
+            const incorrectFeedbackText = $('incorrectFeedbackText');
+            const submitBtn = $('submitBtn');
+            const nextBtn = $('nextBtn');
+            const prevBtn = $('prevBtn');
+            const quizArea = $('quizArea');
+            const startQuizBtn = $('startQuizBtn');
+            const saveScoreBtn = $('saveScoreBtn');
+            const scoreDisplay = $('scoreDisplay');
+            const introVideo = $('introVideo');
+            const introVideoContainer = $('introVideoContainer');
+            const studentNameInput = $('studentNameInput');
+            const leaderboardList = $('leaderboardList');
+            const clearScoresBtn = $('clearScoresBtn');
+            const exportCSVBtn = $('exportCSVBtn');
+            const streakDisplay = $('streakDisplay');
+
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  5.  FIREBASE — CRUD
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            /** Load scores from Firestore and render leaderboard */
+            async function loadScoresFromFirebase() {
+                try {
+                    leaderboardList.innerHTML =
+                        '<div class="loading-spinner">⏳ Loading scores from cloud…</div>';
+
+                    const snapshot = await db.collection('quiz_scores')
+                        .orderBy('score', 'desc')
+                        .orderBy('timestamp', 'desc')
+                        .get();
+
+                    const scores = [];
+                    snapshot.forEach(doc => {
+                        scores.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    renderLeaderboard(scores);
+                    return scores;
+                } catch (err) {
+                    console.error('loadScoresFromFirebase error:', err);
+                    leaderboardList.innerHTML =
+                        '<div class="loading-spinner" style="color:#dc2626;">⚠️ Error loading scores. Please refresh.</div>';
+                    return [];
+                }
+            }
+
+            /** Save a score document to Firestore */
+            async function saveScoreToFirebase(name, score, correctCount, wrongCount,
+                answersArray, submittedArray) {
+                try {
+                    const now = new Date();
+                    const dateStr = now.toLocaleDateString();
+                    const timeStr = now.toLocaleTimeString();
+
+                    await db.collection('quiz_scores').add({
+                        name: name.trim(),
+                        score: score,
+                        correctCount: correctCount,
+                        wrongCount: wrongCount,
+                        answers: answersArray,
+                        submitted: submittedArray,
+                        date: dateStr,
+                        time: timeStr,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    await loadScoresFromFirebase();
+                    return true;
+                } catch (err) {
+                    console.error('saveScoreToFirebase error:', err);
+                    alert('❌ Error saving score. Please check your internet connection.');
+                    return false;
+                }
+            }
+
+            /** Delete ALL scores from Firestore */
+            async function clearAllScoresFromFirebase() {
+                if (!confirm('⚠️ This will permanently delete ALL scores from the cloud. Are you sure?')) {
+                    return;
+                }
+                try {
+                    const snapshot = await db.collection('quiz_scores').get();
+                    const batch = db.batch();
+                    snapshot.docs.forEach(doc => batch.delete(doc.ref));
+                    await batch.commit();
+                    await loadScoresFromFirebase();
+                    alert('✅ All scores have been cleared.');
+                } catch (err) {
+                    console.error('clearAllScoresFromFirebase error:', err);
+                    alert('❌ Error clearing scores. Please try again.');
+                }
+            }
+
+            /** Export scores to CSV */
+            async function exportToCSV() {
+                try {
+                    const snapshot = await db.collection('quiz_scores')
+                        .orderBy('score', 'desc')
+                        .orderBy('timestamp', 'desc')
+                        .get();
+
+                    if (snapshot.empty) {
+                        alert('No scores to export.');
+                        return;
+                    }
+
+                    let csv = 'Name,Score,Correct,Wrong,Date,Time\n';
+                    snapshot.forEach(doc => {
+                        const d = doc.data();
+                        csv +=
+                            `"${d.name || ''}",${d.score ?? 0},${d.correctCount ?? 0},${d.wrongCount ?? 0},"${d.date || ''}","${d.time || ''}"\n`;
+                    });
+
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `eduquest_scores_${new Date().toISOString().slice(0,10)}.csv`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                } catch (err) {
+                    console.error('exportToCSV error:', err);
+                    alert('❌ Error exporting CSV.');
+                }
+            }
+
+            /** Render the leaderboard from an array of score objects */
+            function renderLeaderboard(scores) {
+                if (!scores || scores.length === 0) {
+                    leaderboardList.innerHTML =
+                        '<div class="lb-empty">📭 No scores yet. Be the first to take the quiz!</div>';
+                    return;
+                }
+
+                let html = '';
+                scores.forEach((entry, idx) => {
+                    const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '📝';
+                    const name = entry.name || 'Anonymous';
+                    const score = entry.score ?? 0;
+                    const correct = entry.correctCount ?? 0;
+                    const wrong = entry.wrongCount ?? 0;
+                    const date = entry.date || '';
+                    const time = entry.time || '';
+
+                    html += `
+                        <div class="lb-item">
+                            <div class="lb-left">
+                                <span style="font-size:20px;">${medal}</span>
+                                <span class="lb-name">${escapeHtml(name)}</span>
+                                <span class="lb-detail">
+                                    <span class="correct-detail">✅ ${correct}</span>
+                                    <span class="wrong-detail">❌ ${wrong}</span>
+                                </span>
+                            </div>
+                            <div>
+                                <span class="lb-score">${score}/20</span>
+                                <span class="text-muted" style="font-size:11px;margin-left:6px;">${date} ${time}</span>
+                            </div>
+                        </div>
+                    `;
                 });
-                
-                displayLeaderboard(scores);
-                return scores;
-            } catch (error) {
-                console.error("Error loading scores: ", error);
-                leaderboardList.innerHTML = '<div class="loading" style="color:#e74c3c;">Error loading scores. Please refresh.</div>';
-                return [];
-            }
-        }
 
-        async function saveScoreToFirebase(name, score, correctAnswers, wrongAnswers, answers, submittedStatus) {
-            try {
-                // Get the current date and time
-                const now = new Date();
-                const dateStr = now.toLocaleDateString();
-                const timeStr = now.toLocaleTimeString();
-                
-                // Create the score document
-                const scoreData = {
-                    name: name,
-                    score: score,
-                    correctCount: correctAnswers,
-                    wrongCount: wrongAnswers,
-                    answers: answers, // Store all answers
-                    submitted: submittedStatus, // Store which were submitted
-                    date: dateStr,
-                    time: timeStr,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                
-                // Add to Firestore
-                await db.collection('quiz_scores').add(scoreData);
-                
-                // Reload the leaderboard
-                await loadScoresFromFirebase();
-                
-                return true;
-            } catch (error) {
-                console.error("Error saving score: ", error);
-                alert("Error saving score to cloud. Please check your internet connection.");
-                return false;
+                leaderboardList.innerHTML = html;
             }
-        }
 
-        async function clearAllScoresFromFirebase() {
-            if (!confirm('⚠️ This will permanently delete ALL scores from the cloud. Are you sure?')) {
-                return;
+            /** Simple escape to prevent XSS */
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
             }
-            
-            try {
-                const snapshot = await db.collection('quiz_scores').get();
-                const batch = db.batch();
-                
-                snapshot.docs.forEach((doc) => {
-                    batch.delete(doc.ref);
-                });
-                
-                await batch.commit();
-                await loadScoresFromFirebase();
-                alert('All scores have been cleared from the cloud.');
-            } catch (error) {
-                console.error("Error clearing scores: ", error);
-                alert('Error clearing scores. Please try again.');
-            }
-        }
 
-        function displayLeaderboard(scores) {
-            if (scores.length === 0) {
-                leaderboardList.innerHTML = '<div class="loading">No scores yet. Be the first to take the quiz!</div>';
-                return;
-            }
-            
-            let html = '';
-            scores.forEach((entry, index) => {
-                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '📝';
-                
-                // Create detailed view for correct/wrong answers
-                const details = entry.answers ? 
-                    `<div class="correct-answers-detail">✅ Correct: ${entry.correctCount || 0}</div>
-                     <div class="wrong-answers-detail">❌ Wrong: ${entry.wrongCount || 0}</div>` : '';
-                
-                html += `<div class="leaderboard-item">
-                    <span>
-                        ${medal} ${entry.name}
-                        ${details}
-                    </span>
-                    <strong>${entry.score}/20</strong>
-                    <small>${entry.date || ''} ${entry.time || ''}</small>
-                </div>`;
-            });
-            
-            leaderboardList.innerHTML = html;
-        }
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  6.  TIMER
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-        function calculateDetailedScore() {
-            let correct = 0;
-            let wrong = 0;
-            
-            for(let i = 0; i < 20; i++) { 
-                if(submitted[i]) {
-                    if(userAnswers[i] === questions[i].correct) {
-                        correct++;
+            function stopTimer() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+            }
+
+            function startTimer() {
+                stopTimer();
+                timerSeconds = 180;
+                updateTimerDisplay();
+                timerInterval = setInterval(() => {
+                    if (timerSeconds > 0) {
+                        timerSeconds--;
+                        updateTimerDisplay();
                     } else {
-                        wrong++;
+                        stopTimer();
+                        alert("⏰ Time's up! You can still review your answers.");
+                    }
+                }, 1000);
+            }
+
+            function updateTimerDisplay() {
+                const mins = Math.floor(timerSeconds / 60);
+                const secs = timerSeconds % 60;
+                timerDisplay.textContent = `⏱️ ${mins}:${secs.toString().padStart(2,'0')}`;
+            }
+
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  7.  SCORE CALCULATION
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            function calculateScore() {
+                let count = 0;
+                for (let i = 0; i < TOTAL; i++) {
+                    if (submitted[i] && userAnswers[i] === QUESTIONS[i].correct) count++;
+                }
+                return count;
+            }
+
+            function calculateDetailed() {
+                let correct = 0,
+                    wrong = 0;
+                for (let i = 0; i < TOTAL; i++) {
+                    if (submitted[i]) {
+                        if (userAnswers[i] === QUESTIONS[i].correct) correct++;
+                        else wrong++;
                     }
                 }
+                return { correct, wrong };
             }
-            
-            return { correct, wrong };
-        }
 
-        // ========== EXPORT TO CSV ==========
-        async function exportToCSV() {
-            try {
-                const snapshot = await db.collection('quiz_scores')
-                    .orderBy('score', 'desc')
-                    .orderBy('timestamp', 'desc')
-                    .get();
-                
-                let csvContent = "Name,Score,Correct Answers,Wrong Answers,Date,Time\n";
-                
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    csvContent += `"${data.name || ''}",${data.score || 0},${data.correctCount || 0},${data.wrongCount || 0},${data.date || ''},${data.time || ''}\n`;
+            function updateScoreUI() {
+                const score = calculateScore();
+                scoreDisplay.textContent = score;
+                streakDisplay.textContent = `🔥 ${score} correct`;
+            }
+
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  8.  RENDER QUESTION
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            function renderQuestion() {
+                const q = QUESTIONS[currentIndex];
+                const letters = ['A', 'B', 'C', 'D'];
+
+                // ── Question text ──
+                questionText.textContent = q.question;
+
+                // ── Options ──
+                let html = '';
+                for (let i = 0; i < q.options.length; i++) {
+                    const letter = letters[i];
+                    let cls = 'option';
+                    if (submitted[currentIndex]) cls += ' disabled-opt';
+                    if (userAnswers[currentIndex] === letter) cls += ' selected';
+                    if (submitted[currentIndex]) {
+                        if (letter === q.correct) cls += ' correct';
+                        else if (userAnswers[currentIndex] === letter && userAnswers[currentIndex] !== q.correct) cls +=
+                            ' incorrect';
+                    }
+
+                    html += `
+                        <div class="${cls}" data-opt="${letter}">
+                            <span class="option-letter">${letter}</span>
+                            <span class="option-text">${q.options[i]}</span>
+                        </div>
+                    `;
+                }
+                optionsContainer.innerHTML = html;
+
+                // ── Click handlers ──
+                document.querySelectorAll('.option').forEach(el => {
+                    el.addEventListener('click', function() {
+                        if (submitted[currentIndex]) return;
+                        const opt = this.getAttribute('data-opt');
+                        userAnswers[currentIndex] = opt;
+                        renderQuestion();
+                        submitBtn.disabled = false;
+                    });
                 });
-                
-                const blob = new Blob([csvContent], { type: 'text/csv' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `quiz_scores_${new Date().toISOString().slice(0,10)}.csv`;
-                a.click();
-                window.URL.revokeObjectURL(url);
-            } catch (error) {
-                console.error("Error exporting CSV: ", error);
-                alert('Error exporting data. Please try again.');
-            }
-        }
 
-        // ========== TIMER FUNCTIONS ==========
-        function stopTimer() { 
-            if(timerInterval) clearInterval(timerInterval); 
-            timerInterval = null; 
-        }
-        
-        function startTimer() {
-            stopTimer();
-            timerSeconds = 180;
-            updateTimerDisplay();
-            timerInterval = setInterval(() => {
-                if (timerSeconds > 0) { 
-                    timerSeconds--; 
-                    updateTimerDisplay(); 
-                }
-                else { 
-                    stopTimer(); 
-                    alert("Time's up! You can still review your answers."); 
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            const mins = Math.floor(timerSeconds / 60);
-            const secs = timerSeconds % 60;
-            timerDisplay.textContent = `⏱️ ${mins}:${secs.toString().padStart(2,'0')}`;
-        }
-
-        // ========== SCORE FUNCTIONS ==========
-        function calculateScore() {
-            let count = 0;
-            for(let i=0; i<20; i++) { 
-                if(submitted[i] && userAnswers[i] === questions[i].correct) count++; 
-            }
-            return count;
-        }
-
-        function updateScoreUI() {
-            const score = calculateScore();
-            scoreDisplay.textContent = score;
-            streakDisplay.textContent = `🔥 ${score} correct`;
-        }
-
-        // ========== RENDER QUESTION ==========
-        function renderQuestion() {
-            const q = questions[currentIndex];
-            questionText.textContent = q.question;
-            let htmlStr = '';
-            const letters = ['A','B','C','D'];
-            for(let i=0; i<q.options.length; i++) {
-                let optClass = 'option';
-                const optLetter = letters[i];
-                if(userAnswers[currentIndex] === optLetter) optClass += ' selected';
-                if(submitted[currentIndex]) {
-                    if(optLetter === q.correct) optClass += ' correct';
-                    else if(userAnswers[currentIndex] === optLetter && userAnswers[currentIndex] !== q.correct) optClass += ' incorrect';
-                }
-                htmlStr += `<div class="${optClass}" data-opt="${optLetter}">
-                    <div class="option-letter">${optLetter}</div>
-                    <div class="option-text">${q.options[i]}</div>
-                </div>`;
-            }
-            optionsContainer.innerHTML = htmlStr;
-
-            document.querySelectorAll('.option').forEach(opt => {
-                opt.addEventListener('click', function() {
-                    if(submitted[currentIndex]) return;
-                    userAnswers[currentIndex] = this.getAttribute('data-opt');
-                    renderQuestion();
-                    submitBtn.disabled = false;
-                });
-            });
-
-            if(submitted[currentIndex]) {
-                const isCorrect = userAnswers[currentIndex] === q.correct;
-                correctFeedback.style.display = isCorrect ? 'block' : 'none';
-                incorrectFeedback.style.display = isCorrect ? 'none' : 'block';
-                if(isCorrect) {
-                    correctFeedback.innerHTML = `<div class="feedback-title">✅ Correct!</div>${q.explanation}<br><small>${q.detailed}</small>`;
+                // ── Feedback ──
+                if (submitted[currentIndex]) {
+                    const isCorrect = userAnswers[currentIndex] === q.correct;
+                    if (isCorrect) {
+                        correctFeedback.style.display = 'block';
+                        incorrectFeedback.style.display = 'none';
+                        correctFeedbackText.innerHTML = `
+                            ${q.explanation}
+                            <div class="fb-detail">${q.detail}</div>
+                        `;
+                    } else {
+                        const correctAns = q.options[q.correct.charCodeAt(0) - 65];
+                        incorrectFeedback.style.display = 'block';
+                        correctFeedback.style.display = 'none';
+                        incorrectFeedbackText.innerHTML = `
+                            Correct answer: <strong>${q.correct} – ${correctAns}</strong>
+                            <div class="fb-detail">${q.explanation}</div>
+                        `;
+                    }
                 } else {
-                    const correctAnswer = q.options[q.correct.charCodeAt(0)-65];
-                    incorrectFeedback.innerHTML = `<div class="feedback-title">❌ Incorrect</div>Correct answer: ${q.correct} - ${correctAnswer}<br><small>${q.explanation}</small>`;
+                    correctFeedback.style.display = 'none';
+                    incorrectFeedback.style.display = 'none';
                 }
-            } else {
-                correctFeedback.style.display = 'none';
-                incorrectFeedback.style.display = 'none';
+
+                // ── Buttons ──
+                submitBtn.disabled = submitted[currentIndex] || !userAnswers[currentIndex];
+                nextBtn.disabled = !submitted[currentIndex];
+                prevBtn.disabled = (currentIndex === 0);
+
+                qCounter.textContent = `Question ${currentIndex+1} / ${TOTAL}`;
             }
 
-            submitBtn.disabled = submitted[currentIndex] || !userAnswers[currentIndex];
-            nextBtn.disabled = !submitted[currentIndex];
-            prevBtn.disabled = (currentIndex === 0);
-            qCounter.textContent = `Question ${currentIndex+1} / 20`;
-        }
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  9.  QUIZ LIFECYCLE
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-        // ========== QUIZ CONTROL ==========
-        function handleQuizButton() {
-            if (!quizActive) {
-                startQuiz();
-            } else {
-                resetToVideo();
+            function startQuiz() {
+                if (introVideo) {
+                    introVideo.pause();
+                    introVideoContainer.style.display = 'none';
+                }
+
+                userAnswers = new Array(TOTAL).fill(null);
+                submitted = new Array(TOTAL).fill(false);
+                currentIndex = 0;
+                quizActive = true;
+
+                startTimer();
+                quizArea.classList.remove('hidden');
+                renderQuestion();
+                updateScoreUI();
+                saveScoreBtn.disabled = false;
+                startQuizBtn.textContent = '🔄 Reset & Watch Video';
             }
-        }
 
-        function startQuiz() {
+            function resetToVideo() {
+                stopTimer();
+                quizActive = false;
+                quizArea.classList.add('hidden');
+
+                if (introVideoContainer) {
+                    introVideoContainer.style.display = 'block';
+                    if (introVideo) introVideo.currentTime = 0;
+                }
+
+                startQuizBtn.textContent = '▶ Start Quiz';
+                saveScoreBtn.disabled = true;
+
+                userAnswers = new Array(TOTAL).fill(null);
+                submitted = new Array(TOTAL).fill(false);
+                updateScoreUI();
+            }
+
+            function handleStartReset() {
+                if (!quizActive) {
+                    startQuiz();
+                } else {
+                    resetToVideo();
+                }
+            }
+
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  10. SAVE SCORE (online)
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            async function handleSaveScore() {
+                if (!quizActive) {
+                    alert('Please start the quiz first.');
+                    return;
+                }
+
+                const name = studentNameInput.value.trim();
+                if (!name || name === 'Write Name & Section') {
+                    alert('Please enter your name & section before saving.');
+                    return;
+                }
+
+                const hasAnswers = submitted.some(s => s === true);
+                if (!hasAnswers) {
+                    alert('Please answer at least one question before saving.');
+                    return;
+                }
+
+                const score = calculateScore();
+                const { correct, wrong } = calculateDetailed();
+
+                const ok = await saveScoreToFirebase(name, score, correct, wrong,
+                    userAnswers, submitted);
+
+                if (ok) {
+                    alert(`✅ Score saved to cloud!\n${name} : ${score}/20 (${correct} correct, ${wrong} wrong)`);
+                }
+            }
+
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  11. EVENT BINDING
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            startQuizBtn.addEventListener('click', handleStartReset);
+            saveScoreBtn.addEventListener('click', handleSaveScore);
+            clearScoresBtn.addEventListener('click', clearAllScoresFromFirebase);
+            exportCSVBtn.addEventListener('click', exportToCSV);
+
+            submitBtn.addEventListener('click', () => {
+                submitted[currentIndex] = true;
+                renderQuestion();
+                updateScoreUI();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentIndex < TOTAL - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                } else {
+                    alert('🎉 You completed all questions! Click "Save Score" to store your results in the cloud.');
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    renderQuestion();
+                }
+            });
+
+            // ── Bottom navigation ──
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const nav = this.getAttribute('data-nav');
+                    if (nav === 'home') {
+                        if (confirm('Go to Home page?')) window.location.href = 'Learningmainpage.html';
+                    } else if (nav === 'profile') {
+                        if (confirm('Go to Profile page?')) window.location.href = 'Profile view.html';
+                    } else if (nav === 'lessons') {
+                        alert('📚 Lessons page coming soon.');
+                    } else if (nav === 'quiz') {
+                        // already here
+                    }
+                });
+            });
+
+            // ── Video error fallback ──
             if (introVideo) {
-                introVideo.pause();
-                introVideoContainer.style.display = 'none';
+                introVideo.addEventListener('error', function() {
+                    console.warn('Video file "Video Lesson.mp4" not found. Please add it to your folder.');
+                });
             }
-            
-            userAnswers = new Array(20).fill(null);
-            submitted = new Array(20).fill(false);
-            currentIndex = 0;
-            quizActive = true;
-            
-            startTimer();
-            quizArea.style.display = 'block';
-            renderQuestion();
-            updateScoreUI();
-            saveScoreBtn.disabled = false;
-            startQuizBtn.textContent = "🔄 Reset & Watch Video";
-        }
 
-        function resetToVideo() {
-            stopTimer();
-            quizActive = false;
-            quizArea.style.display = 'none';
-            
-            if (introVideoContainer) {
-                introVideoContainer.style.display = 'block';
-                if (introVideo) introVideo.currentTime = 0;
-            }
-            
-            startQuizBtn.textContent = "▶ Start Quiz";
-            saveScoreBtn.disabled = true;
-            
-            userAnswers = new Array(20).fill(null);
-            submitted = new Array(20).fill(false);
-            updateScoreUI();
-        }
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  12. INIT
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-        // ========== SAVE SCORE TO FIREBASE ==========
-        async function saveCurrentScore() {
-            if (!quizActive) {
-                alert('Please start the quiz first!');
-                return;
-            }
-            
-            const name = studentNameInput.value.trim();
-            if (!name || name === 'Write Name Here') {
-                alert('Please enter your name before saving.');
-                return;
-            }
-            
-            // Check if any answers have been submitted
-            const hasAnswers = submitted.some(s => s === true);
-            if (!hasAnswers) {
-                alert('Please answer at least one question before saving.');
-                return;
-            }
-            
-            const score = calculateScore();
-            const { correct, wrong } = calculateDetailedScore();
-            
-            // Save to Firebase
-            const success = await saveScoreToFirebase(name, score, correct, wrong, userAnswers, submitted);
-            
-            if (success) {
-                alert(`✅ Score saved to cloud!\n${name}: ${score}/20 (${correct} correct, ${wrong} wrong)`);
-            }
-        }
+            // Load scores from Firestore on page load
+            loadScoresFromFirebase();
 
-        // ========== EVENT LISTENERS ==========
-        startQuizBtn.addEventListener('click', handleQuizButton);
-        
-        saveScoreBtn.addEventListener('click', saveCurrentScore);
-        
-        clearScoresBtn.addEventListener('click', clearAllScoresFromFirebase);
-        
-        exportCSVBtn.addEventListener('click', exportToCSV);
+            // Auto-refresh leaderboard every 30 seconds
+            setInterval(loadScoresFromFirebase, 30000);
 
-        submitBtn.addEventListener('click', () => {
-            submitted[currentIndex] = true;
-            renderQuestion();
-            updateScoreUI();
-        });
+            // Show initial state
+            resetToVideo();
 
-        nextBtn.addEventListener('click', () => { 
-            if(currentIndex < 19) { 
-                currentIndex++; 
-                renderQuestion(); 
-            } else { 
-                alert('Quiz Finished! Click "Save my score" to store your results in the cloud.'); 
-            }
-        });
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  13. (OPTIONAL)  REAL-TIME LISTENER
+            //     Uncomment below to enable live updates via onSnapshot
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-        prevBtn.addEventListener('click', () => { 
-            if(currentIndex > 0) { 
-                currentIndex--; 
-                renderQuestion(); 
-            }
-        });
+            /*
+            db.collection('quiz_scores')
+              .orderBy('score', 'desc')
+              .orderBy('timestamp', 'desc')
+              .onSnapshot((snapshot) => {
+                const scores = [];
+                snapshot.forEach(doc => {
+                  scores.push({ id: doc.id, ...doc.data() });
+                });
+                renderLeaderboard(scores);
+              }, (err) => {
+                console.warn('Realtime listener error:', err);
+              });
+            */
 
-        // Navigation
-        document.querySelectorAll('.nav-item').forEach((item, idx) => {
-            item.addEventListener('click', () => {
-                if(idx === 0) {
-                    if (confirm('Go to Home?')) window.location.href = 'Learningmainpage.html';
-                }
-                else if(idx === 3) {
-                    if (confirm('Go to Profile?')) window.location.href = 'Profile view.html';
-                }
-            });
-        });
+        })();
+    </script>
 
-        // ========== INITIALIZE ==========
-        // Load scores from Firebase when page loads
-        loadScoresFromFirebase();
-        
-        // Handle video loading error
-        if (introVideo) {
-            introVideo.addEventListener('error', function() {
-                console.log('Video file not found. Please add "Video Lesson.mp4" to your folder.');
-            });
-        }
-
-        // Refresh leaderboard every 30 seconds
-        setInterval(loadScoresFromFirebase, 30000);
-
-    })();
-</script>
 </body>
 </html>
