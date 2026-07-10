@@ -519,14 +519,6 @@
             font-size: 13px;
         }
 
-        .mt-8 {
-            margin-top: 8px;
-        }
-
-        .gap-6 {
-            gap: 6px;
-        }
-
         /* ── RESPONSIVE ── */
         @media (max-width: 540px) {
             .container {
@@ -652,12 +644,11 @@
                 <div class="leaderboard-header">
                     <h3>🏆 Online Leaderboard</h3>
                     <div class="actions">
-                        <button class="btn btn-blue" id="exportCSVBtn" style="font-size:12px;padding:4px 14px;">📥 CSV</button>
-                        <button class="btn btn-danger" id="clearScoresBtn" style="font-size:12px;padding:4px 14px;">🗑️ Clear</button>
+                        <button class="btn btn-danger" id="clearScoresBtn" style="font-size:12px;padding:4px 14px;">🗑️ Clear All</button>
                     </div>
                 </div>
                 <div class="lb-list" id="leaderboardList">
-                    <div class="loading-spinner">Loading scores from cloud…</div>
+                    <div class="loading-spinner">⏳ Loading scores from cloud…</div>
                 </div>
             </div>
         </div>
@@ -692,9 +683,6 @@
 
             // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
             //  1.  FIREBASE CONFIGURATION
-            //      Replace the values below with YOUR Firebase project’s
-            //      config.  You can find these in the Firebase Console
-            //      → Project Settings → Your apps → SDK setup.
             // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
             const firebaseConfig = {
@@ -706,7 +694,6 @@
                 appId: "1:939570939207:web:ba25d7dd07810e94bb7862"
             };
 
-            // ── Initialize Firebase ──
             firebase.initializeApp(firebaseConfig);
             const db = firebase.firestore();
 
@@ -845,7 +832,7 @@
             // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
             let currentIndex = 0;
-            let userAnswers = new Array(TOTAL).fill(null); // 'A','B','C','D' or null
+            let userAnswers = new Array(TOTAL).fill(null);
             let submitted = new Array(TOTAL).fill(false);
             let quizActive = false;
             let timerSeconds = 180;
@@ -876,22 +863,21 @@
             const studentNameInput = $('studentNameInput');
             const leaderboardList = $('leaderboardList');
             const clearScoresBtn = $('clearScoresBtn');
-            const exportCSVBtn = $('exportCSVBtn');
             const streakDisplay = $('streakDisplay');
 
             // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            //  5.  FIREBASE — CRUD
+            //  5.  FIREBASE — CRUD (fixed: no composite index needed)
             // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-            /** Load scores from Firestore and render leaderboard */
+            /** Load scores from Firestore — orders by score only (no composite index) */
             async function loadScoresFromFirebase() {
                 try {
                     leaderboardList.innerHTML =
                         '<div class="loading-spinner">⏳ Loading scores from cloud…</div>';
 
+                    // ✅ Fixed: order by score ONLY — no composite index required
                     const snapshot = await db.collection('quiz_scores')
                         .orderBy('score', 'desc')
-                        .orderBy('timestamp', 'desc')
                         .get();
 
                     const scores = [];
@@ -945,6 +931,10 @@
                 }
                 try {
                     const snapshot = await db.collection('quiz_scores').get();
+                    if (snapshot.empty) {
+                        alert('No scores to clear.');
+                        return;
+                    }
                     const batch = db.batch();
                     snapshot.docs.forEach(doc => batch.delete(doc.ref));
                     await batch.commit();
@@ -953,39 +943,6 @@
                 } catch (err) {
                     console.error('clearAllScoresFromFirebase error:', err);
                     alert('❌ Error clearing scores. Please try again.');
-                }
-            }
-
-            /** Export scores to CSV */
-            async function exportToCSV() {
-                try {
-                    const snapshot = await db.collection('quiz_scores')
-                        .orderBy('score', 'desc')
-                        .orderBy('timestamp', 'desc')
-                        .get();
-
-                    if (snapshot.empty) {
-                        alert('No scores to export.');
-                        return;
-                    }
-
-                    let csv = 'Name,Score,Correct,Wrong,Date,Time\n';
-                    snapshot.forEach(doc => {
-                        const d = doc.data();
-                        csv +=
-                            `"${d.name || ''}",${d.score ?? 0},${d.correctCount ?? 0},${d.wrongCount ?? 0},"${d.date || ''}","${d.time || ''}"\n`;
-                    });
-
-                    const blob = new Blob([csv], { type: 'text/csv' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `eduquest_scores_${new Date().toISOString().slice(0,10)}.csv`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                } catch (err) {
-                    console.error('exportToCSV error:', err);
-                    alert('❌ Error exporting CSV.');
                 }
             }
 
@@ -1105,10 +1062,8 @@
                 const q = QUESTIONS[currentIndex];
                 const letters = ['A', 'B', 'C', 'D'];
 
-                // ── Question text ──
                 questionText.textContent = q.question;
 
-                // ── Options ──
                 let html = '';
                 for (let i = 0; i < q.options.length; i++) {
                     const letter = letters[i];
@@ -1130,7 +1085,6 @@
                 }
                 optionsContainer.innerHTML = html;
 
-                // ── Click handlers ──
                 document.querySelectorAll('.option').forEach(el => {
                     el.addEventListener('click', function() {
                         if (submitted[currentIndex]) return;
@@ -1141,7 +1095,6 @@
                     });
                 });
 
-                // ── Feedback ──
                 if (submitted[currentIndex]) {
                     const isCorrect = userAnswers[currentIndex] === q.correct;
                     if (isCorrect) {
@@ -1165,7 +1118,6 @@
                     incorrectFeedback.style.display = 'none';
                 }
 
-                // ── Buttons ──
                 submitBtn.disabled = submitted[currentIndex] || !userAnswers[currentIndex];
                 nextBtn.disabled = !submitted[currentIndex];
                 prevBtn.disabled = (currentIndex === 0);
@@ -1262,7 +1214,6 @@
             startQuizBtn.addEventListener('click', handleStartReset);
             saveScoreBtn.addEventListener('click', handleSaveScore);
             clearScoresBtn.addEventListener('click', clearAllScoresFromFirebase);
-            exportCSVBtn.addEventListener('click', exportToCSV);
 
             submitBtn.addEventListener('click', () => {
                 submitted[currentIndex] = true;
@@ -1321,26 +1272,6 @@
 
             // Show initial state
             resetToVideo();
-
-            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            //  13. (OPTIONAL)  REAL-TIME LISTENER
-            //     Uncomment below to enable live updates via onSnapshot
-            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-            /*
-            db.collection('quiz_scores')
-              .orderBy('score', 'desc')
-              .orderBy('timestamp', 'desc')
-              .onSnapshot((snapshot) => {
-                const scores = [];
-                snapshot.forEach(doc => {
-                  scores.push({ id: doc.id, ...doc.data() });
-                });
-                renderLeaderboard(scores);
-              }, (err) => {
-                console.warn('Realtime listener error:', err);
-              });
-            */
 
         })();
     </script>
